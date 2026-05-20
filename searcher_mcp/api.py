@@ -7,10 +7,10 @@ from .services.page import fetch_page as fetch_page_service
 from .services.page import review_page as review_page_service
 from .services.pdf import download_pdf as download_pdf_service
 from .services.search import (
-    search_google as search_google_service,
     search_google_scholar as search_google_scholar_service,
+    search_ieeexplore as search_ieeexplore_service,
     search_scholar as search_scholar_service,
-    search_web as search_web_service,
+    search_web_of_science as search_web_of_science_service,
 )
 
 app = FastAPI(title="Searcher MCP API", version=VERSION_NAME)
@@ -19,23 +19,6 @@ app = FastAPI(title="Searcher MCP API", version=VERSION_NAME)
 @app.get("/health")
 def health() -> dict[str, str]:
     return {"status": "ok", "version_name": VERSION_NAME}
-
-
-@app.get("/search_web")
-def search_web(
-    query: str,
-    limit: int = Query(default=5, ge=1, le=20),
-    provider: str = Query(default="auto"),
-) -> dict[str, Any]:
-    return search_web_service(query=query, limit=limit, provider=provider)
-
-
-@app.get("/search_google")
-def search_google(
-    query: str,
-    limit: int = Query(default=5, ge=1, le=20),
-) -> dict[str, Any]:
-    return search_google_service(query=query, limit=limit)
 
 
 @app.get("/fetch_page")
@@ -61,8 +44,16 @@ def search_scholar(
     query: str,
     limit: int = Query(default=5, ge=1, le=20),
     provider: str = Query(default="auto"),
+    start_record: int = Query(default=1, ge=1, le=2000),
+    wos_page: int = Query(default=1, ge=1, le=1000),
 ) -> dict[str, Any]:
-    return search_scholar_service(query=query, limit=limit, provider=provider)
+    return search_scholar_service(
+        query=query,
+        limit=limit,
+        provider=provider,
+        start_record=start_record,
+        wos_page=wos_page,
+    )
 
 
 @app.get("/search_google_scholar")
@@ -71,6 +62,24 @@ def search_google_scholar(
     limit: int = Query(default=5, ge=1, le=20),
 ) -> dict[str, Any]:
     return search_google_scholar_service(query=query, limit=limit)
+
+
+@app.get("/search_ieeexplore")
+def search_ieeexplore(
+    query: str,
+    limit: int = Query(default=5, ge=1, le=20),
+    start_record: int = Query(default=1, ge=1, le=2000),
+) -> dict[str, Any]:
+    return search_ieeexplore_service(query=query, limit=limit, start_record=start_record)
+
+
+@app.get("/search_web_of_science")
+def search_web_of_science(
+    query: str,
+    limit: int = Query(default=5, ge=1, le=20),
+    page: int = Query(default=1, ge=1, le=1000),
+) -> dict[str, Any]:
+    return search_web_of_science_service(query=query, limit=limit, page=page)
 
 
 @app.get("/download_pdf")

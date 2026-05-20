@@ -67,6 +67,7 @@ When using multiple agents in parallel, assign disjoint file ownership to avoid 
 - Keep network calls bounded with timeouts.
 - Never log or expose API keys or secrets.
 - Keep external dependencies minimal.
+- For standalone scripts, prefer flat top-level execution flow and do not add `main()`.
 
 ## 5. Python Environment Rules (Required)
 

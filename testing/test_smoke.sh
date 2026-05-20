@@ -51,10 +51,18 @@ call_get "/openapi.json" "/openapi.json"
 assert_status "200" "/openapi.json"
 assert_body_contains '"openapi"[[:space:]]*:' "/openapi.json"
 
-echo "Testing provider validation for /search_web"
-call_get "/search_web?query=fastapi&provider=invalid_provider&limit=1" "/search_web invalid provider"
-assert_status "400" "/search_web invalid provider"
-assert_body_contains 'Invalid provider' "/search_web invalid provider"
+echo "Testing removed /search_web endpoint"
+call_get "/search_web?query=fastapi&limit=1" "/search_web removed"
+assert_status "404" "/search_web removed"
+
+echo "Testing removed /search_google endpoint"
+call_get "/search_google?query=fastapi&limit=1" "/search_google removed"
+assert_status "404" "/search_google removed"
+
+echo "Testing provider validation for /search_scholar"
+call_get "/search_scholar?query=llm&provider=invalid_provider&limit=1" "/search_scholar invalid provider"
+assert_status "400" "/search_scholar invalid provider"
+assert_body_contains 'Invalid provider' "/search_scholar invalid provider"
 
 if [[ "${SKIP_NETWORK_TESTS}" == "1" ]]; then
   echo "Skipping network-dependent tests (SKIP_NETWORK_TESTS=1)."
@@ -65,11 +73,6 @@ if [[ "${SKIP_NETWORK_TESTS}" == "1" ]]; then
   echo "PASS: smoke test (non-network checks)"
   exit 0
 fi
-
-echo "Testing /search_web with duckduckgo provider"
-call_get "/search_web?query=fastapi&provider=duckduckgo&limit=3" "/search_web duckduckgo"
-assert_status "200" "/search_web duckduckgo"
-assert_body_contains '"results"[[:space:]]*:[[:space:]]*\[' "/search_web duckduckgo"
 
 echo "Testing /fetch_page"
 call_get "/fetch_page?url=https://example.com" "/fetch_page"

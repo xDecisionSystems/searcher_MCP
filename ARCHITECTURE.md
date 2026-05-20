@@ -8,9 +8,8 @@ This project is a single-service HTTP API built with FastAPI.
 
 Core responsibilities:
 
-- Web search via pluggable providers.
+- Scholar search via pluggable scholarly providers.
 - Web page retrieval and content extraction for review.
-- Scholarly paper search.
 - PDF download with safety limits.
 
 The implementation is modular:
@@ -28,7 +27,7 @@ The implementation is modular:
 - Shared `requests.Session`:
   Reused for outbound HTTP calls with a configured User-Agent.
 - Provider adapters:
-  Internal functions that normalize upstream results into project JSON shapes.
+  Internal functions that normalize upstream scholarly results into project JSON shapes.
 - Extraction/parsing layer:
   Uses BeautifulSoup for HTML cleanup and content extraction.
 - Download manager:
@@ -48,41 +47,41 @@ Generic request lifecycle:
 
 - `/health`:
   Lightweight liveness endpoint.
-- `/search_web`:
-  Provider-agnostic web search with `provider=auto` fallback chain.
-- `/search_google`:
-  Explicit SerpAPI-backed Google search.
+- `/search_scholar`:
+  Unified scholarly search router for Semantic Scholar, SerpAPI Google Scholar, IEEE Xplore, and Web of Science.
+- `/search_google_scholar`:
+  Explicit SerpAPI-backed Google Scholar search.
+- `/search_ieeexplore`:
+  IEEE Xplore metadata search using API key authentication.
+- `/search_web_of_science`:
+  Clarivate Web of Science Starter API search using API key authentication.
 - `/fetch_page`:
   Retrieves HTML and returns extracted textual content.
 - `/review_page`:
   Extends fetch output with headings and readability metrics.
-- `/search_scholar`:
-  Scholar search through Semantic Scholar or SerpAPI Google Scholar.
-- `/search_google_scholar`:
-  Explicit SerpAPI-backed Google Scholar search.
 - `/download_pdf`:
   Streams PDF to disk with content-type and max-size enforcement.
 
 ## 5. Provider Selection Logic
 
-Web search provider selection in `/search_web` when `provider=auto`:
-
-1. SerpAPI Google (if `SERPAPI_API_KEY`)
-2. Brave Search (if `BRAVE_SEARCH_API_KEY`)
-3. Bing Search (if `BING_SEARCH_API_KEY`)
-4. DuckDuckGo HTML fallback
-
 Scholar provider selection in `/search_scholar` when `provider=auto`:
 
 1. Semantic Scholar
+
+Explicit provider names supported by `/search_scholar`:
+
+- `semantic_scholar`
+- `google_scholar_serpapi`
+- `ieeexplore`
+- `web_of_science`
 
 ## 6. Configuration Model
 
 Configuration is environment-driven:
 
 - `SERPAPI_API_KEY`
-- `BRAVE_SEARCH_API_KEY`
-- `BING_SEARCH_API_KEY`
+- `IEEE_XPLORE_API_KEY`
+- `WEB_OF_SCIENCE_API_KEY`
 - `SEMANTIC_SCHOLAR_API_KEY`
 - `REQUEST_TIMEOUT_SECONDS`
 - `PDF_MAX_MB`
@@ -122,8 +121,7 @@ Local `.venv` + `uvicorn` deployment is also supported for testing only.
 
 ## 10. Recommended Future Refactors
 
-- Split `app.py` into modules:
-  `routers/`, `providers/`, `schemas/`, `services/`.
+- Split API definitions into dedicated route modules by domain.
 - Add Pydantic response models for stronger contracts.
-- Add test suite for endpoint behavior and provider normalization.
+- Add test coverage for provider-specific normalization branches.
 - Add structured logging and request IDs.

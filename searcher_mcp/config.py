@@ -12,10 +12,9 @@ DOWNLOAD_DIR = Path(os.getenv("DOWNLOAD_DIR", tempfile.gettempdir()))
 VERSION_FILE = Path(__file__).resolve().parent.parent / "VERSION.md"
 
 SERPAPI_API_KEY = os.getenv("SERPAPI_API_KEY")
-SERPER_API_KEY = os.getenv("SERPER_API_KEY")
-BRAVE_SEARCH_API_KEY = os.getenv("BRAVE_SEARCH_API_KEY")
-BING_SEARCH_API_KEY = os.getenv("BING_SEARCH_API_KEY")
+IEEE_XPLORE_API_KEY = os.getenv("IEEE_XPLORE_API_KEY")
 SEMANTIC_SCHOLAR_API_KEY = os.getenv("SEMANTIC_SCHOLAR_API_KEY")
+WEB_OF_SCIENCE_API_KEY = os.getenv("WEB_OF_SCIENCE_API_KEY")
 
 
 def load_version_name() -> str:

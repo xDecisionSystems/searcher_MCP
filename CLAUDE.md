@@ -38,6 +38,7 @@ Deployment and testing permissions:
   - `.venv/bin/python -m uvicorn app:app --host 0.0.0.0 --port 8000` (local debugging only, not deployment)
 - Run syntax checks:
   - `.venv/bin/python -m py_compile app.py searcher_mcp/*.py searcher_mcp/services/*.py`
+- For standalone scripts, prefer flat top-level execution flow and do not add `main()`.
 
 If an interactive shell needs activation, use:
 

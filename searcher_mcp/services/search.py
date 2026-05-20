@@ -1,147 +1,82 @@
 from typing import Any
 
-import requests
-from bs4 import BeautifulSoup
 from fastapi import HTTPException
 
 from ..config import (
-    BING_SEARCH_API_KEY,
-    BRAVE_SEARCH_API_KEY,
-    REQUEST_TIMEOUT,
+    IEEE_XPLORE_API_KEY,
     SEMANTIC_SCHOLAR_API_KEY,
     SERPAPI_API_KEY,
-    SERPER_API_KEY,
+    WEB_OF_SCIENCE_API_KEY,
 )
-from ..http_client import request_json, session
+from ..http_client import request_json
 
 
-def _search_web_serpapi(query: str, limit: int) -> list[dict[str, str]]:
-    if not SERPAPI_API_KEY:
-        raise HTTPException(status_code=400, detail="SERPAPI_API_KEY is not configured.")
-    payload = request_json(
-        "https://serpapi.com/search.json",
-        params={"engine": "google", "q": query, "num": limit, "api_key": SERPAPI_API_KEY},
-    )
-    results: list[dict[str, str]] = []
-    for item in payload.get("organic_results", [])[:limit]:
-        results.append(
-            {
-                "title": item.get("title", ""),
-                "url": item.get("link", ""),
-                "snippet": item.get("snippet", ""),
-            }
-        )
-    return results
+def _normalize_authors(raw: Any) -> list[str]:
+    if isinstance(raw, list):
+        names: list[str] = []
+        for item in raw:
+            if isinstance(item, str):
+                value = item.strip()
+                if value:
+                    names.append(value)
+                continue
+            if not isinstance(item, dict):
+                continue
+            for key in ("name", "full_name", "displayName", "wosStandard"):
+                value = str(item.get(key, "")).strip()
+                if value:
+                    names.append(value)
+                    break
+        return names
 
+    if isinstance(raw, dict):
+        if isinstance(raw.get("authors"), list):
+            return _normalize_authors(raw["authors"])
+        if isinstance(raw.get("author"), list):
+            return _normalize_authors(raw["author"])
 
-def _search_web_serper(query: str, limit: int) -> list[dict[str, str]]:
-    if not SERPER_API_KEY:
-        raise HTTPException(status_code=400, detail="SERPER_API_KEY is not configured.")
-    payload = request_json(
-        "https://google.serper.dev/search",
-        method="POST",
-        headers={"X-API-KEY": SERPER_API_KEY, "Content-Type": "application/json"},
-        json={"q": query, "num": limit},
-    )
-    results: list[dict[str, str]] = []
-    for item in payload.get("organic", [])[:limit]:
-        results.append(
-            {
-                "title": item.get("title", ""),
-                "url": item.get("link", ""),
-                "snippet": item.get("snippet", ""),
-            }
-        )
-    return results
-
-
-def _search_web_brave(query: str, limit: int) -> list[dict[str, str]]:
-    if not BRAVE_SEARCH_API_KEY:
-        raise HTTPException(status_code=400, detail="BRAVE_SEARCH_API_KEY is not configured.")
-    payload = request_json(
-        "https://api.search.brave.com/res/v1/web/search",
-        params={"q": query, "count": limit},
-        headers={"X-Subscription-Token": BRAVE_SEARCH_API_KEY},
-    )
-    results: list[dict[str, str]] = []
-    for item in payload.get("web", {}).get("results", [])[:limit]:
-        results.append(
-            {
-                "title": item.get("title", ""),
-                "url": item.get("url", ""),
-                "snippet": item.get("description", ""),
-            }
-        )
-    return results
-
-
-def _search_web_bing(query: str, limit: int) -> list[dict[str, str]]:
-    if not BING_SEARCH_API_KEY:
-        raise HTTPException(status_code=400, detail="BING_SEARCH_API_KEY is not configured.")
-    payload = request_json(
-        "https://api.bing.microsoft.com/v7.0/search",
-        params={"q": query, "count": limit},
-        headers={"Ocp-Apim-Subscription-Key": BING_SEARCH_API_KEY},
-    )
-    results: list[dict[str, str]] = []
-    for item in payload.get("webPages", {}).get("value", [])[:limit]:
-        results.append(
-            {
-                "title": item.get("name", ""),
-                "url": item.get("url", ""),
-                "snippet": item.get("snippet", ""),
-            }
-        )
-    return results
-
-
-def _search_web_duckduckgo(query: str, limit: int) -> list[dict[str, str]]:
-    try:
-        resp = session.get(
-            "https://duckduckgo.com/html/",
-            params={"q": query},
-            timeout=REQUEST_TIMEOUT,
-        )
-        resp.raise_for_status()
-    except requests.RequestException as exc:
-        raise HTTPException(status_code=502, detail=f"DuckDuckGo request failed: {exc}") from exc
-
-    soup = BeautifulSoup(resp.text, "html.parser")
-    results: list[dict[str, str]] = []
-    for node in soup.select("div.result")[:limit]:
-        anchor = node.select_one("a.result__a")
-        snippet = node.select_one(".result__snippet")
-        if not anchor:
-            continue
-        href = anchor.get("href", "")
-        results.append(
-            {
-                "title": anchor.get_text(strip=True),
-                "url": href,
-                "snippet": snippet.get_text(" ", strip=True) if snippet else "",
-            }
-        )
-    return results
+    return []
 
 
 def _search_scholar_semantic(query: str, limit: int) -> dict[str, Any]:
     headers: dict[str, str] = {}
     if SEMANTIC_SCHOLAR_API_KEY:
         headers["x-api-key"] = SEMANTIC_SCHOLAR_API_KEY
-    return request_json(
+
+    payload = request_json(
         "https://api.semanticscholar.org/graph/v1/paper/search",
         params={
             "query": query,
             "limit": limit,
-            "fields": "title,year,authors,url,abstract,openAccessPdf,citationCount",
+            "fields": "title,year,authors,url,abstract,openAccessPdf,citationCount,venue",
         },
         headers=headers or None,
     )
+
+    results: list[dict[str, Any]] = []
+    for item in payload.get("data", [])[:limit]:
+        authors = [author.get("name", "") for author in item.get("authors", []) if author.get("name")]
+        open_access_pdf = item.get("openAccessPdf") or {}
+        results.append(
+            {
+                "title": item.get("title", ""),
+                "url": item.get("url", ""),
+                "snippet": item.get("abstract", "") or "",
+                "publication_year": item.get("year"),
+                "authors": authors,
+                "citation_count": item.get("citationCount"),
+                "source": item.get("venue"),
+                "pdf_link": open_access_pdf.get("url", "") if isinstance(open_access_pdf, dict) else "",
+            }
+        )
+
+    return {"total_records": payload.get("total"), "results": results}
 
 
 def _search_scholar_serpapi(query: str, limit: int) -> dict[str, Any]:
     if not SERPAPI_API_KEY:
         raise HTTPException(status_code=400, detail="SERPAPI_API_KEY is not configured.")
+
     payload = request_json(
         "https://serpapi.com/search.json",
         params={
@@ -151,83 +86,161 @@ def _search_scholar_serpapi(query: str, limit: int) -> dict[str, Any]:
             "api_key": SERPAPI_API_KEY,
         },
     )
+
     results: list[dict[str, Any]] = []
     for item in payload.get("organic_results", [])[:limit]:
         resources = item.get("resources", [])
         pdf_link = ""
-        for resource in resources:
-            if "pdf" in resource.get("file_format", "").lower():
-                pdf_link = resource.get("link", "")
-                break
+        if isinstance(resources, list):
+            for resource in resources:
+                if not isinstance(resource, dict):
+                    continue
+                if "pdf" in str(resource.get("file_format", "")).lower():
+                    pdf_link = str(resource.get("link", ""))
+                    break
+
+        publication_info = item.get("publication_info") or {}
+        author_names = _normalize_authors(publication_info.get("authors", []))
+
         results.append(
             {
-                "title": item.get("title"),
-                "publication_info": item.get("publication_info"),
-                "snippet": item.get("snippet"),
+                "title": item.get("title", ""),
+                "url": item.get("link", ""),
+                "snippet": item.get("snippet", ""),
+                "publication_info": publication_info,
+                "authors": author_names,
                 "result_id": item.get("result_id"),
-                "link": item.get("link"),
                 "pdf_link": pdf_link,
             }
         )
-    return {"data": results}
+
+    search_info = payload.get("search_information")
+    total_records = None
+    if isinstance(search_info, dict):
+        total_records = search_info.get("total_results")
+
+    return {"total_records": total_records, "results": results}
 
 
-def search_web(query: str, limit: int, provider: str) -> dict[str, Any]:
-    provider = provider.lower()
-    if provider == "auto":
-        if SERPAPI_API_KEY:
-            provider = "serpapi_google"
-        elif SERPER_API_KEY:
-            provider = "serper_google"
-        elif BRAVE_SEARCH_API_KEY:
-            provider = "brave"
-        elif BING_SEARCH_API_KEY:
-            provider = "bing"
-        else:
-            provider = "duckduckgo"
+def _search_ieeexplore(query: str, limit: int, start_record: int) -> dict[str, Any]:
+    if not IEEE_XPLORE_API_KEY:
+        raise HTTPException(status_code=400, detail="IEEE_XPLORE_API_KEY is not configured.")
 
-    if provider == "serpapi_google":
-        results = _search_web_serpapi(query, limit)
-    elif provider == "serper_google":
-        results = _search_web_serper(query, limit)
-    elif provider == "brave":
-        results = _search_web_brave(query, limit)
-    elif provider == "bing":
-        results = _search_web_bing(query, limit)
-    elif provider == "duckduckgo":
-        results = _search_web_duckduckgo(query, limit)
-    else:
-        raise HTTPException(status_code=400, detail="Invalid provider.")
+    payload = request_json(
+        "https://ieeexploreapi.ieee.org/api/v1/search/articles",
+        params={
+            "apikey": IEEE_XPLORE_API_KEY,
+            "querytext": query,
+            "max_records": limit,
+            "start_record": start_record,
+        },
+    )
 
-    return {"provider": provider, "query": query, "results": results}
-
-
-def search_google(query: str, limit: int) -> dict[str, Any]:
-    if SERPAPI_API_KEY:
-        provider = "serpapi_google"
-        results = _search_web_serpapi(query=query, limit=limit)
-    elif SERPER_API_KEY:
-        provider = "serper_google"
-        results = _search_web_serper(query=query, limit=limit)
-    else:
-        raise HTTPException(
-            status_code=400,
-            detail="Set SERPAPI_API_KEY or SERPER_API_KEY to use /search_google.",
+    results: list[dict[str, Any]] = []
+    for item in payload.get("articles", [])[:limit]:
+        authors = item.get("authors", {}).get("authors", [])
+        author_names = [author.get("full_name", "") for author in authors if author.get("full_name")]
+        results.append(
+            {
+                "title": item.get("title", "") or item.get("article_title", ""),
+                "url": item.get("html_url", "") or item.get("pdf_url", ""),
+                "snippet": item.get("abstract", ""),
+                "publication_year": item.get("publication_year"),
+                "authors": author_names,
+                "doi": item.get("doi"),
+                "article_number": item.get("article_number"),
+                "source": item.get("publication_title"),
+            }
         )
-    return {"provider": provider, "query": query, "results": results}
+
+    return {
+        "start_record": start_record,
+        "total_records": payload.get("total_records"),
+        "results": results,
+    }
 
 
-def search_scholar(query: str, limit: int, provider: str) -> dict[str, Any]:
-    provider = provider.lower()
+def _search_web_of_science(query: str, limit: int, page: int) -> dict[str, Any]:
+    if not WEB_OF_SCIENCE_API_KEY:
+        raise HTTPException(status_code=400, detail="WEB_OF_SCIENCE_API_KEY is not configured.")
+
+    payload = request_json(
+        "https://api.clarivate.com/apis/wos-starter/v1/documents",
+        params={"q": query, "limit": limit, "page": page},
+        headers={"X-ApiKey": WEB_OF_SCIENCE_API_KEY, "Accept": "application/json"},
+    )
+
+    hits = payload.get("hits")
+    if not isinstance(hits, list):
+        hits = []
+
+    results: list[dict[str, Any]] = []
+    for item in hits[:limit]:
+        if not isinstance(item, dict):
+            continue
+
+        source = item.get("source") if isinstance(item.get("source"), dict) else {}
+        identifiers = item.get("identifiers") if isinstance(item.get("identifiers"), dict) else {}
+        links = item.get("links") if isinstance(item.get("links"), dict) else {}
+
+        abstract = item.get("abstract", "")
+        if isinstance(abstract, list):
+            abstract = " ".join(str(part).strip() for part in abstract if str(part).strip())
+        elif abstract is None:
+            abstract = ""
+
+        authors = _normalize_authors(item.get("names"))
+
+        results.append(
+            {
+                "uid": item.get("uid"),
+                "title": item.get("title", ""),
+                "url": links.get("record", "") or links.get("url", ""),
+                "snippet": str(abstract),
+                "publication_year": source.get("publishYear") or item.get("publishYear"),
+                "authors": authors,
+                "doi": identifiers.get("doi") or item.get("doi"),
+                "source": source.get("sourceTitle") or source.get("title"),
+                "citation_count": item.get("timesCited"),
+            }
+        )
+
+    metadata = payload.get("metadata") if isinstance(payload.get("metadata"), dict) else {}
+
+    return {
+        "page": page,
+        "total_records": metadata.get("total"),
+        "results": results,
+    }
+
+
+def search_scholar(
+    query: str,
+    limit: int,
+    provider: str,
+    start_record: int = 1,
+    wos_page: int = 1,
+) -> dict[str, Any]:
+    provider = provider.lower().strip()
     if provider == "auto":
         provider = "semantic_scholar"
 
     if provider == "semantic_scholar":
-        data = _search_scholar_semantic(query, limit)
+        data = _search_scholar_semantic(query=query, limit=limit)
     elif provider == "google_scholar_serpapi":
-        data = _search_scholar_serpapi(query, limit)
+        data = _search_scholar_serpapi(query=query, limit=limit)
+    elif provider == "ieeexplore":
+        data = _search_ieeexplore(query=query, limit=limit, start_record=start_record)
+    elif provider == "web_of_science":
+        data = _search_web_of_science(query=query, limit=limit, page=wos_page)
     else:
-        raise HTTPException(status_code=400, detail="Invalid provider.")
+        raise HTTPException(
+            status_code=400,
+            detail=(
+                "Invalid provider. Use auto, semantic_scholar, google_scholar_serpapi, "
+                "ieeexplore, or web_of_science."
+            ),
+        )
 
     return {"provider": provider, "query": query, **data}
 
@@ -235,3 +248,13 @@ def search_scholar(query: str, limit: int, provider: str) -> dict[str, Any]:
 def search_google_scholar(query: str, limit: int) -> dict[str, Any]:
     data = _search_scholar_serpapi(query=query, limit=limit)
     return {"provider": "google_scholar_serpapi", "query": query, **data}
+
+
+def search_ieeexplore(query: str, limit: int, start_record: int) -> dict[str, Any]:
+    data = _search_ieeexplore(query=query, limit=limit, start_record=start_record)
+    return {"provider": "ieeexplore", "query": query, **data}
+
+
+def search_web_of_science(query: str, limit: int, page: int) -> dict[str, Any]:
+    data = _search_web_of_science(query=query, limit=limit, page=page)
+    return {"provider": "web_of_science", "query": query, **data}

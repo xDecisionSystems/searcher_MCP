@@ -56,33 +56,24 @@ test_keyed_endpoint() {
 echo "Running API key behavior tests against: ${BASE_URL}"
 
 test_keyed_endpoint \
-  "/search_web?query=fastapi&provider=serpapi_google&limit=1" \
-  "/search_web provider=serpapi_google" \
-  "SERPAPI_API_KEY is not configured"
-
-test_keyed_endpoint \
-  "/search_web?query=fastapi&provider=serper_google&limit=1" \
-  "/search_web provider=serper_google" \
-  "SERPER_API_KEY is not configured"
-
-test_keyed_endpoint \
-  "/search_web?query=fastapi&provider=brave&limit=1" \
-  "/search_web provider=brave" \
-  "BRAVE_SEARCH_API_KEY is not configured"
-
-test_keyed_endpoint \
-  "/search_web?query=fastapi&provider=bing&limit=1" \
-  "/search_web provider=bing" \
-  "BING_SEARCH_API_KEY is not configured"
-
-test_keyed_endpoint \
-  "/search_google?query=fastapi&limit=1" \
-  "/search_google" \
-  "SERPAPI_API_KEY or SERPER_API_KEY"
-
-test_keyed_endpoint \
   "/search_google_scholar?query=llm&limit=1" \
   "/search_google_scholar" \
   "SERPAPI_API_KEY is not configured"
+
+test_keyed_endpoint \
+  "/search_scholar?query=llm&provider=google_scholar_serpapi&limit=1" \
+  "/search_scholar provider=google_scholar_serpapi" \
+  "SERPAPI_API_KEY is not configured"
+
+test_keyed_endpoint \
+  "/search_ieeexplore?query=wireless+sensor+network&limit=1" \
+  "/search_ieeexplore" \
+  "IEEE_XPLORE_API_KEY is not configured"
+
+test_keyed_endpoint \
+  "/search_web_of_science?query=wireless+sensor+network&limit=1" \
+  "/search_web_of_science" \
+  "WEB_OF_SCIENCE_API_KEY is not configured"
+
 
 echo "PASS: API key behavior tests"

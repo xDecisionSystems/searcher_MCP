@@ -11,13 +11,12 @@ Thanks for contributing to Searcher MCP.
 ## 2. Local Setup
 
 ```bash
-python3 -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
-cp .env.example .env
+.venv/bin/python -m pip install -r requirements.txt
+cp .env.example .env.dev
+set -a && source .env.dev && set +a
 ```
 
-Add API keys in `.env` as needed.
+Add API keys in `.env.dev` as needed.
 
 ## 3. Development Workflow
 
@@ -41,14 +40,14 @@ Recommended smoke checks:
 
 ```bash
 curl "http://127.0.0.1:8000/health"
-curl "http://127.0.0.1:8000/search_web?query=test&provider=duckduckgo"
+curl "http://127.0.0.1:8000/search_scholar?query=test&provider=semantic_scholar"
 curl "http://127.0.0.1:8000/fetch_page?url=https://example.com"
 curl "http://127.0.0.1:8000/review_page?url=https://example.com"
 ```
 
 ## 5. Code Style
 
-- Follow existing style in `app.py`.
+- Follow existing style in `app.py` and service modules.
 - Keep functions short and purpose-specific.
 - Prefer explicit error handling over silent fallback.
 - Use type hints for new/changed functions.

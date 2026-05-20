@@ -2,13 +2,15 @@
 
 FastAPI service for:
 
-- Web search (`/search_web`)
-- Direct Google search (`/search_google`)
-- Webpage fetch + review-ready extraction (`/fetch_page`)
-- Website review output (`/review_page`)
 - Scholar search (`/search_scholar`)
 - Direct Google Scholar search (`/search_google_scholar`)
+- IEEE Xplore search (`/search_ieeexplore`)
+- Web of Science search (`/search_web_of_science`)
+- Webpage fetch + review-ready extraction (`/fetch_page`)
+- Website review output (`/review_page`)
 - PDF download (`/download_pdf`)
+
+This service is intentionally scholar-focused and does not provide normal Google/Bing/Brave web search endpoints.
 
 ## 0. One-Line Proxmox LXC Installer (wget)
 
@@ -63,31 +65,68 @@ The `testing/` folder includes endpoint smoke tests:
 
 See [testing/README.md](/home/aev/UCF Dropbox/Adan Vela/git-ucf/searcher_MCP/testing/README.md) for options and usage.
 
-## 4. Endpoints
+## 4. Environment Variables
+
+Core provider keys:
+
+- `SEMANTIC_SCHOLAR_API_KEY` (optional)
+- `SERPAPI_API_KEY` (required for Google Scholar endpoints)
+- `IEEE_XPLORE_API_KEY` (required for IEEE Xplore endpoints)
+- `WEB_OF_SCIENCE_API_KEY` (required for Web of Science endpoints)
+
+Runtime tuning:
+
+- `REQUEST_TIMEOUT_SECONDS`
+- `PDF_MAX_MB`
+- `DOWNLOAD_DIR`
+- `MCP_USER_AGENT`
+
+## 5. Endpoints
 
 ### `GET /health`
 
 Simple health check.
 
-### `GET /search_web`
+### `GET /search_scholar`
 
 Params:
 
 - `query` (required)
 - `limit` (default `5`, max `20`)
-- `provider` (`auto|serpapi_google|serper_google|brave|bing|duckduckgo`)
+- `provider` (`auto|semantic_scholar|google_scholar_serpapi|ieeexplore|web_of_science`)
+- `start_record` (default `1`, IEEE Xplore only)
+- `wos_page` (default `1`, Web of Science only)
 
-`auto` chooses `serpapi_google`, then `serper_google`, then `brave`, then `bing`, then `duckduckgo`.
+`auto` chooses `semantic_scholar`.
 
-### `GET /search_google`
+### `GET /search_google_scholar`
 
 Params:
 
 - `query` (required)
 - `limit` (default `5`, max `20`)
 
-Uses SerpAPI Google when `SERPAPI_API_KEY` is set.
-If `SERPAPI_API_KEY` is not set, it falls back to Serper Google (`SERPER_API_KEY` required).
+Uses SerpAPI Google Scholar (`SERPAPI_API_KEY` required).
+
+### `GET /search_ieeexplore`
+
+Params:
+
+- `query` (required)
+- `limit` (default `5`, max `20`)
+- `start_record` (default `1`)
+
+Uses IEEE Xplore Metadata API (`IEEE_XPLORE_API_KEY` required).
+
+### `GET /search_web_of_science`
+
+Params:
+
+- `query` (required)
+- `limit` (default `5`, max `20`)
+- `page` (default `1`)
+
+Uses Clarivate Web of Science Starter API (`WEB_OF_SCIENCE_API_KEY` required).
 
 ### `GET /fetch_page`
 
@@ -109,25 +148,6 @@ Params:
 
 Returns everything from `/fetch_page` plus headings, word count, and estimated read time.
 
-### `GET /search_scholar`
-
-Params:
-
-- `query` (required)
-- `limit` (default `5`, max `20`)
-- `provider` (`auto|semantic_scholar|google_scholar_serpapi`)
-
-`auto` uses Semantic Scholar.
-
-### `GET /search_google_scholar`
-
-Params:
-
-- `query` (required)
-- `limit` (default `5`, max `20`)
-
-Always uses SerpAPI Google Scholar (`SERPAPI_API_KEY` required).
-
 ### `GET /download_pdf`
 
 Params:
@@ -136,14 +156,15 @@ Params:
 
 Downloads PDF to `DOWNLOAD_DIR` (or `/tmp` by default), enforces max size (`PDF_MAX_MB`), and returns file path + size.
 
-## 5. Example Requests
+## 6. Example Requests
 
 ```bash
-curl "http://127.0.0.1:8000/search_web?query=fastapi+mcp&provider=duckduckgo"
-curl "http://127.0.0.1:8000/search_google?query=fastapi+mcp"
+curl "http://127.0.0.1:8000/search_scholar?query=llm+agents&provider=semantic_scholar"
+curl "http://127.0.0.1:8000/search_scholar?query=retrieval+augmented+generation&provider=google_scholar_serpapi"
+curl "http://127.0.0.1:8000/search_google_scholar?query=multi+agent+systems"
+curl "http://127.0.0.1:8000/search_ieeexplore?query=wireless+sensor+network"
+curl "http://127.0.0.1:8000/search_web_of_science?query=aviation+noise+model"
 curl "http://127.0.0.1:8000/fetch_page?url=https://example.com"
 curl "http://127.0.0.1:8000/review_page?url=https://example.com"
-curl "http://127.0.0.1:8000/search_scholar?query=llm+agents&provider=semantic_scholar"
-curl "http://127.0.0.1:8000/search_google_scholar?query=retrieval+augmented+generation"
 curl "http://127.0.0.1:8000/download_pdf?url=https://arxiv.org/pdf/1706.03762.pdf"
 ```
