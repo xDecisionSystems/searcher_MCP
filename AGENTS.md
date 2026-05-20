@@ -49,7 +49,22 @@ When using multiple agents in parallel, assign disjoint file ownership to avoid 
 - Never log or expose API keys or secrets.
 - Keep external dependencies minimal.
 
-## 5. Safety and Security
+## 5. Python Environment Rules (Required)
+
+- Always use the repository virtual environment at `.venv`.
+- Immediately after creating `.venv`, run `.venv/bin/python -m pip install -r requirements.txt`.
+- Re-run `.venv/bin/python -m pip install -r requirements.txt` any time `requirements.txt` changes.
+- Prefer explicit executables over relying on shell activation:
+  - `.venv/bin/python`
+  - `.venv/bin/pip`
+- Do not use system/global `python`, `python3`, or `pip` for project tasks.
+- For commands in docs, scripts, and examples, prefer:
+  - `.venv/bin/python -m pip install -r requirements.txt`
+  - `.venv/bin/python -m uvicorn app:app --host 0.0.0.0 --port 8000`
+- If activation is needed for an interactive session, use:
+  - `source .venv/bin/activate`
+
+## 6. Safety and Security
 
 - Accept only `http`/`https` URLs.
 - Treat downloaded content as untrusted.
@@ -58,18 +73,18 @@ When using multiple agents in parallel, assign disjoint file ownership to avoid 
 - Do not execute downloaded files.
 - Prefer allowlists for provider names and parameters.
 
-## 6. Change Workflow for Agents
+## 7. Change Workflow for Agents
 
 1. Read `README.md`, `ARCHITECTURE.md`, and `app.py`.
 2. Identify impacted endpoints, config, and docs.
 3. Implement smallest coherent change.
 4. Run quick checks:
-   - `python3 -m py_compile app.py`
+   - `.venv/bin/python -m py_compile app.py`
    - Optional runtime checks if deps are installed.
 5. Update docs and examples.
 6. Summarize changes, assumptions, and residual risks.
 
-## 7. API Change Policy
+## 8. API Change Policy
 
 Treat these as breaking changes:
 
@@ -84,7 +99,7 @@ If a breaking change is required:
 - Update `README.md` and `ARCHITECTURE.md`.
 - Call out change impact clearly in PR/task summary.
 
-## 8. Definition of Done
+## 9. Definition of Done
 
 A change is complete when:
 
