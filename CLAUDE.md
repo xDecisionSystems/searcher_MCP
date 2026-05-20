@@ -2,6 +2,12 @@
 
 Repository instructions for Claude-based programming agents.
 
+Deployment policy:
+
+- Production deployment is Debian-based Proxmox LXC with `systemd`.
+- Local deployment using `.venv` + `uvicorn` is allowed for testing and validation only.
+- Do not add additional deployment targets unless explicitly requested.
+
 ## 1. Environment Requirement (Mandatory)
 
 - Use the repository virtual environment located at `.venv`.
@@ -17,7 +23,7 @@ Repository instructions for Claude-based programming agents.
 - Install dependencies:
   - `.venv/bin/python -m pip install -r requirements.txt`
 - Run API:
-  - `.venv/bin/python -m uvicorn app:app --host 0.0.0.0 --port 8000`
+  - `.venv/bin/python -m uvicorn app:app --host 0.0.0.0 --port 8000` (local debugging only, not deployment)
 - Run syntax checks:
   - `.venv/bin/python -m py_compile app.py`
 

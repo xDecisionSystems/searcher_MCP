@@ -98,7 +98,8 @@ When changing response schemas, update `README.md` and announce impact.
 
 ## 8. Deployment Topology
 
-Target environment is Proxmox LXC with optional systemd management.
+Primary production environment is Debian-based Proxmox LXC with systemd management.
+Local `.venv` + `uvicorn` deployment is also supported for testing only.
 
 - Service file: `deploy/searcher-mcp.service`
 - Working directory: `/opt/searcher_mcp`

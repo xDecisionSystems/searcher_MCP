@@ -18,44 +18,33 @@ wget -O install.sh https://raw.githubusercontent.com/xDecisionSystems/searcher_M
 
 This installer downloads, installs, and deploys the FastAPI service on Debian-based Proxmox LXC, and installs `curl` as part of system dependencies.
 
-## 1. Install
+## 1. Supported Deployment Targets
 
-```bash
-python3 -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
-cp .env.example .env
-```
+Supported deployment modes:
 
-Edit `.env` and add API keys you want to use.
+- Production: Debian-based Proxmox LXC with `systemd` (`searcher-mcp.service`)
+- Testing: local deployment using `.venv` + `uvicorn`
 
-## 2. Run
-
-```bash
-source .venv/bin/activate
-set -a && source .env && set +a
-uvicorn app:app --host 0.0.0.0 --port 8000
-```
+After install, edit `/opt/searcher_mcp/.env` and add your API keys.
 
 Swagger docs:
 
 - `http://<lxc-ip>:8000/docs`
 
-## 2b. Optional systemd (Proxmox LXC)
+## 1b. Local Deployment (Testing Only)
 
 ```bash
-mkdir -p /opt/searcher_mcp
-cp -r . /opt/searcher_mcp
-python3 -m venv /opt/searcher_mcp/.venv
-/opt/searcher_mcp/.venv/bin/pip install -r /opt/searcher_mcp/requirements.txt
-cp /opt/searcher_mcp/.env.example /opt/searcher_mcp/.env
-cp /opt/searcher_mcp/deploy/searcher-mcp.service /etc/systemd/system/searcher-mcp.service
-systemctl daemon-reload
-systemctl enable --now searcher-mcp
-systemctl status searcher-mcp
+.venv/bin/python -m pip install -r requirements.txt
+cp .env.example .env
+set -a && source .env && set +a
+.venv/bin/python -m uvicorn app:app --host 127.0.0.1 --port 8000
 ```
 
-## 2c. Update an Existing Deployment
+Local testing docs URL:
+
+- `http://127.0.0.1:8000/docs`
+
+## 2. Update an Existing Proxmox Deployment
 
 `update.sh` downloads the latest runtime files (including `app.py`, `requirements.txt`, `install.sh`, and `update.sh`) and restarts the service automatically.
 

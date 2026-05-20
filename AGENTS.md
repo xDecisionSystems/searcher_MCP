@@ -25,6 +25,12 @@ Primary code and runtime files:
 
 If you add or change behavior in `app.py`, update `README.md` and `.env.example` in the same change.
 
+Deployment policy:
+
+- Production deployment is Debian-based Proxmox LXC with `systemd`.
+- Local deployment using `.venv` + `uvicorn` is allowed for testing and validation only.
+- Do not add additional deployment targets unless explicitly requested.
+
 ## 3. Agent Roles
 
 Use these roles when coordinating multiple programming agents:
@@ -60,7 +66,7 @@ When using multiple agents in parallel, assign disjoint file ownership to avoid 
 - Do not use system/global `python`, `python3`, or `pip` for project tasks.
 - For commands in docs, scripts, and examples, prefer:
   - `.venv/bin/python -m pip install -r requirements.txt`
-  - `.venv/bin/python -m uvicorn app:app --host 0.0.0.0 --port 8000`
+  - `.venv/bin/python -m uvicorn app:app --host 0.0.0.0 --port 8000` (local debugging only, not deployment)
 - If activation is needed for an interactive session, use:
   - `source .venv/bin/activate`
 
