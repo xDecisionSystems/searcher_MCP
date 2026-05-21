@@ -185,13 +185,18 @@
 
       <!-- Open URL form -->
       <hr class="divider" style="margin:1.25rem 0;">
-      <label for="open-url" style="margin-bottom:0.4rem;">Open URL in remote browser</label>
-      <div style="display:flex;gap:0.5rem;margin-bottom:1.5rem;">
-        <input type="text" id="open-url" placeholder="https://www.sciencedirect.com"
-               style="flex:1;margin-bottom:0;">
-        <button onclick="openUrl()" class="btn btn-primary" style="width:auto;padding:0.6rem 1rem;">Open</button>
-      </div>
-      <div id="open-result" style="font-size:0.8rem;color:#68d391;display:none;margin-bottom:1rem;"></div>
+      {% if open_result %}
+      <p style="font-size:0.8rem;color:#68d391;margin-bottom:1rem;">&#x2713; {{ open_result }}</p>
+      {% endif %}
+      <form method="post" action="/open">
+        <input type="hidden" name="token" value="{{ token }}">
+        <label for="open-url" style="margin-bottom:0.4rem;">Open URL in remote browser</label>
+        <div style="display:flex;gap:0.5rem;margin-bottom:1.5rem;">
+          <input type="text" id="open-url" name="url" placeholder="https://www.sciencedirect.com"
+                 style="flex:1;margin-bottom:0;">
+          <button type="submit" class="btn btn-primary" style="width:auto;padding:0.6rem 1rem;">Open</button>
+        </div>
+      </form>
 
       <div class="steps">
         <p style="margin-bottom:0.6rem;">To connect Chrome DevTools:</p>
@@ -207,43 +212,14 @@
     </div>
 
     <script>
-      const _token = document.getElementById("token-value").innerText.replace(/\s+/g, "").trim();
-
       function copyToken() {
-        navigator.clipboard.writeText(_token).then(() => {
+        const t = document.getElementById("token-value").innerText.replace(/\s+/g, "").trim();
+        navigator.clipboard.writeText(t).then(() => {
           const btn = document.querySelector(".copy-btn");
           btn.textContent = "Copied!";
           setTimeout(() => btn.textContent = "Copy token", 2000);
         });
       }
-
-      function openUrl() {
-        const url = document.getElementById("open-url").value.trim();
-        if (!url) return;
-        const result = document.getElementById("open-result");
-        result.style.display = "none";
-        fetch("/json/new?url=" + encodeURIComponent(url) + "&token=" + encodeURIComponent(_token))
-          .then(r => r.json())
-          .then(data => {
-            if (data.error) {
-              result.style.color = "#fc8181";
-              result.textContent = "Error: " + data.error;
-            } else {
-              result.style.color = "#68d391";
-              result.textContent = "Opened: " + (data.title || data.url || "new tab");
-            }
-            result.style.display = "block";
-          })
-          .catch(() => {
-            result.style.color = "#fc8181";
-            result.textContent = "Request failed.";
-            result.style.display = "block";
-          });
-      }
-
-      document.getElementById("open-url").addEventListener("keydown", e => {
-        if (e.key === "Enter") openUrl();
-      });
     </script>
     {% endif %}
 

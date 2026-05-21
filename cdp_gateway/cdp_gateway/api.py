@@ -45,6 +45,7 @@ def _ctx(request: Request, **kwargs: Any) -> dict:
         "error": None,
         "durations": list(DURATIONS.keys()),
         "gateway_host": None,
+        "open_result": None,
         **kwargs,
     }
 
@@ -183,6 +184,33 @@ async def login_submit(
 
 
 # ─── CDP HTTP passthrough ─────────────────────────────────────────────────────
+
+@app.post("/open", response_class=HTMLResponse)
+async def open_url(
+    request: Request,
+    url: str = Form(...),
+    token: str = Form(...),
+) -> Any:
+    if not validate_token(token):
+        return _render(request, _ctx(request,
+            needs_setup=False,
+            error="Invalid or expired token. Please generate a new one.",
+            token=token,
+            gateway_host=request.headers.get("host", f"localhost:{GATEWAY_PORT}"),
+        ), status_code=401)
+    async with httpx.AsyncClient() as client:
+        resp = await client.put(f"{_cdp_http_base()}/json/new?{url}")
+    gateway_host = request.headers.get("host", f"localhost:{GATEWAY_PORT}")
+    data = resp.json()
+    if isinstance(data, dict):
+        data = _rewrite_json_entry(data, token, gateway_host)
+    return _render(request, _ctx(request,
+        needs_setup=False,
+        token=token,
+        gateway_host=gateway_host,
+        open_result=f"Opened: {url}",
+    ))
+
 
 @app.api_route("/json/new", methods=["GET", "PUT", "POST"])
 async def cdp_json_new(request: Request) -> Any:
