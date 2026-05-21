@@ -1,0 +1,15 @@
+[Unit]
+Description=Searcher MCP FastAPI Service
+After=network.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/opt/searcher
+EnvironmentFile=/opt/searcher/.env
+ExecStart=/opt/searcher/.venv/bin/uvicorn app:app --host 0.0.0.0 --port 8000
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target
