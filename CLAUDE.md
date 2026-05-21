@@ -51,10 +51,11 @@ Each service has its own `requirements.txt` and `deploy/` folder. There is a sin
 - Run cdp_gateway locally: `cd cdp_gateway && ../.venv/bin/python -m uvicorn app:app --host 127.0.0.1 --port 8020`
 - For standalone scripts, prefer flat top-level execution flow and do not add `main()`.
 
-## 3. Version Update Command Rule
+## 3. Version Update Rule
 
-- If the user says `update version name to <new version name>`, update `VERSION.md` at the repo root.
-- Use exactly: `VERSION_NAME=<new version name>`
+- Whenever code changes are made, automatically increment the patch version in `VERSION.md` at the repo root (e.g. `v1.0.4` → `v1.0.5`).
+- If the user says `update version name to <new version name>`, use that exact name instead.
+- Format: `VERSION_NAME=<version name>`
 - Keep the key name exactly `VERSION_NAME`.
 
 ## 4. Change Hygiene

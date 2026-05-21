@@ -102,10 +102,11 @@ When using multiple agents in parallel, assign disjoint file ownership.
 - Re-run whenever a service's `requirements.txt` changes.
 - Do not use system/global `python`, `python3`, or `pip` for project tasks.
 
-## 7. Version Update Command Rule
+## 7. Version Update Rule
 
-- `update version name to <new>` → update `VERSION.md` at the **repo root**.
-- Format: `VERSION_NAME=<new version name>`
+- Whenever code changes are made, automatically increment the patch version in `VERSION.md` at the repo root (e.g. `v1.0.4` → `v1.0.5`).
+- If the user says `update version name to <new>`, use that exact name instead.
+- Format: `VERSION_NAME=<version name>`
 
 ## 8. Safety and Security
 

@@ -184,6 +184,41 @@ async def login_submit(
 
 # ─── CDP HTTP passthrough ─────────────────────────────────────────────────────
 
+@app.api_route("/json/new", methods=["GET", "PUT", "POST"])
+async def cdp_json_new(request: Request) -> Any:
+    token = _extract_token(request)
+    if not validate_token(token):
+        return JSONResponse({"error": "Access denied. Authenticate at /login."}, status_code=403)
+    url = request.query_params.get("url", "about:blank")
+    async with httpx.AsyncClient() as client:
+        resp = await client.get(f"{_cdp_http_base()}/json/new?{url}")
+    data = resp.json()
+    gateway_host = request.headers.get("host", f"localhost:{GATEWAY_PORT}")
+    if isinstance(data, dict):
+        data = _rewrite_json_entry(data, token, gateway_host)
+    return JSONResponse(data, status_code=resp.status_code)
+
+
+@app.api_route("/json/activate/{target_id}", methods=["GET", "POST"])
+async def cdp_json_activate(request: Request, target_id: str) -> Any:
+    token = _extract_token(request)
+    if not validate_token(token):
+        return JSONResponse({"error": "Access denied. Authenticate at /login."}, status_code=403)
+    async with httpx.AsyncClient() as client:
+        resp = await client.get(f"{_cdp_http_base()}/json/activate/{target_id}")
+    return JSONResponse(resp.json() if resp.content else {}, status_code=resp.status_code)
+
+
+@app.api_route("/json/close/{target_id}", methods=["GET", "POST"])
+async def cdp_json_close(request: Request, target_id: str) -> Any:
+    token = _extract_token(request)
+    if not validate_token(token):
+        return JSONResponse({"error": "Access denied. Authenticate at /login."}, status_code=403)
+    async with httpx.AsyncClient() as client:
+        resp = await client.get(f"{_cdp_http_base()}/json/close/{target_id}")
+    return JSONResponse(resp.json() if resp.content else {}, status_code=resp.status_code)
+
+
 @app.api_route("/json/version", methods=["GET"])
 async def cdp_json_version(request: Request) -> Any:
     token = _extract_token(request)
