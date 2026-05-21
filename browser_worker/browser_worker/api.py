@@ -3,9 +3,10 @@ from typing import Any
 from fastapi import FastAPI
 from pydantic import BaseModel, Field
 
+from .config import VERSION_NAME
 from .services.download import download_paper_via_browser
 
-app = FastAPI(title="Searcher Browser Worker", version="1.0.0")
+app = FastAPI(title="Searcher Browser Worker", version=VERSION_NAME)
 
 
 class DownloadRequest(BaseModel):
@@ -15,7 +16,7 @@ class DownloadRequest(BaseModel):
 
 @app.get("/health")
 def health() -> dict[str, str]:
-    return {"status": "ok", "service": "browser_worker"}
+    return {"status": "ok", "service": "browser_worker", "version_name": VERSION_NAME}
 
 
 @app.post("/download_paper")

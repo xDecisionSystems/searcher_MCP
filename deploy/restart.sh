@@ -12,9 +12,9 @@
 
 set -euo pipefail
 
-SERVICES=(chromium-cdp browser-worker searcher-mcp)
-PORTS=(9222 8010 8000)
-HEALTH_URLS=("" "http://127.0.0.1:8010/health" "http://127.0.0.1:8000/health")
+SERVICES=(chromium-cdp browser-worker searcher-mcp cdp-gateway)
+PORTS=(9222 8010 8000 8020)
+HEALTH_URLS=("" "http://127.0.0.1:8010/health" "http://127.0.0.1:8000/health" "http://127.0.0.1:8020/login")
 
 STATUS_ONLY=0
 [[ "${1:-}" == "--status" ]] && STATUS_ONLY=1
@@ -46,7 +46,7 @@ done
 pass "chromium-cdp"
 
 # Restart remaining services sequentially
-for i in 1 2; do
+for i in 1 2 3; do
   svc="${SERVICES[$i]}"
   url="${HEALTH_URLS[$i]}"
 

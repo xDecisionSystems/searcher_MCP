@@ -1,14 +1,12 @@
-# Browser Worker (FastAPI)
+# browser_worker
 
-Dedicated browser-automation worker service intended to run on a separate host from the main Searcher API.
+FastAPI service that drives a persistent Chromium browser to download papers from authenticated publisher portals. Part of the `searcher-stack` deployment.
 
 ## Purpose
 
-- Open target pages with a real Chromium browser context.
-- Resolve PDF content either directly from page response or discovered PDF links.
-- Download papers to local disk and return metadata.
-
-In production this service runs alongside a `chromium-cdp` systemd service on the same host. Chromium runs persistently with a saved profile so you can log into publisher portals (ScienceDirect, IEEE, etc.) once and reuse the session for all subsequent downloads.
+- Connect to a co-located `chromium-cdp` Chromium instance via the Chrome DevTools Protocol.
+- Navigate to paper pages, resolve PDF links, download and stream to disk.
+- Reuse a persistent browser session — log in to publisher portals once, all subsequent requests reuse the session.
 
 ## Endpoints
 
@@ -24,57 +22,52 @@ In production this service runs alongside a `chromium-cdp` systemd service on th
 }
 ```
 
-## Local Run
+## Deployment
 
-```bash
-.venv/bin/python -m pip install -r requirements.txt
-.venv/bin/python -m playwright install chromium
-cp .env.example .env
-set -a && source .env && set +a
-.venv/bin/python -m uvicorn app:app --host 127.0.0.1 --port 8010
-```
-
-Docs:
-
-- `http://127.0.0.1:8010/docs`
-
-## Deployment Notes
-
-- Intended to be deployed on a separate host from `searcher/`.
-- Keep this service on a trusted network segment; it can access arbitrary URLs.
-- Use host-level controls (firewall, reverse proxy auth, VPN) before exposing externally.
-
-## Services on the Same Host
-
-The deploy script installs two systemd services on this LXC:
+Deployed as part of the full stack via `deploy/proxmox_deploy.sh` at the repo root. Two systemd services run on the same LXC:
 
 | Service | Description | Port |
 |---------|-------------|------|
 | `browser-worker` | FastAPI download API | 8010 |
-| `chromium-cdp` | Persistent Chromium CDP instance | 9222 (localhost only) |
+| `chromium-cdp` | Persistent Chromium CDP instance | 9222 |
 
-`browser-worker` connects to `chromium-cdp` via `BROWSER_WORKER_CDP_URL=http://127.0.0.1:9222`.
+- Working directory inside LXC: `/opt/repo/browser_worker`
+- Env file: `/opt/repo/.env` (shared with all services)
+- Chromium profile: `/opt/repo/browser_worker/chromium-profile`
 
-### Logging into publisher portals
+To update a live deployment:
+```bash
+pct exec <vmid> -- bash /opt/repo/deploy/update.sh
+```
 
-To authenticate with ScienceDirect, IEEE, or other portals:
+## Logging into publisher portals
 
-1. SSH port-forward the CDP port to your local machine:
-   ```bash
-   ssh -L 9222:127.0.0.1:9222 root@<lxc-ip>
-   ```
-2. Open Chrome or Edge and go to `chrome://inspect`
-3. Click **Configure** and add `localhost:9222`
-4. Click **inspect** on the remote target — a DevTools window opens showing the Chromium instance running on the LXC
-5. Navigate to the publisher portal and log in
-6. Close DevTools — the session is saved to `/opt/browser_worker/chromium-profile` and persists across restarts
+1. Open Chrome or Edge and go to `chrome://inspect`
+2. Click **Configure** and add `<lxc-ip>:9222`
+3. Click **inspect** on the remote target
+4. Navigate to the publisher portal and log in
+5. Session is saved to `/opt/repo/browser_worker/chromium-profile` — persists across restarts
+
+## Local Testing
+
+```bash
+cd browser_worker
+../.venv/bin/python -m pip install -r requirements.txt
+../.venv/bin/python -m playwright install chromium
+set -a && source ../.env.dev && set +a
+../.venv/bin/python -m uvicorn app:app --host 127.0.0.1 --port 8010
+```
+
+Docs: `http://127.0.0.1:8010/docs`
 
 ## Environment Variables
 
-- `BROWSER_WORKER_CDP_URL` — URL of the Chromium CDP endpoint (default: `http://127.0.0.1:9222`)
-- `BROWSER_WORKER_TIMEOUT_SECONDS`
-- `BROWSER_WORKER_MAX_DOWNLOAD_MB`
-- `BROWSER_WORKER_DOWNLOAD_DIR`
-- `BROWSER_WORKER_HEADLESS` — only used when CDP_URL is not set (local launch fallback)
-- `BROWSER_WORKER_SESSION_DIR` — only used when CDP_URL is not set (local launch fallback)
+All keys are shared via the root `.env.example`.
+
+- `BROWSER_WORKER_CDP_URL` — CDP endpoint (set automatically by deploy script to `http://127.0.0.1:8020`, pointing at `cdp_gateway` which proxies to `chromium-cdp` internally)
+- `BROWSER_WORKER_TIMEOUT_SECONDS` (default `45`)
+- `BROWSER_WORKER_MAX_DOWNLOAD_MB` (default `100`)
+- `BROWSER_WORKER_DOWNLOAD_DIR` (default `/tmp`)
+- `BROWSER_WORKER_HEADLESS` — only used when `CDP_URL` is not set (local launch fallback)
+- `BROWSER_WORKER_SESSION_DIR` — only used when `CDP_URL` is not set (local launch fallback)
 - `BROWSER_WORKER_USER_AGENT`

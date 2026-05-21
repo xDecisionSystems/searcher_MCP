@@ -4,10 +4,11 @@ Guidance for programming agents contributing to this repository.
 
 ## 1. Mission
 
-Maintain two reliable FastAPI services:
+Maintain three FastAPI services and one Chromium process deployed together as a single stack:
 
 - `searcher/` — scholarly search, web page retrieval, and PDF download via HTTP APIs.
 - `browser_worker/` — browser-driven paper download for authenticated publisher portals.
+- `cdp_gateway/` — JWT-authenticated login page and WebSocket proxy for Chromium CDP access.
 
 Prioritize correctness, safe defaults, and predictable API behavior.
 
@@ -27,10 +28,10 @@ searcher_MCP/
 │   │       ├── pdf.py
 │   │       └── search.py
 │   ├── requirements.txt
-│   ├── .env.example
 │   ├── deploy/searcher-mcp.service
 │   ├── testing/
-│   └── VERSION.md
+│   ├── README.md
+│   └── ARCHITECTURE.md
 ├── browser_worker/                  # Browser-automation download service
 │   ├── app.py
 │   ├── browser_worker/
@@ -38,28 +39,46 @@ searcher_MCP/
 │   │   ├── config.py
 │   │   └── services/download.py
 │   ├── requirements.txt
-│   ├── .env.example
-│   ├── deploy/browser-worker.service
-│   └── VERSION.md
+│   ├── deploy/
+│   │   ├── browser-worker.service
+│   │   └── chromium-cdp.service
+│   └── README.md
+├── cdp_gateway/                     # Authenticated CDP login page + WebSocket proxy
+│   ├── app.py
+│   ├── cdp_gateway/
+│   │   ├── api.py
+│   │   ├── config.py
+│   │   ├── session.py
+│   │   └── templates/login.html
+│   ├── requirements.txt
+│   └── deploy/cdp-gateway.service
+├── deploy/                          # Stack-level deployment scripts
+│   ├── proxmox_deploy.sh            # Creates LXC and deploys all services
+│   ├── update.sh                    # Updates code and restarts in the LXC
+│   └── restart.sh                   # Restarts all services in dependency order
 ├── exploration/                     # Standalone evaluation scripts (not production)
+├── .env.example                     # Shared env template for all services
+├── VERSION.md                       # Stack version (single file at repo root)
 ├── AGENTS.md
 ├── CLAUDE.md
 └── README.md
 ```
 
-If you add or change behavior in a service, update that service's `README.md` and `.env.example` in the same change.
+If you add or change behavior in a service, update that service's `README.md` and the root `.env.example` in the same change.
 
 ## 3. Deployment Policy
 
-- Production: Debian-based Proxmox LXC with `systemd`.
-- `searcher/` and `browser_worker/` are deployed on **separate LXC hosts**.
+- Production: single Debian-based Proxmox LXC with `systemd`, running four services.
+- Code is deployed to `/opt/repo/` inside the LXC (git clone of this repo).
+- Shared env lives at `/opt/repo/.env`; each service symlinks to it.
 - Local `.venv` + `uvicorn` is for testing only.
-- Do not run `install.sh` or `update.sh` as part of normal agent operations.
+- Use `deploy/update.sh` inside the LXC for code updates — no full redeploy needed.
+- Do not run per-service `install.sh` or `update.sh` — these are legacy and unused.
 
 ## 4. Agent Roles
 
 - **Implementer agent**: owns code changes inside a service's module (`searcher_mcp/` or `browser_worker/`).
-- **Documentation agent**: owns `README.md`, `ARCHITECTURE.md` (where present), `.env.example`.
+- **Documentation agent**: owns `README.md`, `ARCHITECTURE.md`, root `.env.example`.
 - **Verification agent**: runs syntax checks and smoke tests for the affected service.
 
 When using multiple agents in parallel, assign disjoint file ownership.
@@ -85,7 +104,7 @@ When using multiple agents in parallel, assign disjoint file ownership.
 
 ## 7. Version Update Command Rule
 
-- `update version name to <new>` → update `VERSION.md` in the relevant service folder.
+- `update version name to <new>` → update `VERSION.md` at the **repo root**.
 - Format: `VERSION_NAME=<new version name>`
 
 ## 8. Safety and Security
@@ -95,7 +114,7 @@ When using multiple agents in parallel, assign disjoint file ownership.
 - Enforce PDF size limits during streaming downloads.
 - Reject obviously incorrect content types where possible.
 - Do not execute downloaded files.
-- `browser_worker/` can navigate arbitrary URLs — never expose it publicly without auth.
+- `browser_worker/` can navigate arbitrary URLs — restrict port 9222 by firewall if needed.
 
 ## 9. Change Workflow
 
@@ -103,13 +122,13 @@ When using multiple agents in parallel, assign disjoint file ownership.
 2. Read that service's `README.md` and main module files.
 3. Implement the smallest coherent change.
 4. Run syntax checks for the affected service.
-5. Update that service's docs and `.env.example`.
+5. Update that service's docs and the root `.env.example` if config keys changed.
 6. Summarize changes, assumptions, and residual risks.
 
 ## 10. Definition of Done
 
 - Code is syntactically valid.
 - Endpoint behavior matches documentation.
-- New config keys are documented in the service's `.env.example`.
+- New config keys are documented in the root `.env.example`.
 - Existing functionality remains intact unless explicitly changed.
 - Risks and follow-ups are stated.

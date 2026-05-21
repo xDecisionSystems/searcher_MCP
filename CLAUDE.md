@@ -4,25 +4,28 @@ Repository instructions for Claude-based programming agents.
 
 ## Repository Structure
 
-This is a monorepo with two independently deployable services:
+This is a monorepo with four services deployed together in a single Proxmox LXC:
 
 - `searcher/` — FastAPI scholarly search and web content service (port 8000)
 - `browser_worker/` — FastAPI Playwright browser-automation download service (port 8010)
+- `chromium-cdp` — Persistent Chromium instance managed by `browser_worker/deploy/chromium-cdp.service` (port 9222)
 
-Each service has its own `requirements.txt`, `.env.example`, `deploy/`, `testing/`, and `VERSION.md`. All work on a service must stay within its folder.
+Each service has its own `requirements.txt` and `deploy/` folder. There is a single shared `.env.example` and `VERSION.md` at the repo root.
 
 ## Deployment Policy
 
-- Production deployment is Debian-based Proxmox LXC with `systemd`.
-- `searcher/` and `browser_worker/` are deployed on **separate hosts**.
+- Production deployment is a single Debian-based Proxmox LXC with `systemd`.
+- All services deploy to `/opt/repo/` inside the LXC (git clone of this repo).
+- Shared env lives at `/opt/repo/.env`; each service symlinks to it.
 - Local deployment using `.venv` + `uvicorn` is allowed for testing and validation only.
-- Use `.env.dev` inside the relevant service folder for local development.
+- Use `.env.dev` at the repo root for local development.
 - Do not add additional deployment targets unless explicitly requested.
 
 ## Deployment and Testing Permissions
 
 - Claude may deploy locally for testing only (`.venv` + `uvicorn`).
-- Claude must not run production deployment scripts (`./install.sh`, `./update.sh`).
+- Claude must not run `deploy/proxmox_deploy.sh` or per-service `install.sh`/`update.sh` (legacy, unused).
+- Claude may run `deploy/update.sh` inside the LXC to update a live deployment when explicitly asked.
 - Claude is allowed to run testing scripts in each service's `testing/` folder.
 - After local test deployment, Claude should run verification checks and report results.
 
@@ -44,11 +47,13 @@ Each service has its own `requirements.txt`, `.env.example`, `deploy/`, `testing
 - Run browser_worker locally: `cd browser_worker && ../.venv/bin/python -m uvicorn app:app --host 127.0.0.1 --port 8010`
 - Syntax check searcher: `.venv/bin/python -m py_compile searcher/app.py searcher/searcher_mcp/*.py searcher/searcher_mcp/services/*.py`
 - Syntax check browser_worker: `.venv/bin/python -m py_compile browser_worker/app.py browser_worker/browser_worker/*.py browser_worker/browser_worker/services/*.py`
+- Syntax check cdp_gateway: `.venv/bin/python -m py_compile cdp_gateway/app.py cdp_gateway/cdp_gateway/*.py`
+- Run cdp_gateway locally: `cd cdp_gateway && ../.venv/bin/python -m uvicorn app:app --host 127.0.0.1 --port 8020`
 - For standalone scripts, prefer flat top-level execution flow and do not add `main()`.
 
 ## 3. Version Update Command Rule
 
-- If the user says `update version name to <new version name>`, update `VERSION.md` in the relevant service folder.
+- If the user says `update version name to <new version name>`, update `VERSION.md` at the repo root.
 - Use exactly: `VERSION_NAME=<new version name>`
 - Keep the key name exactly `VERSION_NAME`.
 

@@ -149,8 +149,6 @@ def download_paper_via_browser(url: str, filename: str | None = None) -> dict[st
         with sync_playwright() as playwright:
             ctx = _get_browser_context(playwright)
 
-            # persistent context acts as both browser and context
-            is_persistent = not hasattr(ctx, "new_page") is False
             page = ctx.new_page()
 
             response = page.goto(url, wait_until="domcontentloaded", timeout=int(REQUEST_TIMEOUT * 1000))

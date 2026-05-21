@@ -18,9 +18,11 @@ DRY_RUN=0
 
 SEARCHER_DIR="/opt/repo/searcher"
 WORKER_DIR="/opt/repo/browser_worker"
+GATEWAY_DIR="/opt/repo/cdp_gateway"
 CDP_PORT=9222
 SEARCHER_PORT=8000
 WORKER_PORT=8010
+GATEWAY_PORT=8020
 
 # ─── Argument parsing ─────────────────────────────────────────────────────────
 while [[ $# -gt 0 ]]; do
@@ -49,28 +51,20 @@ run() {
 
 # ─── Show current versions ────────────────────────────────────────────────────
 read_version() {
-  local f="$1/VERSION.md"
+  local f="${REPO_DIR}/VERSION.md"
   [[ -f "$f" ]] && grep -E '^VERSION_NAME=' "$f" | cut -d= -f2- | tr -d '"'"'" || echo "unknown"
 }
 
-SEARCHER_OLD="$(read_version "$SEARCHER_DIR")"
-WORKER_OLD="$(read_version "$WORKER_DIR")"
-
-log "Current versions:"
-log "  searcher      : ${SEARCHER_OLD}"
-log "  browser_worker: ${WORKER_OLD}"
+OLD_VERSION="$(read_version)"
+log "Current version: ${OLD_VERSION}"
 
 # ─── Pull latest code ─────────────────────────────────────────────────────────
 log "Pulling latest code from ${REPO_URL} (branch: ${BRANCH}) ..."
 run git -C "$REPO_DIR" fetch --depth 1 origin "${BRANCH}"
 run git -C "$REPO_DIR" reset --hard "origin/${BRANCH}"
 
-SEARCHER_NEW="$(read_version "$SEARCHER_DIR")"
-WORKER_NEW="$(read_version "$WORKER_DIR")"
-
-log "New versions:"
-log "  searcher      : ${SEARCHER_NEW}"
-log "  browser_worker: ${WORKER_NEW}"
+NEW_VERSION="$(read_version)"
+log "New version: ${NEW_VERSION}"
 
 # ─── Confirm ──────────────────────────────────────────────────────────────────
 if [[ "$DRY_RUN" == "0" ]]; then
@@ -97,6 +91,14 @@ run "${WORKER_DIR}/.venv/bin/python" -m playwright install chromium
 log "Refreshing browser-worker and chromium-cdp systemd units ..."
 run cp "${WORKER_DIR}/deploy/browser-worker.service"  /etc/systemd/system/browser-worker.service
 run cp "${WORKER_DIR}/deploy/chromium-cdp.service"    /etc/systemd/system/chromium-cdp.service
+
+# ─── Update cdp_gateway deps ──────────────────────────────────────────────────
+log "Updating cdp_gateway dependencies ..."
+run "${GATEWAY_DIR}/.venv/bin/python" -m pip install --quiet --upgrade pip
+run "${GATEWAY_DIR}/.venv/bin/python" -m pip install --quiet -r "${GATEWAY_DIR}/requirements.txt"
+
+log "Refreshing cdp-gateway systemd unit ..."
+run cp "${GATEWAY_DIR}/deploy/cdp-gateway.service" /etc/systemd/system/cdp-gateway.service
 
 # ─── Reload systemd ───────────────────────────────────────────────────────────
 run systemctl daemon-reload
@@ -131,11 +133,19 @@ for i in $(seq 1 10); do
 done
 pass "searcher-mcp"
 
+log "Restarting cdp-gateway ..."
+run systemctl restart cdp-gateway
+for i in $(seq 1 10); do
+  curl -sf "http://127.0.0.1:${GATEWAY_PORT}/login" > /dev/null 2>&1 && break
+  [[ "$i" == "10" ]] && die "cdp-gateway did not pass health check"
+  sleep 2
+done
+pass "cdp-gateway"
+
 # ─── Summary ──────────────────────────────────────────────────────────────────
 echo ""
 log "=== Update complete ==="
-log "  searcher      : ${SEARCHER_OLD} → ${SEARCHER_NEW}"
-log "  browser_worker: ${WORKER_OLD} → ${WORKER_NEW}"
+log "  ${OLD_VERSION} → ${NEW_VERSION}"
 echo ""
-systemctl is-active chromium-cdp browser-worker searcher-mcp 2>/dev/null | \
-  paste - - - | awk '{printf "  %-20s %-20s %-20s\n", "chromium-cdp:"$1, "browser-worker:"$2, "searcher-mcp:"$3}'
+systemctl is-active chromium-cdp browser-worker searcher-mcp cdp-gateway 2>/dev/null | \
+  paste - - - - | awk '{printf "  %-20s %-20s %-20s %-20s\n", "chromium-cdp:"$1, "browser-worker:"$2, "searcher-mcp:"$3, "cdp-gateway:"$4}'

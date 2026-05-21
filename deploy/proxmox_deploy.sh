@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # proxmox_deploy.sh
 #
-# Creates a single Proxmox LXC and deploys all three services:
+# Creates a single Proxmox LXC and deploys all four services:
 #   - searcher-mcp    FastAPI scholar search API          port 8000
 #   - browser-worker  FastAPI browser-download API        port 8010
 #   - chromium-cdp    Persistent Chromium CDP instance    port 9222
@@ -46,6 +46,7 @@ LXC_HOSTNAME=""  # resolved after prompts
 SEARCHER_PORT=8000
 WORKER_PORT=8010
 CDP_PORT=9222
+GATEWAY_PORT=8020
 MEMORY=1536
 SWAP=512
 CORES=2
@@ -297,7 +298,8 @@ echo ""
 echo "  Services to install:"
 echo "    searcher-mcp    port ${SEARCHER_PORT}"
 echo "    browser-worker  port ${WORKER_PORT}"
-echo "    chromium-cdp    port ${CDP_PORT}"
+echo "    chromium-cdp    port ${CDP_PORT} (localhost only)"
+echo "    cdp-gateway     port ${GATEWAY_PORT} (login page + CDP proxy)"
 echo ""
 if [[ "$DRY_RUN" == "1" ]]; then
   echo "  *** DRY RUN — no changes will be made ***"
@@ -322,8 +324,9 @@ if [[ -n "$EXISTS" ]]; then
     echo "  VMID ${VMID} ('${EXISTING_HOSTNAME}') will be permanently destroyed and redeployed."
   fi
   echo ""
-  read -rp "  Type the hostname to confirm destruction ('${EXISTING_HOSTNAME}'): " CONFIRM_DESTROY
-  [[ "$CONFIRM_DESTROY" == "$EXISTING_HOSTNAME" ]] || die "Hostname did not match. Aborted."
+  read -rp "  Destroy VMID ${VMID} ('${EXISTING_HOSTNAME}')? [Y/n] " CONFIRM_DESTROY
+  CONFIRM_DESTROY="${CONFIRM_DESTROY:-y}"
+  [[ "${CONFIRM_DESTROY,,}" == "y" ]] || die "Aborted."
   log "Confirmed — stopping and destroying VMID ${VMID} ..."
   ssh_run "$PROXMOX_HOST" "pct stop ${VMID} --skiplock 1 2>/dev/null || true"
   ssh_run "$PROXMOX_HOST" "pct destroy ${VMID} --purge 1"
@@ -382,9 +385,19 @@ if [[ -n "$SHARED_ENV_FILE" && -f "$SHARED_ENV_FILE" ]]; then
   log "Shared env uploaded."
 fi
 
+# ─── Locale setup ─────────────────────────────────────────────────────────────
+log "Configuring locale ..."
+lxc_exec "$VMID" "
+  apt-get update -qq
+  apt-get install -y -qq locales
+  sed -i 's/^# *en_US.UTF-8/en_US.UTF-8/' /etc/locale.gen
+  locale-gen en_US.UTF-8
+  update-locale LANG=en_US.UTF-8 LC_ALL=en_US.UTF-8
+"
+
 # ─── System packages ──────────────────────────────────────────────────────────
 log "Installing system packages ..."
-lxc_exec "$VMID" "apt-get update -qq && apt-get install -y -qq python3 python3-venv git curl chromium"
+lxc_exec "$VMID" "DEBIAN_FRONTEND=noninteractive apt-get install -y -qq python3 python3-venv git curl chromium"
 
 # ─── Clone repo ───────────────────────────────────────────────────────────────
 log "Cloning ${REPO_URL} (branch: ${REPO_BRANCH}) ..."
@@ -420,7 +433,7 @@ lxc_exec "$VMID" "
 log "Installing Playwright Chromium ..."
 lxc_exec "$VMID" "
   cd /opt/repo/browser_worker
-  .venv/bin/python -m playwright install-deps chromium 2>&1 | tail -5
+  DEBIAN_FRONTEND=noninteractive .venv/bin/python -m playwright install-deps chromium 2>&1 | tail -5
   .venv/bin/python -m playwright install chromium 2>&1 | tail -5
 "
 
@@ -447,9 +460,9 @@ log "chromium-cdp PASSED."
 log "Configuring and starting browser-worker ..."
 lxc_exec "$VMID" "
   ln -sf /opt/repo/.env /opt/repo/browser_worker/.env
-  sed -i 's|^BROWSER_WORKER_CDP_URL=.*|BROWSER_WORKER_CDP_URL=http://127.0.0.1:${CDP_PORT}|' /opt/repo/.env
+  sed -i 's|^BROWSER_WORKER_CDP_URL=.*|BROWSER_WORKER_CDP_URL=http://127.0.0.1:${GATEWAY_PORT}|' /opt/repo/.env
   grep -q 'BROWSER_WORKER_CDP_URL' /opt/repo/.env || \
-    echo 'BROWSER_WORKER_CDP_URL=http://127.0.0.1:${CDP_PORT}' >> /opt/repo/.env
+    echo 'BROWSER_WORKER_CDP_URL=http://127.0.0.1:${GATEWAY_PORT}' >> /opt/repo/.env
   cp /opt/repo/browser_worker/deploy/browser-worker.service /etc/systemd/system/browser-worker.service
   systemctl daemon-reload
   systemctl enable browser-worker
@@ -459,6 +472,24 @@ log "Waiting for browser-worker ..."
 lxc_exec "$VMID" "sleep 4"
 lxc_exec "$VMID" "curl -sf http://127.0.0.1:${WORKER_PORT}/health || { echo 'browser-worker health check failed'; exit 1; }"
 log "browser-worker PASSED."
+
+# ─── Install cdp_gateway ──────────────────────────────────────────────────────
+log "Installing cdp_gateway ..."
+lxc_exec "$VMID" "
+  cd /opt/repo/cdp_gateway
+  python3 -m venv .venv
+  .venv/bin/python -m pip install --quiet --upgrade pip
+  .venv/bin/python -m pip install --quiet -r requirements.txt
+  ln -sf /opt/repo/.env /opt/repo/cdp_gateway/.env
+  cp /opt/repo/cdp_gateway/deploy/cdp-gateway.service /etc/systemd/system/cdp-gateway.service
+  systemctl daemon-reload
+  systemctl enable cdp-gateway
+  systemctl start cdp-gateway
+"
+log "Waiting for cdp-gateway ..."
+lxc_exec "$VMID" "sleep 3"
+lxc_exec "$VMID" "curl -sf http://127.0.0.1:${GATEWAY_PORT}/login > /dev/null || { echo 'cdp-gateway health check failed'; exit 1; }"
+log "cdp-gateway PASSED."
 
 # ─── Summary ──────────────────────────────────────────────────────────────────
 log ""
@@ -471,7 +502,8 @@ LXC_ACTUAL_IP="$(ssh_run "$PROXMOX_HOST" \
 echo "  searcher-mcp    http://${LXC_ACTUAL_IP}:${SEARCHER_PORT}/health"
 echo "  searcher docs   http://${LXC_ACTUAL_IP}:${SEARCHER_PORT}/docs"
 echo "  browser-worker  http://${LXC_ACTUAL_IP}:${WORKER_PORT}/health"
-echo "  chromium-cdp    http://${LXC_ACTUAL_IP}:${CDP_PORT}/json/version"
+echo "  cdp-gateway     http://${LXC_ACTUAL_IP}:${GATEWAY_PORT}/login"
+echo "  chromium-cdp    port ${CDP_PORT} (localhost inside LXC only)"
 echo ""
 echo "  Next steps:"
 if [[ -z "$SHARED_ENV_FILE" ]]; then
@@ -482,7 +514,20 @@ else
 fi
 echo ""
 echo "    2. To log into publisher portals (ScienceDirect, IEEE, etc.):"
-echo "       a. In Chrome/Edge go to: chrome://inspect"
-echo "          Click 'Configure', add: ${LXC_ACTUAL_IP}:${CDP_PORT}"
-echo "          Click 'inspect' on the remote target and log in."
-echo "       c. Session saves to /opt/browser_worker/chromium-profile — persists across restarts."
+echo "       a. Open http://${LXC_ACTUAL_IP}:${GATEWAY_PORT}/login"
+echo "          Enter your CDP_LOGIN_KEY and select a session duration."
+echo "       b. In Chrome/Edge go to: chrome://inspect"
+echo "          Click 'Configure', add: ${LXC_ACTUAL_IP}:${GATEWAY_PORT}"
+echo "          Click 'inspect' on the remote target and log in to the portal."
+echo "       c. Session saves to /opt/repo/browser_worker/chromium-profile — persists across restarts."
+
+# ─── Optional Tailscale install ───────────────────────────────────────────────
+echo ""
+read -rp "Install Tailscale on VMID ${VMID}? [Y/n] " INSTALL_TAILSCALE
+INSTALL_TAILSCALE="${INSTALL_TAILSCALE:-y}"
+if [[ "${INSTALL_TAILSCALE,,}" == "y" ]]; then
+  log "Installing Tailscale on VMID ${VMID} ..."
+  ssh_run "$PROXMOX_HOST" \
+    "bash -c \"\$(curl -fsSL https://raw.githubusercontent.com/community-scripts/ProxmoxVE/main/tools/addon/add-tailscale-lxc.sh)\" -- ${VMID}"
+  log "Tailscale install complete."
+fi

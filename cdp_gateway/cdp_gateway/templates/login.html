@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CDP Gateway</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #0f1117;
+      color: #e2e8f0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 1rem;
+    }
+    .card {
+      background: #1a1d27;
+      border: 1px solid #2d3748;
+      border-radius: 12px;
+      padding: 2.5rem;
+      width: 100%;
+      max-width: 480px;
+    }
+    h1 { font-size: 1.25rem; font-weight: 600; margin-bottom: 0.25rem; }
+    .subtitle { font-size: 0.875rem; color: #718096; margin-bottom: 2rem; }
+    .badge {
+      display: inline-block;
+      font-size: 0.7rem;
+      font-weight: 600;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      margin-left: 0.5rem;
+      vertical-align: middle;
+    }
+    .badge-setup { background: #744210; color: #fbd38d; }
+    label { display: block; font-size: 0.8rem; font-weight: 500; color: #a0aec0; margin-bottom: 0.4rem; }
+    input[type="password"], input[type="text"] {
+      width: 100%;
+      background: #0f1117;
+      border: 1px solid #2d3748;
+      border-radius: 6px;
+      color: #e2e8f0;
+      font-size: 0.95rem;
+      padding: 0.6rem 0.75rem;
+      outline: none;
+      margin-bottom: 1.25rem;
+    }
+    input[type="password"]:focus, input[type="text"]:focus { border-color: #4299e1; }
+    .duration-group {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+    }
+    .duration-group input[type="radio"] { display: none; }
+    .duration-group label {
+      display: block;
+      text-align: center;
+      padding: 0.5rem 0.25rem;
+      border: 1px solid #2d3748;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.8rem;
+      color: #a0aec0;
+      margin: 0;
+      transition: all 0.15s;
+    }
+    .duration-group input[type="radio"]:checked + label {
+      border-color: #4299e1;
+      background: #1a365d;
+      color: #90cdf4;
+    }
+    .duration-group label:hover { border-color: #4a5568; }
+    .btn {
+      width: 100%;
+      padding: 0.65rem;
+      border: none;
+      border-radius: 6px;
+      font-size: 0.95rem;
+      font-weight: 500;
+      cursor: pointer;
+    }
+    .btn-primary { background: #3182ce; color: #fff; }
+    .btn-primary:hover { background: #2b6cb0; }
+    .btn-warning { background: #b7791f; color: #fefcbf; }
+    .btn-warning:hover { background: #975a16; }
+    .error { color: #fc8181; font-size: 0.8rem; margin-bottom: 1rem; }
+    .hint { color: #718096; font-size: 0.78rem; margin-top: -0.9rem; margin-bottom: 1.25rem; }
+    .divider { border: none; border-top: 1px solid #2d3748; margin: 2rem 0; }
+
+    /* Token result */
+    .result h2 { font-size: 1rem; font-weight: 600; margin-bottom: 0.5rem; color: #68d391; }
+    .token-box {
+      background: #0f1117;
+      border: 1px solid #2d3748;
+      border-radius: 6px;
+      padding: 0.75rem;
+      font-family: monospace;
+      font-size: 0.72rem;
+      word-break: break-all;
+      color: #90cdf4;
+      margin-bottom: 0.75rem;
+    }
+    .copy-btn {
+      display: block;
+      width: 100%;
+      padding: 0.4rem;
+      background: #2d3748;
+      border: none;
+      border-radius: 4px;
+      color: #a0aec0;
+      font-size: 0.8rem;
+      cursor: pointer;
+      margin-bottom: 1.25rem;
+    }
+    .copy-btn:hover { background: #4a5568; color: #e2e8f0; }
+    .steps { font-size: 0.82rem; color: #a0aec0; line-height: 1.7; }
+    .steps ol { padding-left: 1.25rem; }
+    .steps code {
+      background: #0f1117;
+      border: 1px solid #2d3748;
+      border-radius: 3px;
+      padding: 0.1rem 0.35rem;
+      font-size: 0.78rem;
+      color: #90cdf4;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+
+    {% if needs_setup %}
+
+    <!-- ── Set password (first run) ─────────────────────────────────────── -->
+    <h1>CDP Gateway <span class="badge badge-setup">First run</span></h1>
+    <p class="subtitle">No password is set. Create one to continue.</p>
+
+    {% if error %}<p class="error">{{ error }}</p>{% endif %}
+
+    <form method="post" action="/set-password">
+      <label for="password">New password</label>
+      <input type="password" id="password" name="password" autocomplete="new-password" autofocus>
+      <p class="hint">Minimum 8 characters. Stored as a bcrypt hash.</p>
+
+      <label for="confirm">Confirm password</label>
+      <input type="password" id="confirm" name="confirm" autocomplete="new-password">
+
+      <button type="submit" class="btn btn-warning">Set password</button>
+    </form>
+
+    {% else %}
+
+    <!-- ── Login ─────────────────────────────────────────────────────────── -->
+    <h1>CDP Gateway</h1>
+    <p class="subtitle">Chromium remote debugging access</p>
+
+    {% if error %}<p class="error">{{ error }}</p>{% endif %}
+
+    <form method="post" action="/login">
+      <label for="password">Password</label>
+      <input type="password" id="password" name="password" autocomplete="current-password"
+             {% if not token %}autofocus{% endif %}>
+
+      <label>Session duration</label>
+      <div class="duration-group">
+        {% for d in durations %}
+        <input type="radio" name="duration" id="d_{{ d }}" value="{{ d }}"
+               {% if loop.first %}checked{% endif %}>
+        <label for="d_{{ d }}">{{ d }}</label>
+        {% endfor %}
+      </div>
+
+      <button type="submit" class="btn btn-primary">Generate token</button>
+    </form>
+
+    {% if token %}
+    <hr class="divider">
+    <div class="result">
+      <h2>&#x2713; Token issued</h2>
+      <div class="token-box" id="token-value">{{ token }}</div>
+      <button class="copy-btn" onclick="copyToken()">Copy token</button>
+
+      <div class="steps">
+        <p style="margin-bottom:0.6rem;">To connect Chrome DevTools:</p>
+        <ol>
+          <li>Open <code>chrome://inspect</code> in Chrome or Edge</li>
+          <li>Click <strong>Configure…</strong> and add:<br>
+            <code>{{ gateway_host }}</code>
+          </li>
+          <li>Click <strong>Done</strong> — targets appear automatically<br>
+            <em>(token is embedded in the WebSocket URL)</em></li>
+          <li>Click <strong>inspect</strong> and log into your portal</li>
+        </ol>
+      </div>
+    </div>
+
+    <script>
+      function copyToken() {
+        const t = document.getElementById("token-value").innerText.trim();
+        navigator.clipboard.writeText(t).then(() => {
+          const btn = document.querySelector(".copy-btn");
+          btn.textContent = "Copied!";
+          setTimeout(() => btn.textContent = "Copy token", 2000);
+        });
+      }
+    </script>
+    {% endif %}
+
+    {% endif %}
+
+  </div>
+</body>
+</html>

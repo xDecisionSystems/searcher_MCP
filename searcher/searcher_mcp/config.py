@@ -9,7 +9,7 @@ APP_USER_AGENT = os.getenv(
 REQUEST_TIMEOUT = float(os.getenv("REQUEST_TIMEOUT_SECONDS", "20"))
 PDF_MAX_MB = int(os.getenv("PDF_MAX_MB", "50"))
 DOWNLOAD_DIR = Path(os.getenv("DOWNLOAD_DIR", tempfile.gettempdir()))
-VERSION_FILE = Path(__file__).resolve().parent.parent / "VERSION.md"
+VERSION_FILE = Path(__file__).resolve().parent.parent.parent / "VERSION.md"
 
 SERPAPI_API_KEY = os.getenv("SERPAPI_API_KEY")
 IEEE_XPLORE_API_KEY = os.getenv("IEEE_XPLORE_API_KEY")

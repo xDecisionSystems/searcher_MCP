@@ -1,0 +1,16 @@
+[Unit]
+Description=CDP Gateway — authenticated proxy for Chromium remote debugging
+After=network.target chromium-cdp.service
+Requires=chromium-cdp.service
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/opt/repo/cdp_gateway
+EnvironmentFile=/opt/repo/.env
+ExecStart=/opt/repo/cdp_gateway/.venv/bin/uvicorn app:app --host 0.0.0.0 --port ${CDP_GATEWAY_PORT:-8020}
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target

@@ -92,7 +92,7 @@ Configuration is environment-driven:
 - `DOWNLOAD_DIR`
 - `MCP_USER_AGENT`
 
-`.env.example` documents expected variables.
+Root `.env.example` documents all expected variables.
 
 ## 7. Data Contracts
 
@@ -111,7 +111,8 @@ Primary production environment is Debian-based Proxmox LXC with systemd manageme
 Local `.venv` + `uvicorn` deployment is also supported for testing only.
 
 - Service file: `deploy/searcher-mcp.service`
-- Working directory: `/opt/searcher`
+- Working directory: `/opt/repo/searcher`
+- Env file: `/opt/repo/.env` (shared with all services)
 - Process manager: `systemd`
 - App server: `uvicorn`
 
