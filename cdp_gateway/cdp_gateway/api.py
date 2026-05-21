@@ -25,6 +25,30 @@ _templates = Jinja2Templates(
 )
 
 
+def _render(request: Request, context: dict, status_code: int = 200) -> HTMLResponse:
+    """Compatibility wrapper — works with both old and new Starlette TemplateResponse."""
+    context.setdefault("request", request)
+    return _templates.TemplateResponse(
+        request=request,
+        name="login.html",
+        context=context,
+        status_code=status_code,
+    )
+
+
+def _ctx(request: Request, **kwargs: Any) -> dict:
+    """Build a full template context with safe defaults."""
+    return {
+        "request": request,
+        "needs_setup": not password_is_set(),
+        "token": None,
+        "error": None,
+        "durations": list(DURATIONS.keys()),
+        "gateway_host": None,
+        **kwargs,
+    }
+
+
 def _cdp_ws_base() -> str:
     parsed = urlparse(CDP_URL)
     host = parsed.hostname or "127.0.0.1"
@@ -76,19 +100,14 @@ async def root() -> RedirectResponse:
     return RedirectResponse(url="/login")
 
 
-# ─── Set-password page (shown only when no password is set yet) ───────────────
+# ─── Login page ───────────────────────────────────────────────────────────────
 
 @app.get("/login", response_class=HTMLResponse)
 async def login_page(request: Request) -> HTMLResponse:
-    return _templates.TemplateResponse("login.html", {
-        "request": request,
-        "needs_setup": not password_is_set(),
-        "token": None,
-        "error": None,
-        "durations": list(DURATIONS.keys()),
-        "gateway_host": None,
-    })
+    return _render(request, _ctx(request))
 
+
+# ─── Set-password (first run) ─────────────────────────────────────────────────
 
 @app.post("/set-password", response_class=HTMLResponse)
 async def set_password_submit(
@@ -97,42 +116,23 @@ async def set_password_submit(
     confirm: str = Form(...),
 ) -> Any:
     if password_is_set():
-        return _templates.TemplateResponse("login.html", {
-            "request": request,
-            "needs_setup": False,
-            "token": None,
-            "error": "Password is already set. Log in below.",
-            "durations": list(DURATIONS.keys()),
-            "gateway_host": None,
-        })
+        return _render(request, _ctx(request,
+            needs_setup=False,
+            error="Password is already set. Log in below.",
+        ))
     if len(password) < 8:
-        return _templates.TemplateResponse("login.html", {
-            "request": request,
-            "needs_setup": True,
-            "token": None,
-            "error": "Password must be at least 8 characters.",
-            "durations": list(DURATIONS.keys()),
-            "gateway_host": None,
-        }, status_code=400)
+        return _render(request, _ctx(request,
+            needs_setup=True,
+            error="Password must be at least 8 characters.",
+        ), status_code=400)
     if password != confirm:
-        return _templates.TemplateResponse("login.html", {
-            "request": request,
-            "needs_setup": True,
-            "token": None,
-            "error": "Passwords do not match.",
-            "durations": list(DURATIONS.keys()),
-            "gateway_host": None,
-        }, status_code=400)
+        return _render(request, _ctx(request,
+            needs_setup=True,
+            error="Passwords do not match.",
+        ), status_code=400)
 
     set_password(password)
-    return _templates.TemplateResponse("login.html", {
-        "request": request,
-        "needs_setup": False,
-        "token": None,
-        "error": None,
-        "durations": list(DURATIONS.keys()),
-        "gateway_host": None,
-    })
+    return _render(request, _ctx(request, needs_setup=False))
 
 
 # ─── Login ────────────────────────────────────────────────────────────────────
@@ -147,46 +147,31 @@ async def login_submit(
         return RedirectResponse(url="/login", status_code=303)
 
     if not JWT_SECRET:
-        return _templates.TemplateResponse("login.html", {
-            "request": request,
-            "needs_setup": False,
-            "token": None,
-            "error": "CDP_JWT_SECRET is not configured on the server.",
-            "durations": list(DURATIONS.keys()),
-            "gateway_host": None,
-        }, status_code=500)
+        return _render(request, _ctx(request,
+            needs_setup=False,
+            error="CDP_JWT_SECRET is not configured on the server.",
+        ), status_code=500)
 
     if duration not in DURATIONS:
-        return _templates.TemplateResponse("login.html", {
-            "request": request,
-            "needs_setup": False,
-            "token": None,
-            "error": "Invalid duration.",
-            "durations": list(DURATIONS.keys()),
-            "gateway_host": None,
-        }, status_code=400)
+        return _render(request, _ctx(request,
+            needs_setup=False,
+            error="Invalid duration.",
+        ), status_code=400)
 
     if not verify_password(password):
-        return _templates.TemplateResponse("login.html", {
-            "request": request,
-            "needs_setup": False,
-            "token": None,
-            "error": "Incorrect password.",
-            "durations": list(DURATIONS.keys()),
-            "gateway_host": None,
-        }, status_code=401)
+        return _render(request, _ctx(request,
+            needs_setup=False,
+            error="Incorrect password.",
+        ), status_code=401)
 
     token = issue_token(duration)
     gateway_host = request.headers.get("host", f"localhost:{GATEWAY_PORT}")
 
-    response = _templates.TemplateResponse("login.html", {
-        "request": request,
-        "needs_setup": False,
-        "token": token,
-        "error": None,
-        "durations": list(DURATIONS.keys()),
-        "gateway_host": gateway_host,
-    })
+    response = _render(request, _ctx(request,
+        needs_setup=False,
+        token=token,
+        gateway_host=gateway_host,
+    ))
     response.set_cookie(
         key="cdp_token",
         value=token,
