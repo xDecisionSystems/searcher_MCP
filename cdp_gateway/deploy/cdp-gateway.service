@@ -8,7 +8,7 @@ Type=simple
 User=root
 WorkingDirectory=/opt/repo/cdp_gateway
 EnvironmentFile=/opt/repo/.env
-ExecStart=/opt/repo/cdp_gateway/.venv/bin/uvicorn app:app --host 0.0.0.0 --port ${CDP_GATEWAY_PORT:-8020}
+ExecStart=/opt/repo/cdp_gateway/.venv/bin/uvicorn app:app --host 0.0.0.0 --port 8020
 Restart=always
 RestartSec=3
 

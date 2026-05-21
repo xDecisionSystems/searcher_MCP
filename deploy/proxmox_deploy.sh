@@ -487,8 +487,13 @@ lxc_exec "$VMID" "
   systemctl start cdp-gateway
 "
 log "Waiting for cdp-gateway ..."
-lxc_exec "$VMID" "sleep 3"
-lxc_exec "$VMID" "curl -sf http://127.0.0.1:${GATEWAY_PORT}/login > /dev/null || { echo 'cdp-gateway health check failed'; exit 1; }"
+lxc_exec "$VMID" "
+  for i in \$(seq 1 15); do
+    curl -sf http://127.0.0.1:${GATEWAY_PORT}/login > /dev/null && exit 0
+    sleep 2
+  done
+  echo 'cdp-gateway health check failed'; exit 1
+"
 log "cdp-gateway PASSED."
 
 # ─── Summary ──────────────────────────────────────────────────────────────────
