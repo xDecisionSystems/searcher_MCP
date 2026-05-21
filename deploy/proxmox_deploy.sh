@@ -390,6 +390,23 @@ if [[ -n "$SHARED_ENV_FILE" && -f "$SHARED_ENV_FILE" ]]; then
   log "Shared env uploaded."
 fi
 
+# ─── Inject ROOT_PATH vars based on hostname postfix ─────────────────────────
+# If a postfix is set (e.g. "aev"), configure path prefixes so Nginx can route
+# multiple users under the same domain: /aev/search/ and /aev/browser/
+if [[ -n "$LXC_HOSTNAME_POSTFIX" ]]; then
+  SEARCHER_ROOT_PATH="/${LXC_HOSTNAME_POSTFIX}/search"
+  BROWSER_ROOT_PATH="/${LXC_HOSTNAME_POSTFIX}/browser"
+  log "Setting root paths: SEARCHER_ROOT_PATH=${SEARCHER_ROOT_PATH}  BROWSER_ROOT_PATH=${BROWSER_ROOT_PATH}"
+  lxc_exec "$VMID" "
+    grep -q 'SEARCHER_ROOT_PATH' /opt/repo/.env && \
+      sed -i 's|^SEARCHER_ROOT_PATH=.*|SEARCHER_ROOT_PATH=${SEARCHER_ROOT_PATH}|' /opt/repo/.env || \
+      echo 'SEARCHER_ROOT_PATH=${SEARCHER_ROOT_PATH}' >> /opt/repo/.env
+    grep -q 'BROWSER_ROOT_PATH' /opt/repo/.env && \
+      sed -i 's|^BROWSER_ROOT_PATH=.*|BROWSER_ROOT_PATH=${BROWSER_ROOT_PATH}|' /opt/repo/.env || \
+      echo 'BROWSER_ROOT_PATH=${BROWSER_ROOT_PATH}' >> /opt/repo/.env
+  "
+fi
+
 # ─── Locale setup ─────────────────────────────────────────────────────────────
 log "Configuring locale ..."
 lxc_exec "$VMID" "
@@ -515,6 +532,16 @@ echo "  searcher-mcp    http://${LXC_ACTUAL_IP}:${SEARCHER_PORT}/health"
 echo "  searcher docs   http://${LXC_ACTUAL_IP}:${SEARCHER_PORT}/docs"
 echo "  browser-worker  http://${LXC_ACTUAL_IP}:${WORKER_PORT}/health"
 echo "  noVNC           http://${LXC_ACTUAL_IP}:${NOVNC_PORT}/vnc.html"
+if [[ -n "$LXC_HOSTNAME_POSTFIX" ]]; then
+  echo ""
+  echo "  Nginx proxy paths (configure in Nginx Proxy Manager):"
+  echo "    /${LXC_HOSTNAME_POSTFIX}/search/  →  http://${LXC_ACTUAL_IP}:${SEARCHER_PORT}/"
+  echo "    /${LXC_HOSTNAME_POSTFIX}/browser/ →  http://${LXC_ACTUAL_IP}:${WORKER_PORT}/"
+  echo ""
+  echo "  MCP endpoints (after Nginx setup):"
+  echo "    https://<domain>/${LXC_HOSTNAME_POSTFIX}/search/mcp"
+  echo "    https://<domain>/${LXC_HOSTNAME_POSTFIX}/browser/mcp"
+fi
 echo ""
 echo "  Next steps:"
 if [[ -z "$SHARED_ENV_FILE" ]]; then

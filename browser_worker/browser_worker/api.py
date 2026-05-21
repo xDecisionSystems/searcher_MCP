@@ -1,12 +1,21 @@
 from typing import Any
 
 from fastapi import FastAPI
+from fastapi_mcp import FastApiMCP
 from pydantic import BaseModel, Field
 
 from .config import VERSION_NAME
 from .services.download import download_paper_authenticated, download_paper_via_browser
 
-app = FastAPI(title="Searcher Browser Worker", version=VERSION_NAME)
+app = FastAPI(
+    title="Searcher Browser Worker",
+    description=(
+        "Browser-automation service for downloading academic papers from authenticated "
+        "publisher portals. Opens pages in a real Chromium browser — use "
+        "download_paper_authenticated for paywalled papers that require institutional login."
+    ),
+    version=VERSION_NAME,
+)
 
 
 class DownloadRequest(BaseModel):
@@ -45,3 +54,17 @@ def download_paper_auth(request: AuthenticatedDownloadRequest) -> dict[str, Any]
         poll_interval=request.poll_interval,
         max_wait_minutes=request.max_wait_minutes,
     )
+
+
+# ─── MCP server ───────────────────────────────────────────────────────────────
+mcp = FastApiMCP(
+    app,
+    name="Browser Worker MCP",
+    description=(
+        "Download academic papers from publisher portals using a real Chromium browser. "
+        "Use download_paper_authenticated for paywalled papers — it opens the page in the "
+        "remote browser so you can log in via noVNC, then downloads automatically."
+    ),
+    exclude_operations=["health"],
+)
+mcp.mount()
