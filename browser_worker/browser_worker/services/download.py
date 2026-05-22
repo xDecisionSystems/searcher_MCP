@@ -103,14 +103,11 @@ def _extract_pdf_link(base_url: str, html: str) -> str | None:
     return candidates[0][1]
 
 
-def _click_pdf_button(page: Any, out_path: Path) -> int | None:
+def _click_pdf_button(page: Any, out_path: Path) -> tuple[int, str] | None:
     """Try to click a PDF download button and intercept the downloaded file.
 
     Works for JS-driven buttons (e.g. ScienceDirect "Download PDF") that do not
-    have a plain href. Returns file size on success, None if no button found.
-
-    Also handles the ScienceDirect pattern where clicking navigates to a PDF
-    viewer page rather than triggering a browser download event.
+    have a plain href. Returns (size_bytes, source_url) on success, None if not found.
     """
     # Selectors tried in priority order
     selectors = [
@@ -191,8 +188,9 @@ def _click_pdf_button(page: Any, out_path: Path) -> int | None:
         try:
             download_obj.save_as(str(out_path))
             size = out_path.stat().st_size
-            log_event("pdf_download_event", selector=matched_selector, size_bytes=size)
-            return size
+            source = download_obj.url or page.url
+            log_event("pdf_download_event", selector=matched_selector, size_bytes=size, source_url=source)
+            return size, source
         except PlaywrightError as exc:
             log_event("pdf_download_event_failed", selector=matched_selector, error=str(exc))
 
@@ -204,21 +202,21 @@ def _click_pdf_button(page: Any, out_path: Path) -> int | None:
             pass
         popup_url = popup_page.url
         log_event("pdf_popup_detected", popup_url=popup_url)
-        size = _fetch_pdf_with_browser(popup_page, popup_url, out_path)
+        result = _fetch_pdf_with_browser(popup_page, popup_url, out_path)
         try:
             popup_page.close()
         except PlaywrightError:
             pass
-        if size is not None:
-            return size
+        if result is not None:
+            return result
 
     # Strategy 3: PDF URL captured from network sniffing (in-page renderer like ScienceDirect).
     if captured_pdf_url:
         log_event("pdf_sniff_attempting", candidates=captured_pdf_url)
         for pdf_url in captured_pdf_url:
-            size = _fetch_pdf_with_browser(page, pdf_url, out_path)
-            if size is not None:
-                return size
+            result = _fetch_pdf_with_browser(page, pdf_url, out_path)
+            if result is not None:
+                return result
 
     # Strategy 4: check if current page navigated directly to a PDF.
     nav_url = page.url
@@ -231,16 +229,19 @@ def _click_pdf_button(page: Any, out_path: Path) -> int | None:
         log_event("pdf_nav_check_failed", navigated_url=nav_url, error=str(exc))
 
     if "pdf" in content_type or nav_url.lower().endswith(".pdf"):
-        size = _fetch_pdf_with_browser(page, nav_url, out_path)
-        if size is not None:
-            return size
+        result = _fetch_pdf_with_browser(page, nav_url, out_path)
+        if result is not None:
+            return result
 
     log_event("pdf_nav_not_pdf", navigated_url=nav_url, content_type=content_type)
     return None
 
 
-def _fetch_pdf_with_browser(page: Any, url: str, out_path: Path) -> int | None:
-    """Download a PDF using the browser session (carries cookies/auth), fall back to requests."""
+def _fetch_pdf_with_browser(page: Any, url: str, out_path: Path) -> tuple[int, str] | None:
+    """Download a PDF using the browser session (carries cookies/auth), fall back to requests.
+
+    Returns (size_bytes, source_url) on success, None on failure.
+    """
     try:
         api_resp = page.request.get(url, timeout=int(REQUEST_TIMEOUT * 1000))
         if api_resp.ok:
@@ -253,7 +254,7 @@ def _fetch_pdf_with_browser(page: Any, url: str, out_path: Path) -> int | None:
                 )
             out_path.write_bytes(data)
             log_event("pdf_browser_stream_ok", url=url, size_bytes=len(data))
-            return len(data)
+            return len(data), url
         else:
             log_event("pdf_browser_stream_failed", url=url, http_status=api_resp.status)
     except HTTPException:
@@ -263,7 +264,7 @@ def _fetch_pdf_with_browser(page: Any, url: str, out_path: Path) -> int | None:
     try:
         size = _stream_to_disk(url, out_path)
         log_event("pdf_plain_stream_ok", url=url, size_bytes=size)
-        return size
+        return size, url
     except Exception as exc:
         log_event("pdf_plain_stream_error", url=url, error=str(exc))
     return None
@@ -466,13 +467,14 @@ def download_paper_via_browser(url: str, filename: str | None = None) -> dict[st
             # Try clicking the PDF button before the login check — pages that are
             # fully authenticated (e.g. ScienceDirect) may still contain "sign in"
             # in their nav/footer, causing false-positive login detection.
-            size = _click_pdf_button(page, output_path)
-            if size is not None:
+            click_result = _click_pdf_button(page, output_path)
+            if click_result is not None:
+                size, pdf_source_url = click_result
                 result = {
                     "path": str(output_path),
                     "filename": output_path.name,
                     "size_bytes": size,
-                    "source_url": current_url,
+                    "source_url": pdf_source_url,
                     "method": "browser_click_download",
                 }
                 log_event("download_success", **result)
