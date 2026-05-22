@@ -142,7 +142,11 @@ def _click_pdf_button(page: Any, out_path: Path) -> tuple[int, str] | None:
 
     ctx = page.context
     captured_pdf_url: list[str] = []
-    pages_before = set(id(p) for p in ctx.pages)
+    # Record URLs of all currently open pages so we can reject stale popups.
+    try:
+        urls_before = set(p.url for p in ctx.pages)
+    except PlaywrightError:
+        urls_before = set()
 
     def _sniff_pdf(route: Any, request: Any) -> None:
         url = request.url
@@ -173,11 +177,12 @@ def _click_pdf_button(page: Any, out_path: Path) -> tuple[int, str] | None:
     except PlaywrightError:
         try:
             candidate = popup_info.value
-            # Only accept the popup if it genuinely appeared after our click.
-            if id(candidate) not in pages_before:
+            candidate_url = candidate.url
+            # Only accept the popup if its URL wasn't already open before the click.
+            if candidate_url not in urls_before:
                 popup_page = candidate
             else:
-                log_event("pdf_popup_stale", popup_url=candidate.url)
+                log_event("pdf_popup_stale", popup_url=candidate_url)
         except Exception:
             popup_page = None
 
@@ -375,6 +380,7 @@ def _dismiss_cookie_banners(page: Any) -> None:
         "button:has-text('Reject All')",
         "button:has-text('Decline all')",
         "button:has-text('Decline All')",
+        "button:has-text('Deny')",
         "button:has-text('Only necessary')",
         "button:has-text('Only essential')",
         "button:has-text('Accept necessary')",
@@ -387,7 +393,6 @@ def _dismiss_cookie_banners(page: Any) -> None:
         "button#onetrust-reject-all-handler",
         # Elsevier / ScienceDirect
         "button.reject-btn",
-        "button:has-text('Manage cookies')",  # skip — opens dialog
         # OneTrust (very common)
         "#onetrust-reject-all-handler",
         ".ot-sdk-btn-handler[id*='reject']",
@@ -396,6 +401,7 @@ def _dismiss_cookie_banners(page: Any) -> None:
         # Generic close
         "button[aria-label*='reject' i]",
         "button[aria-label*='decline' i]",
+        "button[aria-label*='deny' i]",
     ]
     for sel in reject_selectors:
         try:
