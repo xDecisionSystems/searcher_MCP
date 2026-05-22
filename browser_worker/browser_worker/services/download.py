@@ -343,6 +343,52 @@ def _navigate_for_analysis(page: Any, url: str) -> tuple[Any | None, str, str]:
     return response, current_url, html
 
 
+def _dismiss_cookie_banners(page: Any) -> None:
+    """Click common 'reject optional cookies' / 'accept necessary only' buttons.
+
+    Tries a prioritised list of selectors. Silently skips any that are absent or
+    throw — the goal is best-effort dismissal, not a guarantee.
+    """
+    reject_selectors = [
+        # Generic reject/necessary-only patterns
+        "button:has-text('Reject all')",
+        "button:has-text('Reject All')",
+        "button:has-text('Decline all')",
+        "button:has-text('Decline All')",
+        "button:has-text('Only necessary')",
+        "button:has-text('Only essential')",
+        "button:has-text('Accept necessary')",
+        "button:has-text('Accept only necessary')",
+        "button:has-text('Accept necessary cookies')",
+        "button:has-text('Necessary cookies only')",
+        "button:has-text('Use necessary cookies only')",
+        # Springer / Nature
+        "button[data-test='reject-button']",
+        "button#onetrust-reject-all-handler",
+        # Elsevier / ScienceDirect
+        "button.reject-btn",
+        "button:has-text('Manage cookies')",  # skip — opens dialog
+        # OneTrust (very common)
+        "#onetrust-reject-all-handler",
+        ".ot-sdk-btn-handler[id*='reject']",
+        # Cookiebot
+        "#CybotCookiebotDialogBodyButtonDecline",
+        # Generic close
+        "button[aria-label*='reject' i]",
+        "button[aria-label*='decline' i]",
+    ]
+    for sel in reject_selectors:
+        try:
+            loc = page.locator(sel).first
+            if loc.count() and loc.is_visible(timeout=1000):
+                loc.click(timeout=3000)
+                log_event("cookie_banner_dismissed", selector=sel)
+                page.wait_for_timeout(500)
+                return
+        except PlaywrightError:
+            continue
+
+
 def _show_url_in_novnc(ctx: Any, url: str) -> Any:
     """Navigate the active noVNC tab to url so the user sees it immediately.
 
@@ -449,6 +495,8 @@ def download_paper_via_browser(url: str, filename: str | None = None) -> dict[st
             http_status = response.status if response is not None else None
             log_event("page_loaded", requested_url=url, final_url=current_url,
                       http_status=http_status, content_type=content_type)
+
+            _dismiss_cookie_banners(page)
 
             if "pdf" in content_type:
                 final_url = page.url
