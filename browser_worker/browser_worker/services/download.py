@@ -315,16 +315,9 @@ def download_paper_via_browser(url: str, filename: str | None = None) -> dict[st
                     "method": "browser_direct_stream",
                 }
 
-            if _is_login_page(html, current_url):
-                # If ERR_ABORTED left the page in a broken state, navigate it again
-                # via _show_url_in_novnc so the user sees the login page.
-                if not html or html.strip() == "<html><body><p>login</p><p>sign in</p></body></html>":
-                    _show_url_in_novnc(ctx, url)
-                # Return inside the with-block while playwright is still connected.
-                # Do not close the context — leave the login page open for the user.
-                return _login_required_response(url, current_url)
-
-            # Try clicking the PDF button (handles JS-driven buttons like ScienceDirect).
+            # Try clicking the PDF button before the login check — pages that are
+            # fully authenticated (e.g. ScienceDirect) may still contain "sign in"
+            # in their nav/footer, causing false-positive login detection.
             size = _click_pdf_button(page, output_path)
             if size is not None:
                 return {
@@ -334,6 +327,15 @@ def download_paper_via_browser(url: str, filename: str | None = None) -> dict[st
                     "source_url": current_url,
                     "method": "browser_click_download",
                 }
+
+            if _is_login_page(html, current_url):
+                # If ERR_ABORTED left the page in a broken state, navigate it again
+                # via _show_url_in_novnc so the user sees the login page.
+                if not html or html.strip() == "<html><body><p>login</p><p>sign in</p></body></html>":
+                    _show_url_in_novnc(ctx, url)
+                # Return inside the with-block while playwright is still connected.
+                # Do not close the context — leave the login page open for the user.
+                return _login_required_response(url, current_url)
 
             # Fall back to scraping a plain href PDF link.
             pdf_link = _extract_pdf_link(current_url, html)
