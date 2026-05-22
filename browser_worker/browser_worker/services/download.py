@@ -67,14 +67,12 @@ def _stream_to_disk(url: str, out_path: Path) -> int:
 
 
 def _extract_pdf_link(base_url: str, html: str) -> str | None:
-    """Return the best PDF link found on the page, or None.
+    """Return the best PDF link found in static HTML, or None.
 
     Priority order:
-    1. <a> whose href ends with .pdf (explicit extension)
-    2. <a> whose link text contains "pdf" (case-insensitive)
-    3. <a> whose href contains "pdf" (fallback)
-
-    Only http/https absolute or root-relative hrefs are considered.
+    1. <a> whose href ends with .pdf
+    2. <a> whose link text contains "pdf"
+    3. <a> whose href contains "pdf"
     """
     soup = BeautifulSoup(html, "html.parser")
     candidates: list[tuple[int, str]] = []
@@ -102,6 +100,48 @@ def _extract_pdf_link(base_url: str, html: str) -> str | None:
         return None
     candidates.sort(key=lambda x: x[0])
     return candidates[0][1]
+
+
+def _click_pdf_button(page: Any, out_path: Path) -> int | None:
+    """Try to click a PDF download button and intercept the downloaded file.
+
+    Works for JS-driven buttons (e.g. ScienceDirect "Download PDF") that do not
+    have a plain href. Returns file size on success, None if no button found.
+    """
+    # Selectors tried in priority order
+    selectors = [
+        "a[href*='pdf']:visible",
+        "a:has-text('Download PDF')",
+        "a:has-text('View PDF')",
+        "a:has-text('PDF')",
+        "button:has-text('Download PDF')",
+        "button:has-text('PDF')",
+        "[data-testid*='pdf']",
+        "[aria-label*='PDF']",
+        "[aria-label*='pdf']",
+    ]
+
+    btn = None
+    for sel in selectors:
+        try:
+            loc = page.locator(sel).first
+            if loc.count() and loc.is_visible(timeout=2000):
+                btn = loc
+                break
+        except PlaywrightError:
+            continue
+
+    if btn is None:
+        return None
+
+    try:
+        with page.expect_download(timeout=30000) as dl_info:
+            btn.click()
+        download = dl_info.value
+        download.save_as(str(out_path))
+        return out_path.stat().st_size
+    except PlaywrightError:
+        return None
 
 
 def _get_browser_context(playwright: Any) -> Any:
@@ -284,26 +324,35 @@ def download_paper_via_browser(url: str, filename: str | None = None) -> dict[st
                 # Do not close the context — leave the login page open for the user.
                 return _login_required_response(url, current_url)
 
-            _close_context_if_needed(ctx)
+            # Try clicking the PDF button (handles JS-driven buttons like ScienceDirect).
+            size = _click_pdf_button(page, output_path)
+            if size is not None:
+                return {
+                    "path": str(output_path),
+                    "filename": output_path.name,
+                    "size_bytes": size,
+                    "source_url": current_url,
+                    "method": "browser_click_download",
+                }
 
-        pdf_link = _extract_pdf_link(current_url, html)
-        if not pdf_link:
+            # Fall back to scraping a plain href PDF link.
+            pdf_link = _extract_pdf_link(current_url, html)
+            if pdf_link:
+                _close_context_if_needed(ctx)
+                size = _stream_to_disk(pdf_link, output_path)
+                return {
+                    "path": str(output_path),
+                    "filename": output_path.name,
+                    "size_bytes": size,
+                    "source_url": pdf_link,
+                    "method": "browser_page_pdf_link",
+                }
+
+            _close_context_if_needed(ctx)
             raise HTTPException(
                 status_code=404,
-                detail=(
-                    "No PDF link found on page using browser automation. "
-                    "The page may require interactive login/navigation."
-                ),
+                detail="No PDF button or link found. The page may require interactive login.",
             )
-
-        size = _stream_to_disk(pdf_link, output_path)
-        return {
-            "path": str(output_path),
-            "filename": output_path.name,
-            "size_bytes": size,
-            "source_url": pdf_link,
-            "method": "browser_page_pdf_link",
-        }
 
     except HTTPException:
         if output_path.exists():
