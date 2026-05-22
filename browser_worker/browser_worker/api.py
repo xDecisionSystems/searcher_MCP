@@ -20,7 +20,7 @@ app = FastAPI(
 
 class DownloadRequest(BaseModel):
     url: str = Field(..., description="Target page URL that should eventually lead to a PDF.")
-    filename: str | None = Field(default=None, description="Optional output filename.")
+    filename: str = Field(default="", description="Optional output filename. Leave empty to auto-generate.")
 
 
 @app.get("/health")
@@ -39,7 +39,7 @@ def download_paper(request: DownloadRequest) -> dict[str, Any]:
     or Stop to cancel. The agent must surface that prompt to the user and,
     if the user presses OK, call this endpoint again with the same URL.
     """
-    return download_paper_via_browser(url=request.url, filename=request.filename)
+    return download_paper_via_browser(url=request.url, filename=request.filename or None)
 
 
 # ─── MCP server ───────────────────────────────────────────────────────────────
