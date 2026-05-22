@@ -125,6 +125,26 @@ def _click_pdf_button(page: Any, out_path: Path) -> tuple[int, str] | None:
         "a[href*='pdf']:visible",  # last resort — too broad, matches citation links
     ]
 
+    # Some sites (e.g. MDPI) hide "Download PDF" inside a dropdown. Try opening
+    # common dropdown triggers before scanning for the PDF button.
+    dropdown_selectors = [
+        "button:has-text('Download')",
+        "a:has-text('Download')",
+        "button[aria-haspopup='true']:has-text('Download')",
+        "button[aria-expanded='false']:has-text('Download')",
+        ".dropdown-toggle:has-text('Download')",
+    ]
+    for dsel in dropdown_selectors:
+        try:
+            dloc = page.locator(dsel).first
+            if dloc.count() and dloc.is_visible(timeout=1500):
+                dloc.click(timeout=3000)
+                page.wait_for_timeout(500)
+                log_event("dropdown_opened", selector=dsel)
+                break
+        except PlaywrightError:
+            continue
+
     btn = None
     matched_selector = None
     for sel in selectors:
