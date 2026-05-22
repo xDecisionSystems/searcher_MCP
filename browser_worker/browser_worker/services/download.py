@@ -143,27 +143,50 @@ def _click_pdf_button(page: Any, out_path: Path) -> int | None:
 
     log_event("pdf_button_found", selector=matched_selector, page_url=page.url)
 
-    # Try all three interception strategies simultaneously — whichever fires first wins.
-    # ScienceDirect opens PDF in a new tab (popup), so we must watch for that too.
     ctx = page.context
+    captured_pdf_url: list[str] = []
 
-    popup_page = None
-    download_obj = None
-    nav_url = None
+    def _sniff_pdf(route: Any, request: Any) -> None:
+        url = request.url
+        if "pdf" in url.lower() or url.lower().endswith(".pdf"):
+            if url not in captured_pdf_url:
+                captured_pdf_url.append(url)
+                log_event("pdf_url_sniffed", url=url)
+        route.continue_()
 
+    # Intercept all network requests on context to catch the PDF fetch from the viewer.
     try:
-        with ctx.expect_page(timeout=15000) as popup_info:
-            with page.expect_download(timeout=15000) as dl_info:
+        ctx.route("**/*", _sniff_pdf)
+    except PlaywrightError:
+        pass
+
+    download_obj = None
+    popup_page = None
+
+    # Watch for a direct download or a new tab simultaneously.
+    try:
+        with ctx.expect_page(timeout=20000) as popup_info:
+            with page.expect_download(timeout=20000) as dl_info:
                 btn.click()
-            # If we get here, a download fired before a popup.
             download_obj = dl_info.value
     except PlaywrightError:
-        # expect_download timed out — check if a popup appeared instead.
         try:
             popup_page = popup_info.value
         except Exception:
             popup_page = None
 
+    # Wait a moment for any in-flight PDF network requests to be sniffed.
+    try:
+        page.wait_for_timeout(3000)
+    except PlaywrightError:
+        pass
+
+    try:
+        ctx.unroute("**/*", _sniff_pdf)
+    except PlaywrightError:
+        pass
+
+    # Strategy 1: direct browser download event.
     if download_obj is not None:
         try:
             download_obj.save_as(str(out_path))
@@ -173,7 +196,7 @@ def _click_pdf_button(page: Any, out_path: Path) -> int | None:
         except PlaywrightError as exc:
             log_event("pdf_download_event_failed", selector=matched_selector, error=str(exc))
 
-    # Popup tab opened (e.g. ScienceDirect "View PDF" → new tab with PDF viewer).
+    # Strategy 2: new tab/popup opened (PDF viewer in separate tab).
     if popup_page is not None:
         try:
             popup_page.wait_for_load_state("domcontentloaded", timeout=20000)
@@ -189,11 +212,15 @@ def _click_pdf_button(page: Any, out_path: Path) -> int | None:
         if size is not None:
             return size
 
-    # Last resort: check if the current page navigated to a PDF URL after the click.
-    try:
-        page.wait_for_load_state("domcontentloaded", timeout=10000)
-    except PlaywrightError:
-        pass
+    # Strategy 3: PDF URL captured from network sniffing (in-page renderer like ScienceDirect).
+    if captured_pdf_url:
+        log_event("pdf_sniff_attempting", candidates=captured_pdf_url)
+        for pdf_url in captured_pdf_url:
+            size = _fetch_pdf_with_browser(page, pdf_url, out_path)
+            if size is not None:
+                return size
+
+    # Strategy 4: check if current page navigated directly to a PDF.
     nav_url = page.url
     content_type = ""
     try:
