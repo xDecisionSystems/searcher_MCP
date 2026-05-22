@@ -109,17 +109,20 @@ def _click_pdf_button(page: Any, out_path: Path) -> tuple[int, str] | None:
     Works for JS-driven buttons (e.g. ScienceDirect "Download PDF") that do not
     have a plain href. Returns (size_bytes, source_url) on success, None if not found.
     """
-    # Selectors tried in priority order
+    # Selectors tried in priority order — text-based first to avoid matching
+    # reference/citation links that happen to contain "pdf" in their href.
     selectors = [
         "a:has-text('Download PDF')",
         "a:has-text('View PDF')",
+        "a:has-text('Download full text')",
+        "a:has-text('Full text PDF')",
         "button:has-text('Download PDF')",
-        "a[href*='pdf']:visible",
-        "a:has-text('PDF')",
         "button:has-text('PDF')",
         "[data-testid*='pdf']",
         "[aria-label*='PDF']",
         "[aria-label*='pdf']",
+        "a:has-text('PDF')",
+        "a[href*='pdf']:visible",  # last resort — too broad, matches citation links
     ]
 
     btn = None
@@ -197,11 +200,12 @@ def _click_pdf_button(page: Any, out_path: Path) -> tuple[int, str] | None:
     except PlaywrightError:
         pass
 
-    # Filter chrome-extension URLs from sniffed candidates — these are the PDF
-    # viewer's own assets, not the actual document PDF.
+    # Filter chrome-extension URLs and URLs from already-open tabs — these are
+    # the PDF viewer's own assets or unrelated tabs, not the actual document PDF.
     captured_pdf_url[:] = [
         u for u in captured_pdf_url
         if not u.startswith("chrome") and not u.startswith("about:")
+        and u not in urls_before
     ]
 
     # Strategy 1: direct browser download event.
