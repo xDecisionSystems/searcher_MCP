@@ -12,6 +12,7 @@ from .services.recorder import (
     get_recording_status,
     list_strategies,
     load_strategy,
+    save_strategy,
     start_recording,
     stop_recording,
 )
@@ -92,6 +93,17 @@ def get_strategy(domain: str) -> dict[str, Any]:
     if strategy is None:
         raise HTTPException(status_code=404, detail=f"No strategy found for domain '{domain}'.")
     return strategy
+
+
+@app.put("/strategies/{domain}")
+def put_strategy(domain: str, strategy: dict[str, Any]) -> dict[str, Any]:
+    """Write or replace the strategy for a domain with the provided JSON body.
+
+    The body must be a valid strategy object (same schema as GET /strategies/{domain}).
+    Use this to manually clean up or replace a recorded strategy.
+    """
+    save_strategy(domain, strategy)
+    return {"status": "saved", "domain": domain, "steps_count": len(strategy.get("steps", []))}
 
 
 @app.delete("/strategies/{domain}")

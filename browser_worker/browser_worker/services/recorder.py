@@ -392,6 +392,13 @@ def load_strategy(domain: str) -> dict[str, Any] | None:
         return None
 
 
+def save_strategy(domain: str, strategy: dict[str, Any]) -> None:
+    """Write strategy dict to disk for domain, overwriting any existing file."""
+    path = _strategy_path(domain)
+    path.write_text(json.dumps(strategy, indent=2), encoding="utf-8")
+    log_event("strategy_saved_manually", domain=domain, steps=len(strategy.get("steps", [])))
+
+
 def delete_strategy(domain: str) -> bool:
     """Delete the strategy file for domain. Returns True if deleted."""
     path = _strategy_path(domain)

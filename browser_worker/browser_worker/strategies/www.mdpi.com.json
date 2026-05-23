@@ -1,0 +1,31 @@
+{
+  "domain": "www.mdpi.com",
+  "source_url": "https://www.mdpi.com/2076-3417/12/11/5610",
+  "recorded_at": "2026-05-23T21:01:47.489186+00:00",
+  "timeout_seconds": 60,
+  "steps": [
+    {
+      "type": "click",
+      "selector": "a:has-text('Download PDF')",
+      "element_text": "Download PDF",
+      "note": "Try direct link first — visible without dropdown on some MDPI pages"
+    },
+    {
+      "type": "click",
+      "selector": "a:has-text('Download')",
+      "element_text": "Download",
+      "note": "Open the Download dropdown if Download PDF not yet visible"
+    },
+    {
+      "type": "click",
+      "selector": "a:has-text('Download PDF')",
+      "element_text": "Download PDF",
+      "note": "Click Download PDF inside the now-open dropdown"
+    },
+    {
+      "type": "wait_for_pdf_response",
+      "url_pattern": "https://mdpi-res.com/.*\\.pdf",
+      "example_url": "https://mdpi-res.com/d_attachment/applsci/applsci-12-05610/article_deploy/applsci-12-05610-v2.pdf"
+    }
+  ]
+}
