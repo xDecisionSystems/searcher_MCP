@@ -602,16 +602,22 @@ def _replay_strategy(page: Any, strategy: dict[str, Any], output_path: Path) -> 
                 if not selector:
                     continue
                 try:
-                    # Wait for element to be attached (not necessarily visible — some
-                    # sites render buttons hidden until JS activates them).
                     page.wait_for_selector(selector, state="attached", timeout=10000)
                     loc = page.locator(selector).first
-                    # If the anchor has a direct PDF href, fetch via browser session
-                    # (carries cookies/auth) rather than relying on a click event.
-                    # Force-click the element regardless of visibility.
-                    # For PDF href anchors this navigates to the intermediate page
-                    # which triggers the real PDF load — captured by on_response.
-                    loc.click(force=True, timeout=5000)
+                    # Extract href — if the element has a direct link, navigate the
+                    # browser to it rather than clicking (bypasses visibility issues).
+                    href = loc.get_attribute("href") or ""
+                    if href:
+                        from urllib.parse import urljoin
+                        abs_href = urljoin(page.url, href)
+                        log_event("strategy_href_navigate", selector=selector, url=abs_href)
+                        try:
+                            page.goto(abs_href, wait_until="domcontentloaded",
+                                      timeout=int(REQUEST_TIMEOUT * 1000))
+                        except PlaywrightError:
+                            pass
+                    else:
+                        loc.click(force=True, timeout=5000)
                     page.wait_for_timeout(2000)
                     log_event("strategy_click_ok", selector=selector)
                 except PlaywrightError as exc:

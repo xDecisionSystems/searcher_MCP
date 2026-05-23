@@ -9,15 +9,9 @@
   "steps": [
     {
       "type": "click",
-      "selector": "a:has-text('Download')",
-      "element_text": "Download",
-      "note": "Open the Download dropdown"
-    },
-    {
-      "type": "click",
-      "selector": "a:has-text('Download PDF')",
+      "selector": "#js-button-download",
       "element_text": "Download PDF",
-      "note": "Click Download PDF inside the dropdown — navigates to /pdf page which triggers mdpi-res.com fetch"
+      "note": "MDPI download button — has href to /pdf?version=... page. click step navigates browser there."
     },
     {
       "type": "wait_for_pdf_response",
