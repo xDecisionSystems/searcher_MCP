@@ -612,10 +612,18 @@ def _replay_strategy(page: Any, strategy: dict[str, Any], output_path: Path) -> 
                     if href and ("pdf" in href.lower() or href.lower().endswith(".pdf")):
                         from urllib.parse import urljoin
                         abs_href = urljoin(page.url, href)
-                        fetch_result = _fetch_pdf_with_browser(page, abs_href, output_path)
+                        # Navigate the real browser to the PDF URL so all cookies and
+                        # session state are sent — page.request.get() doesn't carry
+                        # the same browser-level auth as a full navigation.
+                        log_event("strategy_href_navigate", selector=selector, url=abs_href)
+                        _, nav_url, nav_html = _navigate_for_analysis(page, abs_href)
+                        if nav_html == "__AUTO_DOWNLOAD__":
+                            fetch_result = _fetch_pdf_with_browser(page, abs_href, output_path)
+                        else:
+                            fetch_result = _fetch_pdf_with_browser(page, nav_url, output_path)
                         if fetch_result is not None:
                             size, src = fetch_result
-                            log_event("strategy_href_fetch_ok", selector=selector, url=abs_href)
+                            log_event("strategy_href_fetch_ok", selector=selector, url=src)
                             return {
                                 "path": str(output_path),
                                 "filename": output_path.name,
