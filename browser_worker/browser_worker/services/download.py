@@ -480,7 +480,7 @@ def _is_login_page(html: str, url: str) -> bool:
     if any(d in domain for d in auth_domains):
         return True
     matched = sum(1 for s in login_signals if s in lower)
-    return matched >= 3
+    return matched >= 4
 
 
 def _login_required_response(requested_url: str, current_url: str) -> dict[str, Any]:
@@ -568,15 +568,14 @@ def _replay_strategy(page: Any, strategy: dict[str, Any], output_path: Path) -> 
                 if not selector:
                     continue
                 try:
+                    # Wait up to 10s for the element to appear (handles JS-rendered dropdowns)
+                    page.wait_for_selector(selector, timeout=10000)
                     loc = page.locator(selector).first
-                    if loc.count() and loc.is_visible(timeout=5000):
-                        loc.click(timeout=5000)
-                        page.wait_for_timeout(2000)
-                        log_event("strategy_click_ok", selector=selector)
-                    else:
-                        log_event("strategy_click_skip", selector=selector, reason="not_visible")
+                    loc.click(timeout=5000)
+                    page.wait_for_timeout(2000)
+                    log_event("strategy_click_ok", selector=selector)
                 except PlaywrightError as exc:
-                    log_event("strategy_click_error", selector=selector, error=str(exc))
+                    log_event("strategy_click_skip", selector=selector, reason=str(exc))
 
             elif step_type == "wait_for_pdf_response":
                 # Give the browser up to REQUEST_TIMEOUT seconds to deliver the PDF
