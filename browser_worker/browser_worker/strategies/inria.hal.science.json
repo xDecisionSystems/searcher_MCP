@@ -1,0 +1,20 @@
+{
+  "domain": "inria.hal.science",
+  "source_url": "https://inria.hal.science/hal-03450952/file/Drone_Networking_6G.pdf",
+  "recorded_at": "2026-05-24T00:15:00.000000+00:00",
+  "timeout_seconds": 60,
+  "login_detection": {
+    "enabled": false
+  },
+  "post_process": {
+    "strip_first_pages": 1
+  },
+  "steps": [
+    {
+      "type": "wait_for_pdf_response",
+      "url_pattern": "https://inria\\.hal\\.science/.*\\.pdf",
+      "example_url": "https://inria.hal.science/hal-03450952/file/Drone_Networking_6G.pdf",
+      "note": "hal.science PDF links serve directly — first page is a HAL coversheet"
+    }
+  ]
+}

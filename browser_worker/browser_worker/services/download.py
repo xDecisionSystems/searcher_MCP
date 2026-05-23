@@ -475,6 +475,40 @@ def _replay_strategy(page: Any, strategy: dict[str, Any], out_path: Path) -> dic
             pass
 
 
+# ── Post-processing ────────────────────────────────────────────────────────────
+
+def _apply_post_processing(path: Path, post_process: dict[str, Any]) -> None:
+    """Apply post-processing steps defined in a strategy's post_process block."""
+    strip_first = post_process.get("strip_first_pages", 0)
+    strip_last = post_process.get("strip_last_pages", 0)
+    if not strip_first and not strip_last:
+        return
+    try:
+        from pypdf import PdfReader, PdfWriter  # noqa: PLC0415
+    except ImportError:
+        log_event("post_process_skip", reason="pypdf not installed")
+        return
+
+    reader = PdfReader(str(path))
+    total = len(reader.pages)
+    start = min(strip_first, total)
+    end = max(0, total - strip_last)
+    if start >= end:
+        log_event("post_process_skip", reason="nothing left after stripping", total=total)
+        return
+
+    writer = PdfWriter()
+    for i in range(start, end):
+        writer.add_page(reader.pages[i])
+
+    tmp = path.with_suffix(".tmp.pdf")
+    with open(tmp, "wb") as fh:
+        writer.write(fh)
+    tmp.replace(path)
+    log_event("post_process_strip", strip_first=strip_first, strip_last=strip_last,
+              original_pages=total, remaining_pages=end - start)
+
+
 # ── Main entry point ───────────────────────────────────────────────────────────
 
 def download_paper_via_browser(url: str, filename: str | None = None) -> dict[str, Any]:
@@ -513,6 +547,7 @@ def download_paper_via_browser(url: str, filename: str | None = None) -> dict[st
                 if result is None:
                     raise HTTPException(status_code=502, detail="Auto-download triggered but could not be captured.")
                 log_event("download_success", **result)
+                _close_context_if_needed(ctx)
                 return result
 
             content_type = ""
@@ -526,10 +561,17 @@ def download_paper_via_browser(url: str, filename: str | None = None) -> dict[st
 
             # Direct PDF response — stream it.
             if "pdf" in content_type:
-                size = _stream_to_disk(page.url, out_path)
+                _stream_to_disk(page.url, out_path)
+                # Load strategy now so post_process is available.
+                nav_domain = urlparse(current_url).netloc.lower().split(":")[0]
+                strategy = load_strategy(nav_domain) or load_strategy(
+                    urlparse(url).netloc.lower().split(":")[0]
+                )
+                post_process = strategy.get("post_process", {}) if strategy else {}
+                _apply_post_processing(out_path, post_process)
                 result = {
                     "path": str(out_path), "filename": out_path.name,
-                    "size_bytes": size, "source_url": page.url,
+                    "size_bytes": out_path.stat().st_size, "source_url": page.url,
                     "method": "direct_pdf_stream",
                 }
                 log_event("download_success", **result)
@@ -542,12 +584,15 @@ def download_paper_via_browser(url: str, filename: str | None = None) -> dict[st
                 urlparse(url).netloc.lower().split(":")[0]
             )
             login_detection = strategy.get("login_detection") if strategy else None
+            post_process = strategy.get("post_process", {}) if strategy else {}
 
             # Strategy replay.
             if strategy is not None:
                 log_event("strategy_found", domain=nav_domain, steps=len(strategy.get("steps", [])))
                 result = _replay_strategy(page, strategy, out_path)
                 if result is not None:
+                    _apply_post_processing(out_path, post_process)
+                    result["size_bytes"] = out_path.stat().st_size
                     log_event("download_success", **result)
                     _close_context_if_needed(ctx)
                     return result
@@ -556,6 +601,8 @@ def download_paper_via_browser(url: str, filename: str | None = None) -> dict[st
             # Generic PDF button fallback.
             result = _find_and_click_pdf_button(page, out_path)
             if result is not None:
+                _apply_post_processing(out_path, post_process)
+                result["size_bytes"] = out_path.stat().st_size
                 log_event("download_success", **result)
                 _close_context_if_needed(ctx)
                 return result
@@ -578,10 +625,11 @@ def download_paper_via_browser(url: str, filename: str | None = None) -> dict[st
             pdf_link = _extract_pdf_link(current_url, html)
             log_event("pdf_link_scrape", found=pdf_link is not None, link=pdf_link)
             if pdf_link:
-                size = _stream_to_disk(pdf_link, out_path)
+                _stream_to_disk(pdf_link, out_path)
+                _apply_post_processing(out_path, post_process)
                 result = {
                     "path": str(out_path), "filename": out_path.name,
-                    "size_bytes": size, "source_url": pdf_link,
+                    "size_bytes": out_path.stat().st_size, "source_url": pdf_link,
                     "method": "static_href_stream",
                 }
                 log_event("download_success", **result)
