@@ -1,0 +1,25 @@
+{
+  "domain": "www.sciopen.com",
+  "source_url": "https://www.sciopen.com/article/10.32604/cmc.2025.059043",
+  "recorded_at": "2026-05-23T23:55:00.000000+00:00",
+  "timeout_seconds": 120,
+  "login_detection": {
+    "enabled": true,
+    "signals": ["log in", "sign in", "access denied", "purchase access", "subscribe"],
+    "auth_domains": ["idp.", "shibboleth.", "auth.", "login."],
+    "threshold": 1
+  },
+  "steps": [
+    {
+      "type": "click",
+      "selector": "a:has-text('PDF')",
+      "element_text": "PDF",
+      "note": "PDF download button — text includes file size e.g. 'PDF (1.1 MB)', broader selector handles size variation"
+    },
+    {
+      "type": "wait_for_pdf_response",
+      "url_pattern": "https://(www\\.sciopen\\.com|cdn\\.techscience\\.cn)/.*\\.pdf",
+      "example_url": "https://www.sciopen.com/article/pdf/10.32604/cmc.2025.059043"
+    }
+  ]
+}
