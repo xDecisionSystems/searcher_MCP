@@ -1,0 +1,1551 @@
+{
+  "query": "uav mobile ad hoc networks since:2020",
+  "total": 100,
+  "results": [
+    {
+      "index": 1,
+      "title": "UAV-assisted wireless backhaul networks: Connectivity analysis of uplink transmissions",
+      "authors": [
+        "Y Liu",
+        "Q Wang",
+        "HN Dai",
+        "Y Fu",
+        "N Zhang"
+      ],
+      "publication_year": 2023,
+      "source": "IEEE Transactions on \u2026",
+      "url": "https://ieeexplore.ieee.org/abstract/document/10104142/",
+      "pdf_link": "/scholar?output=instlink&q=info:SCtO_6AMgSQJ:scholar.google.com/&hl=en&as_sdt=0,33&scillfp=14728619295678834565&oi=lle",
+      "citation_count": 26,
+      "snippet": "is employing unmanned aerial vehicles (UAVs) as relays to assist the wireless backhaul  of  For convenience, we call these networks as UAV-assisted wireless backhaul networks ("
+    },
+    {
+      "index": 2,
+      "title": "UAS traffic management communications: The legacy of ADS-B, new establishment of remote ID, or leverage of ADS-B-like systems?",
+      "authors": [
+        "N Ruseno",
+        "CY Lin",
+        "SC Chang"
+      ],
+      "publication_year": 2022,
+      "source": "Drones",
+      "url": "https://www.mdpi.com/2504-446X/6/3/57",
+      "pdf_link": "https://www.mdpi.com/2504-446X/6/3/57",
+      "citation_count": 49,
+      "snippet": "since 2020. Similarly, the ADS-B-like system works similarly to ADS-B but uses different types  of wireless  The assumed environment for UAS operation is at a low altitude (below 400 ft),"
+    },
+    {
+      "index": 3,
+      "title": "On the weighted cluster S-UAV scheme using latency-oriented trust",
+      "authors": [
+        "G Khayat",
+        "CX Mavromoustakis",
+        "A Pitsillides"
+      ],
+      "publication_year": 2023,
+      "source": "IEEE \u2026",
+      "url": "https://ieeexplore.ieee.org/abstract/document/10143193/",
+      "pdf_link": "https://ieeexplore.ieee.org/iel7/6287639/10005208/10143193.pdf",
+      "citation_count": 21,
+      "snippet": "This study considered an ad-hoc network with single UAV-to-UAV communication. This  scheme  Laurent, \u2018\u2018Optimized link state routing scheme for ad hoc networks,\u2019\u2019 in Proc. IEEE"
+    },
+    {
+      "index": 4,
+      "title": "Resilient disaster relief in industrial IoT: UAV trajectory design and resource allocation in 6G non-terrestrial networks",
+      "authors": [
+        "A Mohammadisarab",
+        "A Nouruzi",
+        "A Khalili"
+      ],
+      "publication_year": 2024,
+      "source": "IEEE Open Journal \u2026",
+      "url": "https://ieeexplore.ieee.org/abstract/document/10468637/",
+      "pdf_link": "https://ieeexplore.ieee.org/iel7/8782661/8901158/10468637.pdf",
+      "citation_count": 26,
+      "snippet": "a precise energy model for UAV movement and imposed constraints on UAV velocity and  energy consumption. Additionally, we introduced UAV velocity optimization, treating velocity as"
+    },
+    {
+      "index": 5,
+      "title": "New geographical routing protocol for three-dimensional flying ad-hoc network based on new effective transmission range",
+      "authors": [
+        "Y Cui",
+        "H Tian",
+        "C Chen",
+        "W Ni",
+        "H Wu"
+      ],
+      "publication_year": 2023,
+      "source": "IEEE Transactions on \u2026",
+      "url": "https://ieeexplore.ieee.org/abstract/document/10184319/",
+      "pdf_link": "/scholar?output=instlink&q=info:0TXBgSy8zC8J:scholar.google.com/&hl=en&as_sdt=0,33&scillfp=6155257892759631381&oi=lle",
+      "citation_count": 32,
+      "snippet": "ad-hoc networks (VANETs) and mobile ad-hoc networks (MANETs), FANET possesses  distinctive properties [8]. A UAV  multi-UAV setting of FANET, where a set of UAVs freely move in"
+    },
+    {
+      "index": 6,
+      "title": "Optimized routing protocol through exploitation of trajectory knowledge for UAV swarms",
+      "authors": [
+        "Z Zhou",
+        "J Tang",
+        "W Feng",
+        "N Zhao"
+      ],
+      "publication_year": 2024,
+      "source": "IEEE Transactions on \u2026",
+      "url": "https://ieeexplore.ieee.org/abstract/document/10539275/",
+      "pdf_link": "https://ieeexplore.ieee.org/iel7/25/10720559/10539275.pdf",
+      "citation_count": 20,
+      "snippet": "protocols for mobile ad hoc networks (MANETs) or vehicular ad hoc networks (VANETs),   routing protocol of traditional ad hoc networks in a mission-oriented UAV swarm. Consider"
+    },
+    {
+      "index": 7,
+      "title": "A survey of security in uavs and fanets: Issues, threats, analysis of attacks, and solutions",
+      "authors": [
+        "O Ceviz",
+        "S Sen",
+        "P Sadioglu"
+      ],
+      "publication_year": 2024,
+      "source": "IEEE Communications Surveys & \u2026",
+      "url": "https://ieeexplore.ieee.org/abstract/document/10793113/",
+      "pdf_link": "https://arxiv.org/pdf/2306.14281",
+      "citation_count": 112,
+      "snippet": "the domain of UAVs and Flying Ad Hoc Networks (FANETs).  Mobile Ad hoc Networks (MANETs)  and Vehicular Ad hoc  of research efforts in UAV security since 2020, we believe that"
+    },
+    {
+      "index": 8,
+      "title": "Predictive covert communication against multi-UAV surveillance using graph Koopman autoencoder",
+      "authors": [
+        "S Krishnan",
+        "J Park",
+        "G Sherman"
+      ],
+      "publication_year": 2025,
+      "source": "IEEE Transactions on \u2026",
+      "url": "https://ieeexplore.ieee.org/abstract/document/10869370/",
+      "pdf_link": "https://arxiv.org/pdf/2409.17048",
+      "citation_count": 5,
+      "snippet": "Instead, we focus on covert communication for wireless ad-hoc networks under UAV  surveillance, extending the scenario from [10]. In such environments, numerous Alice(s) and Bob(s)"
+    },
+    {
+      "index": 9,
+      "title": "Throughput of hybrid UAV networks with scale-free topology",
+      "authors": [
+        "Z Wei",
+        "Z Wang",
+        "Z Meng",
+        "N Zhang"
+      ],
+      "publication_year": 2022,
+      "source": "IEEE Transactions on \u2026",
+      "url": "https://ieeexplore.ieee.org/abstract/document/9933871/",
+      "pdf_link": "https://arxiv.org/pdf/2306.05616",
+      "citation_count": 11,
+      "snippet": "Facing these facts, this paper studies the throughput of UAV Network with  UAV network  and ground cellular network in this paper. Hybrid network is a combination of ad hoc network"
+    },
+    {
+      "index": 10,
+      "title": "A systematic survey: Security threats to UAV-aided IoT applications, taxonomy, current challenges and requirements with future research directions",
+      "authors": [
+        "M Adil",
+        "MA Jan",
+        "Y Liu",
+        "H Abulkasim"
+      ],
+      "publication_year": 2022,
+      "source": "IEEE Transactions \u2026",
+      "url": "https://ieeexplore.ieee.org/abstract/document/9946859/",
+      "pdf_link": "/scholar?output=instlink&q=info:NKGvvCdx7gAJ:scholar.google.com/&hl=en&as_sdt=0,33&scillfp=9037927957928788560&oi=lle",
+      "citation_count": 112,
+      "snippet": "Following this, mobile IoT applications such as mobile ad hoc networks (MANET), Intelligent  Transportation systems (ITS), and Internet of vehicles (IoV) are commonly used GPS and"
+    },
+    {
+      "index": 11,
+      "title": "Drone networking in the 6G era: A technology overview",
+      "authors": [
+        "D Mishra",
+        "AM Vegni",
+        "V Loscr\u00ed"
+      ],
+      "publication_year": 2022,
+      "source": "IEEE Communications \u2026",
+      "url": "https://ieeexplore.ieee.org/abstract/document/9696271/",
+      "pdf_link": "https://inria.hal.science/hal-03450952/file/Drone_Networking_6G.pdf",
+      "citation_count": 92,
+      "snippet": "well as the benefits carried out for UAV networking in 6G scenarios. Although transmission   characteristics at higher frequencies for drone networking at different propagation distances"
+    },
+    {
+      "index": 12,
+      "title": "Communication and control in collaborative UAVs: Recent advances and future trends",
+      "authors": [
+        "S Javaid",
+        "N Saeed",
+        "Z Qadir",
+        "H Fahim"
+      ],
+      "publication_year": 2023,
+      "source": "IEEE Transactions \u2026",
+      "url": "https://ieeexplore.ieee.org/abstract/document/10077453/",
+      "pdf_link": "https://arxiv.org/pdf/2302.12175",
+      "citation_count": 362,
+      "snippet": "] discussed the characteristics of a UAV network compared to WSN and mobile ad-hoc   ad hoc networks and UAV swarm networks to enable communication between vehicles and"
+    },
+    {
+      "index": 13,
+      "title": "Mariya Ouaissa\u00b7 Inam Ullah Khan\u00b7 Mariyam Ouaissa\u00b7 Zakaria Boulouard\u00b7",
+      "authors": [
+        "SBH Shah"
+      ],
+      "publication_year": null,
+      "source": "NA",
+      "url": "https://link.springer.com/content/pdf/10.1007/978-3-030-97113-7.pdf",
+      "pdf_link": "",
+      "citation_count": 0,
+      "snippet": "and solutions and the network integration of the UAVs, and  present the concept of flying  ad hoc networks (FANETs) and  IoT, UAVs, mobile ad hoc networks (MANETS), flying ad hoc"
+    },
+    {
+      "index": 14,
+      "title": "Evolution of mission-oriented unmanned aerial vehicle networks: a comprehensive review",
+      "authors": [
+        "HK Saini",
+        "K Jain"
+      ],
+      "publication_year": 2023,
+      "source": "Engineered Science",
+      "url": "https://www.espublisher.com/journals/articledetails/895/",
+      "pdf_link": "https://www.espublisher.com/uploads/article_pdf/es895.pdf",
+      "citation_count": 7,
+      "snippet": "seems to be higher since 2020, shows the major contribution of the world in this domain.  The emerging demand for network performance, energy, or services for the UAV is still scarce"
+    },
+    {
+      "index": 15,
+      "title": "Hap-uav-assisted maritime iot communication network",
+      "authors": [
+        "L Liu",
+        "C Shen",
+        "F Shu",
+        "F Wang",
+        "S Li"
+      ],
+      "publication_year": 2025,
+      "source": "\u2026 on Mobile Computing",
+      "url": "https://ieeexplore.ieee.org/abstract/document/11113331/",
+      "pdf_link": "/scholar?output=instlink&q=info:P4Mo7KUYJB8J:scholar.google.com/&hl=en&as_sdt=0,33&scillfp=11356082397600947498&oi=lle",
+      "citation_count": 8,
+      "snippet": "backhaul maritime communication network (UMABMCN), in  unmanned aerial vehicles  (UAVs) through HAP-to-UAV (H2U) links. Additionally, multiple UAVs are deployed to deliver UAV"
+    },
+    {
+      "index": 16,
+      "title": "Channel modeling for UAV communications: State of the art, case studies, and future directions",
+      "authors": [
+        "Z Cui",
+        "K Guan",
+        "C Briso-Rodr\u00edguez",
+        "B Ai"
+      ],
+      "publication_year": 2020,
+      "source": "arXiv preprint arXiv \u2026",
+      "url": "https://arxiv.org/abs/2012.06707",
+      "pdf_link": "https://arxiv.org/pdf/2012.06707",
+      "citation_count": 24,
+      "snippet": "UAV-to-UAV: For many use cases such as aerial relay and flying ad hoc network,  intercommunications between UAVs are  , UAV-to-UAV communications exhibit more challenges"
+    },
+    {
+      "index": 17,
+      "title": "A software-defined UAV network using queueing model",
+      "authors": [
+        "MABS Abir",
+        "MZ Chowdhury",
+        "YM Jang"
+      ],
+      "publication_year": 2023,
+      "source": "IEEE Access",
+      "url": "https://ieeexplore.ieee.org/abstract/document/10138553/",
+      "pdf_link": "https://ieeexplore.ieee.org/iel7/6287639/10005208/10138553.pdf",
+      "citation_count": 35,
+      "snippet": "SDN and UAV communication technologies. In [21] ad hoc networks for flying ad hoc  Networks. To manage this topology and modify network architecture in response to changes in UAV"
+    },
+    {
+      "index": 18,
+      "title": "LSTM-characterized deep reinforcement learning for continuous flight control and resource allocation in UAV-assisted sensor network",
+      "authors": [
+        "K Li",
+        "W Ni",
+        "F Dressler"
+      ],
+      "publication_year": 2021,
+      "source": "IEEE Internet of Things Journal",
+      "url": "https://ieeexplore.ieee.org/abstract/document/9507550/",
+      "pdf_link": "/scholar?output=instlink&q=info:5ui-WAUGpckJ:scholar.google.com/&hl=en&as_sdt=0,33&scillfp=11047952092014348684&oi=lle",
+      "citation_count": 67,
+      "snippet": ") is proposed, where the network state consists of the battery  of the UAV\u2019s visits to the  devices, the battery levels of the UAV,  as an Associate Editor for Ad Hoc Networks (Elsevier) and"
+    },
+    {
+      "index": 19,
+      "title": "Broadcast modeling and rate optimization for ad hoc networks using epidemic theory",
+      "authors": [
+        "L Bai",
+        "Y Su",
+        "J Liu",
+        "D Liu",
+        "J Choi"
+      ],
+      "publication_year": 2024,
+      "source": "\u2026 on Wireless \u2026",
+      "url": "https://ieeexplore.ieee.org/abstract/document/10508273/",
+      "pdf_link": "/scholar?output=instlink&q=info:fqCwcY0GHAQJ:scholar.google.com/&hl=en&as_sdt=0,33&scillfp=294696923450601917&oi=lle",
+      "citation_count": 4,
+      "snippet": "In this paper, we consider a wireless ad hoc network, where a source node located at the  center of the circular area with a radius R (in meters) disseminates a message to all the other"
+    },
+    {
+      "index": 20,
+      "title": "Mission-oriented miniature fixed-wing UAV swarms: A multilayered and distributed architecture",
+      "authors": [
+        "Z Liu",
+        "X Wang",
+        "L Shen",
+        "S Zhao",
+        "Y Cong"
+      ],
+      "publication_year": 2020,
+      "source": "\u2026 on Systems, Man \u2026",
+      "url": "https://ieeexplore.ieee.org/abstract/document/9265199/",
+      "pdf_link": "https://arxiv.org/pdf/1912.06285",
+      "citation_count": 111,
+      "snippet": "More specifically, in order to ensure the precision of the formations for UAV swarms and  prevent the UAVs from stalling, we design the fuzzy inference logic I as shown in Table I, where"
+    },
+    {
+      "index": 21,
+      "title": "Reliable and scalable tactical networks: A systematic literature review on routing protocols in mobile ad hoc networks (MANET)",
+      "authors": [
+        "J Nikkola"
+      ],
+      "publication_year": null,
+      "source": "NA",
+      "url": "https://www.utupub.fi/items/671b79c4-2ab4-4819-b4da-58fabf1b2415",
+      "pdf_link": "https://www.utupub.fi/bitstreams/849d0b04-2a00-4ad8-8784-4f7270fbd462/download",
+      "citation_count": 0,
+      "snippet": "Released in 2023 the paper describes papers from 2020 to 2022. The  based routing  protocols from 2003 to 2020. The authors  These UAVs can be used as relaying nodes for other"
+    },
+    {
+      "index": 22,
+      "title": "Machine Learning-Based Routing Protocol in Flying Ad Hoc Networks: A Review",
+      "authors": [
+        "M Kaur",
+        "D Prashar",
+        "L Mrsic",
+        "AA Khan"
+      ],
+      "publication_year": 2025,
+      "source": "Computers, materials & \u2026",
+      "url": "https://www.sciopen.com/article/10.32604/cmc.2025.059043",
+      "pdf_link": "https://www.sciopen.com/local/article_pdf/10.32604/cmc.2025.059043.pdf",
+      "citation_count": 14,
+      "snippet": "Drone or UAV connections can carry out intricate operations and create FANETs. It is a tiny  portion of VANET and MANET [2].  2022 follows with around 32% of publications, while 2021"
+    },
+    {
+      "index": 23,
+      "title": "A new priority aware routing protocol for efficient emergency data transmissions in MANETs",
+      "authors": [
+        "Y Ozen",
+        "GZ Ozen"
+      ],
+      "publication_year": 2024,
+      "source": "Ad hoc networks",
+      "url": "https://www.sciencedirect.com/science/article/pii/S1570870524002038",
+      "pdf_link": "https://www.sciencedirect.com/science/article/pii/S1570870524002038",
+      "citation_count": 10,
+      "snippet": "routing protocol for mobile Ad-hoc networks to be utilized in emergencies, which is based on  AODV. Mobile Ad-hoc  , smart transportation systems, unmanned aerial vehicles, and smart"
+    },
+    {
+      "index": 24,
+      "title": "Manet routing protocols' performance assessment under dynamic network conditions",
+      "authors": [
+        "IM Selim",
+        "NS Abdelrehem",
+        "WM Alayed",
+        "HM Elbadawy"
+      ],
+      "publication_year": 2025,
+      "source": "Applied Sciences",
+      "url": "https://www.mdpi.com/2076-3417/15/6/2891",
+      "pdf_link": "https://www.mdpi.com/2076-3417/15/6/2891",
+      "citation_count": 18,
+      "snippet": "MANET routing protocols  MANET routing protocols. By incorporating metrics such as  energy consumption and jitter, it offers valuable insights into selecting the most suitable protocols"
+    },
+    {
+      "index": 25,
+      "title": "Evaluation of routing protocol performance for enhanced operations of unmanned aerial vehicles (uavs)",
+      "authors": [
+        "V Gupta",
+        "DK Yadav",
+        "M Agarwal"
+      ],
+      "publication_year": 2024,
+      "source": "2024 2nd International \u2026",
+      "url": "https://ieeexplore.ieee.org/abstract/document/10532952/",
+      "pdf_link": "/scholar?output=instlink&q=info:JLoiYInp5gEJ:scholar.google.com/&hl=en&as_sdt=0,33&scillfp=11228740397544737075&oi=lle",
+      "citation_count": 7,
+      "snippet": "a complete assessment of the routing protocols' routine in UAV scenarios, considering the   of UAV nodes. This approach sheds light on the behavior of MANET routing protocols within"
+    },
+    {
+      "index": 26,
+      "title": "FANET and MANET, a support and composition relationship",
+      "authors": [
+        "CAT Romero",
+        "JH Ortiz",
+        "LCR Timan\u00e1"
+      ],
+      "publication_year": 2025,
+      "source": "\u2026 , Materials & Continua",
+      "url": "https://www.sciopen.com/article/10.32604/cmc.2025.056400",
+      "pdf_link": "https://www.sciopen.com/local/article_pdf/10.32604/cmc.2025.056400.pdf",
+      "citation_count": 4,
+      "snippet": "no other drone or additional drones to replace it  2024, ensuring the inclusion of recent and  pertinent research. Key topics focused on included the development of new routing protocols,"
+    },
+    {
+      "index": 27,
+      "title": "Performance Analysis of Routing Protocols for FANETs",
+      "authors": [
+        "A Rani",
+        "V Bhardwaj"
+      ],
+      "publication_year": 2024,
+      "source": "2024 15th International Conference on \u2026",
+      "url": "https://ieeexplore.ieee.org/abstract/document/10724067/",
+      "pdf_link": "https://www.researchgate.net/profile/Anita-Rani-17/publication/385546684_Performance_Analysis_of_Routing_Protocols_for_FANETs/links/673780dba78ba469f062afd1/Performance-Analysis-of-Routing-Protocols-for-FANETs.pdf",
+      "citation_count": 4,
+      "snippet": "alternative routing strategies may function effectively in several UAV communication   UAV-specific extension with network attributes that differ from the Mobile Ad hoc Network (MANET"
+    },
+    {
+      "index": 28,
+      "title": "Performance Evaluation of Routing Protocols and ML-based Enhancements for UAV-Assisted Post-Disaster Communication Networks",
+      "authors": [
+        "P Choudhary"
+      ],
+      "publication_year": 2024,
+      "source": "NA",
+      "url": "https://commons.erau.edu/edt/851/",
+      "pdf_link": "https://commons.erau.edu/cgi/viewcontent.cgi?article=1885&context=edt",
+      "citation_count": 1,
+      "snippet": "of Routing Protocol Performance: The research evaluates and compares the performance of  four network routing protocols  FANET node is much higher than that of VANET and MANET."
+    },
+    {
+      "index": 29,
+      "title": "Machine Learning Based Routing Approaches for Flying Ad-hoc Networks (FANETs): A Systematic Review",
+      "authors": [
+        "K Jaiswal",
+        "S Kumar",
+        "NK Rathore"
+      ],
+      "publication_year": 2026,
+      "source": "Proceedings of the National Academy of \u2026",
+      "url": "https://link.springer.com/article/10.1007/s40010-026-01038-w",
+      "pdf_link": "https://link.springer.com/article/10.1007/s40010-026-01038-w",
+      "citation_count": 0,
+      "snippet": "January 2020 and October 2025 were included in the systematic analysis. Additionally, a  small number of influential pre-2020  Furthermore, RL-based routing protocols enable UAVs to"
+    },
+    {
+      "index": 30,
+      "title": "A Novel UAV-Assisted VANET Routing Protocol for Post-Disaster Emergency Communications",
+      "authors": [
+        "Z Fan",
+        "M Zhang",
+        "Y Cao",
+        "Z Liu"
+      ],
+      "publication_year": 2025,
+      "source": "\u2026 on Network Science \u2026",
+      "url": "https://ieeexplore.ieee.org/abstract/document/11300954/",
+      "pdf_link": "https://repository.essex.ac.uk/42414/1/A_Novel_UAV_assisted_VANET_Routing_Protocol_for_Post_Disaster_Emergency_Communications%20%281%29.pdf",
+      "citation_count": 4,
+      "snippet": "IN RECENT years, large-scale natural disasters such as the 2023 Turkey-Syria earthquake,  the 2022 Pakistan floods and 2021 Haiti earthquake have exposed the severe vulnerability"
+    },
+    {
+      "index": 31,
+      "title": "An Optimized Geographic Routing Scheme in SDN-Enabled 5G UAV Networks",
+      "authors": [
+        "MEA Fekair",
+        "N Azzaoui",
+        "A Lakas"
+      ],
+      "publication_year": 2025,
+      "source": "2025 7th International \u2026",
+      "url": "https://ieeexplore.ieee.org/abstract/document/11126520/",
+      "pdf_link": "/scholar?output=instlink&q=info:tueSBR1i8ZUJ:scholar.google.com/&hl=en&as_sdt=0,33&scillfp=6849994129304138324&oi=lle",
+      "citation_count": 0,
+      "snippet": "Traditional routing protocols designed for Mobile Ad Hoc  propose GeoSDN-UAV, a novel  geographic routing protocol to  risks that drones face, represent, and mitigation,\u201d in 2024 6th"
+    },
+    {
+      "index": 32,
+      "title": "Resilient enhancements of routing protocols in MANET",
+      "authors": [
+        "M Baumgartner",
+        "J Papaj",
+        "N Kurkina",
+        "L Dobos"
+      ],
+      "publication_year": 2024,
+      "source": "Peer-to-Peer Networking \u2026",
+      "url": "https://link.springer.com/article/10.1007/s12083-024-01746-3",
+      "pdf_link": "https://link.springer.com/article/10.1007/s12083-024-01746-3",
+      "citation_count": 17,
+      "snippet": "of routing protocols without the resilient routing method implemented compared to routing  protocols with the resilient routing  the proposed resilient routing algorithm along with outlining"
+    },
+    {
+      "index": 33,
+      "title": "A review of research on routing protocols for unmanned aerial vehicle cluster self-organizing networks",
+      "authors": [
+        "X Zhou",
+        "H Lin",
+        "J Chen"
+      ],
+      "publication_year": 2025,
+      "source": "Proceedings of the 2025 4th International \u2026",
+      "url": "https://dl.acm.org/doi/abs/10.1145/3732945.3732981",
+      "pdf_link": "https://dl.acm.org/doi/full/10.1145/3732945.3732981",
+      "citation_count": 0,
+      "snippet": "IET Communications, 2023, 17(1): 73-85.  Computer Communications, 2020, 151: 437448.   \u2013 greedy perimeter stateless routing protocol for mobile ad hoc networks,\u201d Mar 2022. [56] G."
+    },
+    {
+      "index": 34,
+      "title": "A QoS-adaptive routing scheme for urban-MANETs",
+      "authors": [
+        "QV Khanh",
+        "QN Minh",
+        "DC Nguyen"
+      ],
+      "publication_year": 2025,
+      "source": "IEEE Sensors Journal",
+      "url": "https://ieeexplore.ieee.org/abstract/document/11008476/",
+      "pdf_link": "/scholar?output=instlink&q=info:Kf_hJ8Oka4gJ:scholar.google.com/&hl=en&as_sdt=0,33&scillfp=12562928541563220584&oi=lle",
+      "citation_count": 6,
+      "snippet": "[20] propose a novel routing scheme for UAVs by predicting the location of  Our routing  algorithm selects candidate routes with bottleneck  44 760\u201344 773, 2020. [26] T. Kaur and D."
+    },
+    {
+      "index": 35,
+      "title": "A study of MANET routing protocols in heterogeneous networks: a review and performance comparison",
+      "authors": [
+        "NI Sarkar",
+        "MJ Ali"
+      ],
+      "publication_year": 2025,
+      "source": "Electronics",
+      "url": "https://www.mdpi.com/2079-9292/14/5/872",
+      "pdf_link": "https://www.mdpi.com/2079-9292/14/5/872",
+      "citation_count": 21,
+      "snippet": "of four selected MANET routing protocols (AODV, OLSR, BATMAN and DYMO) in a  heterogeneous MANET setting. We consider three different types of nodes in the MANET routing"
+    },
+    {
+      "index": 36,
+      "title": "Efficient Air-ground Collaborative Routing Strategy for UAV-assisted MANETs",
+      "authors": [
+        "T Zhang",
+        "Y Zheng",
+        "M Sheng",
+        "J Li"
+      ],
+      "publication_year": 2025,
+      "source": "IEEE Transactions on \u2026",
+      "url": "https://ieeexplore.ieee.org/abstract/document/11154068/",
+      "pdf_link": "/scholar?output=instlink&q=info:DbKRWiEBEwIJ:scholar.google.com/&hl=en&as_sdt=0,33&scillfp=14741988892813320820&oi=lle",
+      "citation_count": 3,
+      "snippet": "at UAVs result in unnecessary routing hops and delays, ultimately limiting throughput. On this  basis, we propose the UAV-assisted Zone Routing Protocol (UZRP), where UAVs  by UAVs"
+    },
+    {
+      "index": 37,
+      "title": "Performance evaluation of three routing protocols for drone communication networks",
+      "authors": [
+        "G Ahmed",
+        "T Sheltami",
+        "A Mahmoud",
+        "M Imam"
+      ],
+      "publication_year": 2024,
+      "source": "Arabian Journal for Science \u2026",
+      "url": "https://link.springer.com/article/10.1007/s13369-024-08932-8",
+      "pdf_link": "https://link.springer.com/article/10.1007/s13369-024-08932-8",
+      "citation_count": 13,
+      "snippet": "effective routing protocols in MANETs. The authors explored different MANET routing protocols,   In: 2020 14th International Conference on Telecommunication Systems, Services, and"
+    },
+    {
+      "index": 38,
+      "title": "Renewable energy efficiency of unmanned aerial vehicles operating with wireless sensor networks and mobile ad hoc networks",
+      "authors": [
+        "W Ahmad",
+        "S Ahmed",
+        "A Ahmad"
+      ],
+      "publication_year": 2024,
+      "source": "2024 Second \u2026",
+      "url": "https://ieeexplore.ieee.org/abstract/document/10537447/",
+      "pdf_link": "/scholar?output=instlink&q=info:Wd3jBEce0-EJ:scholar.google.com/&hl=en&as_sdt=0,33&scillfp=7794915790207744382&oi=lle",
+      "citation_count": 5,
+      "snippet": "includes routing protocols developed for WSNs, MANETs, and the incorporation of  (2021)  examined the mobility of drones and emphasised the importance of  8, pp.56371-56378,2020."
+    },
+    {
+      "index": 39,
+      "title": "Enhancing MANET security through federated learning and multiobjective optimization: A trust-aware routing framework",
+      "authors": [
+        "SM Hassan",
+        "MM Mohamad",
+        "FB Muchtar"
+      ],
+      "publication_year": 2024,
+      "source": "IEEE \u2026",
+      "url": "https://ieeexplore.ieee.org/abstract/document/10766497/",
+      "pdf_link": "https://ieeexplore.ieee.org/iel8/6287639/6514899/10766497.pdf",
+      "citation_count": 34,
+      "snippet": "machine learning and optimization techniques in MANET routing protocols, paving the way  for  mesh networking protocols with ML models, implemented via FL for UAV networks. Their"
+    },
+    {
+      "index": 40,
+      "title": "A Digital Twin-Aided Machine Learning Framework for Responsive Routing in Highly Dynamic MANETs",
+      "authors": [
+        "S Rani",
+        "J Singh",
+        "S Devi",
+        "M Kumar"
+      ],
+      "publication_year": 2025,
+      "source": "2025 IEEE 7th International \u2026",
+      "url": "https://ieeexplore.ieee.org/abstract/document/11325547/",
+      "pdf_link": "/scholar?output=instlink&q=info:v_9oLyk1ej4J:scholar.google.com/&hl=en&as_sdt=0,33&scillfp=7721699187837395468&oi=lle",
+      "citation_count": 0,
+      "snippet": "drones worked as network nodes. Especially in high mobility cases as comparisons to previous  standard protocols  Comprehensive analysis of MANET routing protocols and quality of"
+    },
+    {
+      "index": 41,
+      "title": "Secure UAV-aided mobile edge computing for IoT: A review",
+      "authors": [
+        "ET Michailidis",
+        "K Maliatsos",
+        "DN Skoutas"
+      ],
+      "publication_year": 2022,
+      "source": "IEEE \u2026",
+      "url": "https://ieeexplore.ieee.org/abstract/document/9858158/",
+      "pdf_link": "https://ieeexplore.ieee.org/iel7/6287639/9668973/09858158.pdf",
+      "citation_count": 81,
+      "snippet": "Mobile Edge Computing (MEC) servers has been suggested. On the other hand, prospective  IoT networks are expected to include Unmanned Aerial Vehicles  Vehicular Ad hoc Network"
+    },
+    {
+      "index": 42,
+      "title": "Adaptive routing design for flying ad hoc networks: A joint prediction approach",
+      "authors": [
+        "M Zhang",
+        "H Cheng",
+        "P Yang",
+        "C Dong"
+      ],
+      "publication_year": 2023,
+      "source": "IEEE Transactions \u2026",
+      "url": "https://ieeexplore.ieee.org/abstract/document/10255303/",
+      "pdf_link": "/scholar?output=instlink&q=info:JHmtjryw530J:scholar.google.com/&hl=en&as_sdt=0,33&scillfp=16601130512762822413&oi=lle",
+      "citation_count": 28,
+      "snippet": "to using a single Unmanned Aerial Vehicle (UAV). Nevertheless, the dynamic and mobile  nature of  Since 2021, he has been with Beihang University, where he is currently an Associate"
+    },
+    {
+      "index": 43,
+      "title": "Enhancing Vehicular Ad Hoc Networks",
+      "authors": [
+        "MU Munir\u00b9",
+        "Z Khan",
+        "N Khan"
+      ],
+      "publication_year": 2025,
+      "source": "\u2026 on Smart Systems and \u2026",
+      "url": "https://books.google.com/books?hl=en&lr=&id=prJ5EQAAQBAJ&oi=fnd&pg=PA370&dq=unmanned+aerial+vehicle+mobile+ad+hoc+network+since:2021&ots=5S7G9o8ZLp&sig=oUndXqlo2D0r7qgpn_d0UgeUopA",
+      "pdf_link": "",
+      "citation_count": 0,
+      "snippet": "VANETs represent ad-hoc networks in which information can be communication with vehicles.   Deployment Since 2021, Toyota has equipped Lexus models sold in the US with V2V and"
+    },
+    {
+      "index": 44,
+      "title": "Wireless communication for low-altitude economy with UAV swarm enabled two-level movable antenna system",
+      "authors": [
+        "H Lu",
+        "Y Zeng",
+        "S Ma",
+        "B Li",
+        "S Jin"
+      ],
+      "publication_year": 2026,
+      "source": "\u2026 Transactions on Wireless \u2026",
+      "url": "https://ieeexplore.ieee.org/abstract/document/11512076/",
+      "pdf_link": "https://arxiv.org/pdf/2505.22286",
+      "citation_count": 14,
+      "snippet": "Unmanned aerial vehicle (UAV) is regarded as a key enabling platform for low-altitude  economy, due to its advantages such as three-dimensional (3D) maneuverability,"
+    },
+    {
+      "index": 45,
+      "title": "Secure Communication Protocols and AI-Based Anomaly Detection in UAV-GCS",
+      "authors": [
+        "D Papathanasiou",
+        "E Zacharakis",
+        "J Liaperdos"
+      ],
+      "publication_year": 2026,
+      "source": "Applied Sciences",
+      "url": "https://www.mdpi.com/2076-3417/16/7/3339",
+      "pdf_link": "https://www.mdpi.com/2076-3417/16/7/3339",
+      "citation_count": 0,
+      "snippet": "Unmanned Aerial Vehicles (UAVs) are increasingly  , specifically LSTM patterns, since  2021. Nonetheless, this shift is  drone networks (sometimes called Flying Ad Hoc Networks, or"
+    },
+    {
+      "index": 46,
+      "title": "Artificial Intelligence for Unmanned Aerial Vehicles: Sensing, Communication, and Computing",
+      "authors": [
+        "S Hu",
+        "X Yuan",
+        "K Li",
+        "W Ni",
+        "X Wang"
+      ],
+      "publication_year": 2026,
+      "source": "NA",
+      "url": "https://books.google.com/books?hl=en&lr=&id=I8ipEQAAQBAJ&oi=fnd&pg=PR11&dq=unmanned+aerial+vehicle+mobile+ad+hoc+network+since:2021&ots=ou8F4neJGg&sig=AMLwcLjC9momEqtCiuYnwEtW-G8",
+      "pdf_link": "",
+      "citation_count": 0,
+      "snippet": "interests include machine learning and convex optimization, and their applications to  autonomous aerial vehicle (AAV) networks, wireless communication, and intelligent systems."
+    },
+    {
+      "index": 47,
+      "title": "UAV-Enabled Wireless-Powered Underground Communication Networks: A Novel Time Allocation Approach",
+      "authors": [
+        "K Lin",
+        "Y Mao",
+        "OLA L\u00f3pez"
+      ],
+      "publication_year": 2025,
+      "source": "\u2026 and Networking",
+      "url": "https://ieeexplore.ieee.org/abstract/document/11300317/",
+      "pdf_link": "https://arxiv.org/pdf/2507.14627",
+      "citation_count": 0,
+      "snippet": "Instead, unmanned aerial vehicles (UAVs) may be a suitable  terrestrial wireless powered  communication networks (WPCNs) [15], and [16] that UAV-enabled WET systems can efficiently"
+    },
+    {
+      "index": 48,
+      "title": "Energy-Conscious Mobility Solutions for Drone based Internet Access",
+      "authors": [
+        "M Murugesan",
+        "M Al-Farouni",
+        "P Manojkumar"
+      ],
+      "publication_year": 2025,
+      "source": "Journal of Internet \u2026",
+      "url": "https://jisis.org/wp-content/uploads/2025/11/2025.I3.044.pdf",
+      "pdf_link": "https://jisis.org/wp-content/uploads/2025/11/2025.I3.044.pdf",
+      "citation_count": 1,
+      "snippet": "of an unmanned aerial vehicle network in maintaining vital  Sensor Networks and Mobile  Ad Hoc Networks. In 2024  Since 2021, he has secured about \u20b974 lakhs in government"
+    },
+    {
+      "index": 49,
+      "title": "Unified 3D networks: Architecture, challenges, recent results, and future opportunities",
+      "authors": [
+        "M Rihan",
+        "D W\u00fcbben",
+        "A Bhattacharya"
+      ],
+      "publication_year": 2024,
+      "source": "IEEE open journal of \u2026",
+      "url": "https://ieeexplore.ieee.org/abstract/document/10770553/",
+      "pdf_link": "https://ieeexplore.ieee.org/iel8/8782711/8889399/10770553.pdf",
+      "citation_count": 19,
+      "snippet": "networks, including terrestrial, satellite, and aerial networks (encompassing unmanned aerial  vehicles ( While each network possesses distinct strengths and limitations, the emergence"
+    },
+    {
+      "index": 50,
+      "title": "Energy-efficient UAV relaying robust resource allocation in uncertain adversarial networks",
+      "authors": [
+        "S Ahmed",
+        "MZ Chowdhury",
+        "SR Sabuj",
+        "MI Alam"
+      ],
+      "publication_year": 2021,
+      "source": "IEEE \u2026",
+      "url": "https://ieeexplore.ieee.org/abstract/document/9402734/",
+      "pdf_link": "https://ieeexplore.ieee.org/iel7/6287639/6514899/09402734.pdf",
+      "citation_count": 16,
+      "snippet": "-efficient (EE) mobile relaying networks mounted on the unmanned aerial vehicle (UAV)   We derive EE UAV relay-user maximization problem in the adversarial wireless networks at"
+    },
+    {
+      "index": 51,
+      "title": "AAV Virtual Antenna Array Deployment for Uplink Interference Mitigation in Data Collection Networks",
+      "authors": [
+        "H Li",
+        "H Kang",
+        "G Sun",
+        "J Li",
+        "J Wang"
+      ],
+      "publication_year": 2024,
+      "source": "IEEE Internet of \u2026",
+      "url": "https://ieeexplore.ieee.org/abstract/document/10787239/",
+      "pdf_link": "https://arxiv.org/pdf/2412.06456",
+      "citation_count": 3,
+      "snippet": "Unmanned aerial vehicles (UAVs) have gained considerable attention as a   aerial wireless networks and communications. However, the line-of-sight dominance in air-to-"
+    },
+    {
+      "index": 52,
+      "title": "Fluid Aerial Networks: UAV Rotation for Inter-Cell Interference Mitigation",
+      "authors": [
+        "E Zhou",
+        "Y Xiao",
+        "Z Liu",
+        "SA Tegos"
+      ],
+      "publication_year": 2026,
+      "source": "IEEE Transactions \u2026",
+      "url": "https://ieeexplore.ieee.org/abstract/document/11466459/",
+      "pdf_link": "https://arxiv.org/pdf/2507.01289",
+      "citation_count": 0,
+      "snippet": "of aerial infrastructure, unmanned aerial vehicles (UAVs) that function as aerial base stations  (ABSs) extend terrestrial network  extension of conventional mobile ad hoc networks. This"
+    },
+    {
+      "index": 53,
+      "title": "Distributed TDMA scheduling for autonomous aerial swarms: A self-organizing approach",
+      "authors": [
+        "EE Aydin",
+        "A Akcasoy",
+        "F Cakir",
+        "BS Cansiz"
+      ],
+      "publication_year": 2024,
+      "source": "IEEE \u2026",
+      "url": "https://ieeexplore.ieee.org/abstract/document/10479053/",
+      "pdf_link": "https://ieeexplore.ieee.org/iel7/6287639/6514899/10479053.pdf",
+      "citation_count": 4,
+      "snippet": "in the field of unmanned aerial vehicles. The design of UAVs  degrade system performance  in ad hoc networks, we examine  -free reinforcement learning in wireless ad hoc networks,\u2019\u2019"
+    },
+    {
+      "index": 54,
+      "title": "A Channel Adaptive Encoding and Decoding Method for Unmanned Aerial Vehicle Image Transmission",
+      "authors": [
+        "Z Zhang",
+        "S Zhang",
+        "Q Qiu",
+        "B Li"
+      ],
+      "publication_year": 2026,
+      "source": "IEEE Internet of Things \u2026",
+      "url": "https://ieeexplore.ieee.org/abstract/document/11489044/",
+      "pdf_link": "/scholar?output=instlink&q=info:UCc7dEyKTPcJ:scholar.google.com/&hl=en&as_sdt=0,33&scillfp=11141560510592696547&oi=lle",
+      "citation_count": 0,
+      "snippet": "and decoding method tailored for unmanned aerial vehicle image transmission. This method   for uav ad hoc networks,\u201d IEEE Transactions on Vehicular Technology, vol. 74, no. 7, pp."
+    },
+    {
+      "index": 55,
+      "title": "Secure command and control for internet of battle things using novel network paradigms",
+      "authors": [
+        "JM Stocchero",
+        "CA Silva"
+      ],
+      "publication_year": 2022,
+      "source": "IEEE \u2026",
+      "url": "https://ieeexplore.ieee.org/abstract/document/9846952/",
+      "pdf_link": "/scholar?output=instlink&q=info:VH_v7-Udfl0J:scholar.google.com/&hl=en&as_sdt=0,33&scillfp=8678304790844387788&oi=lle",
+      "citation_count": 29,
+      "snippet": "wireless sensors deployed in the field, wearable devices, armored combat vehicles and small  Unmanned Aerial Vehicles  for SDN-enabled military mobile ad hoc networks. The authors"
+    },
+    {
+      "index": 56,
+      "title": "Cognitive Machine Intelligence: Applications, Challenges, and Related Technologies",
+      "authors": [
+        "IU Khan",
+        "S El Hajjami",
+        "M Ouaissa",
+        "S Belaqziz"
+      ],
+      "publication_year": 2024,
+      "source": "NA",
+      "url": "https://books.google.com/books?hl=en&lr=&id=aaAUEQAAQBAJ&oi=fnd&pg=PP1&dq=unmanned+aerial+vehicle+mobile+ad+hoc+network+since:2021&ots=XOIsn8p598&sig=5Y8liM_OHfGh3UR24Fy6JrgcS3s",
+      "pdf_link": "",
+      "citation_count": 3,
+      "snippet": ", unmanned aerial vehicles, cybersecurity, and neural  , IoT, Mobile Ad Hoc Networks (MANETS),  Flying Ad Hoc Networks,  with wireless communication networks, IoT, ad hoc networks,"
+    },
+    {
+      "index": 57,
+      "title": "Spatially Aware Covert and Jam-Resilience Terahertz Unmanned Aerial Vehicle Communications",
+      "authors": [
+        "W Gao",
+        "C Han",
+        "Z Chen",
+        "H Zhu"
+      ],
+      "publication_year": 2026,
+      "source": "IEEE Journal on Selected \u2026",
+      "url": "https://ieeexplore.ieee.org/abstract/document/11424568/",
+      "pdf_link": "/scholar?output=instlink&q=info:vK516_IELakJ:scholar.google.com/&hl=en&as_sdt=0,33&scillfp=7033176609047185855&oi=lle",
+      "citation_count": 0,
+      "snippet": "Unmanned aerial vehicles (UAVs) are expected to play a key role in future space-air-ground  integrated networks ( By serving as aerial relays or access points, UAVs can effectively"
+    },
+    {
+      "index": 58,
+      "title": "Counter UAV swarms: Challenges, considerations, and future directions in UAV warfare",
+      "authors": [
+        "M Sherman",
+        "S Shao",
+        "X Sun"
+      ],
+      "publication_year": 2024,
+      "source": "IEEE Wireless \u2026",
+      "url": "https://ieeexplore.ieee.org/abstract/document/10648596/",
+      "pdf_link": "https://par.nsf.gov/servlets/purl/10540521",
+      "citation_count": 38,
+      "snippet": "Modern advances in unmanned aerial vehicle (UAV)  However, the increased dependency  on wireless commu (TSA), since 2021, has reported nearly 2,000 drone sightings near US"
+    },
+    {
+      "index": 59,
+      "title": "Digital forensics challenges and readiness for 6G Internet of Things (IoT) networks",
+      "authors": [
+        "AO Akinbi"
+      ],
+      "publication_year": 2023,
+      "source": "Wiley Interdisciplinary Reviews: Forensic Science",
+      "url": "https://wires.onlinelibrary.wiley.com/doi/abs/10.1002/wfs2.1496",
+      "pdf_link": "https://wires.onlinelibrary.wiley.com/doi/full/10.1002/wfs2.1496",
+      "citation_count": 28,
+      "snippet": "XR), autonomous systems, vehicular ad hoc networks (VANETs) ; the number of articles  published since 2021 is the largest  unmanned aerial vehicles (UAVs) and aerial satellites for 6G"
+    },
+    {
+      "index": 60,
+      "title": "Multi-Objective Optimization of Edge Server Placement in UAV Ad Hoc Networks",
+      "authors": [
+        "X Xie",
+        "J Xu",
+        "Q Chen",
+        "S Gong"
+      ],
+      "publication_year": 2025,
+      "source": "IEEE Internet of Things \u2026",
+      "url": "https://ieeexplore.ieee.org/abstract/document/11146623/",
+      "pdf_link": "/scholar?output=instlink&q=info:QUn9eV4qcnAJ:scholar.google.com/&hl=en&as_sdt=0,33&scillfp=14930891425123205220&oi=lle",
+      "citation_count": 9,
+      "snippet": "Chu, and WE Zhang, \u201cContext-aware and adaptive QoS prediction for mobile edge  Since  2022, he has been a Lecturer with the School of Information and Communication Engineering,"
+    },
+    {
+      "index": 61,
+      "title": "A Comprehensive Survey on Energy-Efficient Intelligent Reflecting Surfaces-Assisted Unmanned Aerial Vehicle-Based Communications",
+      "authors": [
+        "MS Lavanya",
+        "R Kishore",
+        "S Gurugopinath"
+      ],
+      "publication_year": 2025,
+      "source": "IEEE Sensors \u2026",
+      "url": "https://ieeexplore.ieee.org/abstract/document/11278464/",
+      "pdf_link": "https://ieeexplore.ieee.org/iel8/10347229/10787061/11278464.pdf",
+      "citation_count": 0,
+      "snippet": "for energyefficient IRS-UAV networks, focusing on AI/MLdriven resource management,  privacy and security challenges, and the role of IRS-UAV integration in enabling scalable and"
+    },
+    {
+      "index": 62,
+      "title": "Real-time immersive aerial video streaming: A comprehensive survey, benchmarking, and open challenges",
+      "authors": [
+        "MK Sharma",
+        "I Farhat",
+        "CF Liu",
+        "N Sehad"
+      ],
+      "publication_year": 2024,
+      "source": "IEEE Open Journal \u2026",
+      "url": "https://ieeexplore.ieee.org/abstract/document/10668820/",
+      "pdf_link": "https://ieeexplore.ieee.org/iel8/8782661/8901158/10668820.pdf",
+      "citation_count": 19,
+      "snippet": "on optimizing video streaming over UAV-to-ground wireless  and mmWave-UAV ad hoc  networks were discussed. The  tracking [130], the QoS relies on the interplay between control"
+    },
+    {
+      "index": 63,
+      "title": "Adaptive uplink scheduling and UAV association in UAV-assisted OFDMA cellular networks: A game-theoretical approach",
+      "authors": [
+        "T Wang",
+        "C You"
+      ],
+      "publication_year": 2024,
+      "source": "IEEE Access",
+      "url": "https://ieeexplore.ieee.org/abstract/document/10517594/",
+      "pdf_link": "https://ieeexplore.ieee.org/iel7/6287639/6514899/10517594.pdf",
+      "citation_count": 16,
+      "snippet": "j, and the subcarrier n is assigned without loss of generosity, then in order to meet the QoS   -deployment strategy for channel-capacity optimization for 3-D UAV-aided ad hoc networks,\u2019"
+    },
+    {
+      "index": 64,
+      "title": "Advancing uav communications: A comprehensive survey of cutting-edge machine learning techniques",
+      "authors": [
+        "C Sun",
+        "G Fontanesi",
+        "B Canberk"
+      ],
+      "publication_year": 2024,
+      "source": "IEEE Open Journal \u2026",
+      "url": "https://ieeexplore.ieee.org/abstract/document/10531095/",
+      "pdf_link": "https://ieeexplore.ieee.org/iel7/8782711/8889399/10531095.pdf",
+      "citation_count": 76,
+      "snippet": "In real-world applications, the user\u2019s location is likely to change over time, especially in the  case of future access to self-driving cars or UAV UEs, providing the required QoS is unstable"
+    },
+    {
+      "index": 65,
+      "title": "Multi-agent Reinforcement Learning Based Delay and Power Optimization for UAV-WMN Substation Inspection",
+      "authors": [
+        "Q Tang",
+        "W Sun",
+        "Z Liu",
+        "Y Xiao",
+        "Q Li"
+      ],
+      "publication_year": 2025,
+      "source": "\u2026 on Network and \u2026",
+      "url": "https://ieeexplore.ieee.org/abstract/document/10955740/",
+      "pdf_link": "/scholar?output=instlink&q=info:1z16s8fNWaAJ:scholar.google.com/&hl=en&as_sdt=0,33&scillfp=14094455141363144821&oi=lle",
+      "citation_count": 6,
+      "snippet": "UAV-based aerial P2P backbone network using DQN for path planning and energy  management, improving data consistency and lookup success in dynamic vehicular ad hoc networks"
+    },
+    {
+      "index": 66,
+      "title": "Blockchain-empowered resource allocation in HAPS-assisted IoV digital twin networks: A federated DRL approach",
+      "authors": [
+        "HN Abishu",
+        "AM Seid",
+        "RH Jhaveri"
+      ],
+      "publication_year": 2024,
+      "source": "IEEE Transactions \u2026",
+      "url": "https://ieeexplore.ieee.org/abstract/document/10742925/",
+      "pdf_link": "/scholar?output=instlink&q=info:viMYfpW8sDEJ:scholar.google.com/&hl=en&as_sdt=0,33&scillfp=6324282226429178173&oi=lle",
+      "citation_count": 20,
+      "snippet": "to satisfy the high-quality of service (QoS) requirements of  of the DT model in UAV-enabled  IoT networks, considering  , and other reputed universities since 2022. He is an editorial"
+    },
+    {
+      "index": 67,
+      "title": "User pairing and power allocation for UAV-NOMA systems based on multi-armed bandit framework",
+      "authors": [
+        "BKS Lima",
+        "R Dinis",
+        "DB Da Costa"
+      ],
+      "publication_year": 2022,
+      "source": "IEEE Transactions \u2026",
+      "url": "https://ieeexplore.ieee.org/abstract/document/9860079/",
+      "pdf_link": "/scholar?output=instlink&q=info:FEshyWdMH5YJ:scholar.google.com/&hl=en&as_sdt=0,33&scillfp=2787724459792287847&oi=lle",
+      "citation_count": 23,
+      "snippet": "power coefficient allocation for unmanned aerial vehicle (UAV) systems which employ  non- Aiming to maximize achievable sum rate and ensure the users\u2019 Quality-of-Service (QoS)"
+    },
+    {
+      "index": 68,
+      "title": "Joint user pairing and resource allocation in air-to-ground communication-caching-charging integrated network based on NOMA",
+      "authors": [
+        "Y Yin",
+        "G Gui",
+        "M Liu",
+        "H Gacanin",
+        "H Sari"
+      ],
+      "publication_year": 2023,
+      "source": "IEEE Transactions on \u2026",
+      "url": "https://ieeexplore.ieee.org/abstract/document/10169083/",
+      "pdf_link": "/scholar?output=instlink&q=info:oz3OFCl7E3EJ:scholar.google.com/&hl=en&as_sdt=0,33&scillfp=6889872845402734656&oi=lle",
+      "citation_count": 36,
+      "snippet": "As a significant participant of A2G network, unmanned aerial vehicle (UAV), which harvests   a resource allocation strategy to enhance the quality of service (QoS) of ground users. The"
+    },
+    {
+      "index": 69,
+      "title": "Minimizing maximum latency of task offloading for multi-UAV-assisted maritime search and rescue",
+      "authors": [
+        "S Qi",
+        "B Lin",
+        "Y Deng",
+        "X Chen"
+      ],
+      "publication_year": 2024,
+      "source": "IEEE transactions on \u2026",
+      "url": "https://ieeexplore.ieee.org/abstract/document/10490255/",
+      "pdf_link": "https://arxiv.org/pdf/2511.00844",
+      "citation_count": 62,
+      "snippet": "as flying BSs for real-time recovery and maintenance of network connectivity in disaster  and post-disaster scenarios. They proposed a user clustering model with Quality-of-Service (QoS"
+    },
+    {
+      "index": 70,
+      "title": "Multi-Agent Deep Reinforcement Learning for Joint Movement and User Association of UAV-BS Emergency Indoor User Service",
+      "authors": [
+        "TY Kim",
+        "J Park",
+        "J Kang",
+        "J Lee",
+        "S Jung"
+      ],
+      "publication_year": 2025,
+      "source": "IEEE Internet of Things \u2026",
+      "url": "https://ieeexplore.ieee.org/abstract/document/11227139/",
+      "pdf_link": "/scholar?output=instlink&q=info:-hVweRgZ3akJ:scholar.google.com/&hl=en&as_sdt=0,33&scillfp=811199918666746721&oi=lle",
+      "citation_count": 0,
+      "snippet": "networks (TNs) are unavailable due to natural disasters or warfare [4]. The use of UAV-BSs   to improved spectral efficiency and quality of service (QoS) in highly dynamic environments [5"
+    },
+    {
+      "index": 71,
+      "title": "Aerial intelligent reflecting surfaces in MIMO-NOMA networks: Fundamentals, potential achievements, and challenges",
+      "authors": [
+        "BKS Lima",
+        "AS De Sena",
+        "R Dinis"
+      ],
+      "publication_year": 2022,
+      "source": "IEEE Open Journal \u2026",
+      "url": "https://ieeexplore.ieee.org/abstract/document/9794781/",
+      "pdf_link": "https://ieeexplore.ieee.org/iel7/8782661/9702748/09794781.pdf",
+      "citation_count": 37,
+      "snippet": "Non-orthogonal multiple access (NOMA) technique and unmanned aerial  vehicles (UAVs) have been recognized as promising technologies for enabling the stringent"
+    },
+    {
+      "index": 72,
+      "title": "Integrated sensing, navigation, and communication for secure UAV networks with a mobile eavesdropper",
+      "authors": [
+        "Z Wei",
+        "F Liu",
+        "C Liu",
+        "Z Yang",
+        "DWK Ng"
+      ],
+      "publication_year": 2023,
+      "source": "IEEE Transactions on \u2026",
+      "url": "https://ieeexplore.ieee.org/abstract/document/10345500/",
+      "pdf_link": "https://arxiv.org/pdf/2305.12842",
+      "citation_count": 62,
+      "snippet": "prediction error and the quality-of-service (QoS) requirements of secure communication. To  account for the E-UAV state sensing uncertainty and the resulting wiretap channel prediction"
+    },
+    {
+      "index": 73,
+      "title": "Research on UAV access deployment algorithm based on improved virtual force model.",
+      "authors": [
+        "S Zhang",
+        "D Wu",
+        "L Jiang",
+        "X Jin"
+      ],
+      "publication_year": 2022,
+      "source": "KSII Transactions on \u2026",
+      "url": "https://openurl.ebsco.com/fulltext/gcd:159127296?sid=ebsco:plink:crawler-gcd&id=ebsco:gcd:159127296&crl=f&jrnl=19767277",
+      "pdf_link": "/scholar?output=instlink&q=info:Uy41_QaHwZAJ:scholar.google.com/&hl=en&as_sdt=0,33&scillfp=10349200798426466554&oi=lle",
+      "citation_count": 7,
+      "snippet": "It indicates that the transmission rate and quality of service (QoS) of UEk can be ensured by   Since 2022, he has been an associate professor with Hangzhou Dianzi University, China."
+    },
+    {
+      "index": 74,
+      "title": "Performance evaluation of UAV-aided radio frequency-UAC relaying systems",
+      "authors": [
+        "J Xiang",
+        "L Yang",
+        "K Guo",
+        "N Zlatanov"
+      ],
+      "publication_year": 2024,
+      "source": "IEEE Internet of Things \u2026",
+      "url": "https://ieeexplore.ieee.org/abstract/document/10499864/",
+      "pdf_link": "/scholar?output=instlink&q=info:-aiVhQ9ZqysJ:scholar.google.com/&hl=en&as_sdt=0,33&scillfp=2406215567605335289&oi=lle",
+      "citation_count": 15,
+      "snippet": "unmanned aerial vehicle (UAV)-aided mixed radio frequency (RF)/underwater acoustic  communication (MRFUAC) transmission system, where the UAV  In particular, the UAV-relay RF"
+    },
+    {
+      "index": 75,
+      "title": "Digital twin-driven trust management in open ran-based spatial crowdsourcing drone services",
+      "authors": [
+        "J Akram",
+        "A Anaissi",
+        "RS Rathore"
+      ],
+      "publication_year": 2024,
+      "source": "\u2026 and Networking",
+      "url": "https://ieeexplore.ieee.org/abstract/document/10535995/",
+      "pdf_link": "/scholar?output=instlink&q=info:dZbJ92yXOLAJ:scholar.google.com/&hl=en&as_sdt=0,33&scillfp=2490697124771697581&oi=lle",
+      "citation_count": 43,
+      "snippet": "and Quality of Service (QoS) [8]\u2013[10]. Within this framework,  for digital twins in vehicular  ad hoc networks,\u201d IEEE Journal  , and other reputed universities since 2022. He is an editorial"
+    },
+    {
+      "index": 76,
+      "title": "Network optimization aspects of autonomous vehicles: Challenges and future directions",
+      "authors": [
+        "R Krecht",
+        "T Budai",
+        "E Horv\u00e1th",
+        "\u00c1 Kov\u00e1cs",
+        "N Mark\u00f3"
+      ],
+      "publication_year": 2023,
+      "source": "\u2026 Network",
+      "url": "https://ieeexplore.ieee.org/abstract/document/10293243/",
+      "pdf_link": "/scholar?output=instlink&q=info:2a8XSNiN0EkJ:scholar.google.com/&hl=en&as_sdt=0,33&scillfp=16303389027974574053&oi=lle",
+      "citation_count": 3,
+      "snippet": "network technologies with different QoS (Quality of Service)  The aim of this case study was  to demonstrate how UAVs could  Since 2022, he is also working as chief of technology at the"
+    },
+    {
+      "index": 77,
+      "title": "A survey on UAV applications in smart city management: Challenges, advances, and opportunities",
+      "authors": [
+        "H Xu",
+        "L Wang",
+        "W Han",
+        "Y Yang",
+        "J Li"
+      ],
+      "publication_year": 2023,
+      "source": "IEEE Journal of \u2026",
+      "url": "https://ieeexplore.ieee.org/abstract/document/10256085/",
+      "pdf_link": "https://ieeexplore.ieee.org/iel7/4609443/4609444/10256085.pdf",
+      "citation_count": 76,
+      "snippet": "UAV urban management system as an example to provide an introduction on how to integrate  advanced technologies such as UAV and  The research in this article shows that UAV"
+    },
+    {
+      "index": 78,
+      "title": "NeSySwarm-IDS: End-to-End Differentiable Neuro-Symbolic Logic for Privacy-Preserving Intrusion Detection in UAV Swarms",
+      "authors": [
+        "G Yang",
+        "L Ni",
+        "T Xia",
+        "Q Shi",
+        "J Li"
+      ],
+      "publication_year": 2026,
+      "source": "Applied Sciences",
+      "url": "https://www.mdpi.com/2076-3417/16/7/3204",
+      "pdf_link": "https://www.mdpi.com/2076-3417/16/7/3204",
+      "citation_count": 0,
+      "snippet": "via Mobile Ad Hoc Networks (MANETs), they become susceptible  2), has seen exponential  growth since 2020. It aims to create hybrid  Aerial Layer (V2V Communication): Drones form a"
+    },
+    {
+      "index": 79,
+      "title": "Determination of subscribers coordinates using flying network for emergencies",
+      "authors": [
+        "TD Dinh",
+        "V Vishnevsky",
+        "DT Le"
+      ],
+      "publication_year": 2021,
+      "source": "\u2026 Communication \u2026",
+      "url": "https://ieeexplore.ieee.org/abstract/document/9370476/",
+      "pdf_link": "/scholar?output=instlink&q=info:aNjk3IULJKUJ:scholar.google.com/&hl=en&as_sdt=0,33&scillfp=16752112912525020625&oi=lle",
+      "citation_count": 8,
+      "snippet": "protocol for communication between UAVs and UAV-swarms.  ) and Mobile Adhoc Network  (MANET). The development of an  Since 2020 he has been the Head of department \u201cSoftware"
+    },
+    {
+      "index": 80,
+      "title": "Robust Radio Frequency Fingerprinting with Signal Denoising and Stacked Multivariate Ensemble Learning for Secure Wireless Communications",
+      "authors": [
+        "SUA Shah",
+        "MU Zahid",
+        "SAH Shah",
+        "SU Rehman"
+      ],
+      "publication_year": 2025,
+      "source": "IEEE \u2026",
+      "url": "https://ieeexplore.ieee.org/abstract/document/11034694/",
+      "pdf_link": "https://ieeexplore.ieee.org/iel8/6287639/6514899/11034694.pdf",
+      "citation_count": 1,
+      "snippet": "with unconventional attacks and swarm threats. To mitigate  , radar systems, MANETs, FANETs,  and drones, offering a scalable  Since 2020, he has been associated with a public sector"
+    },
+    {
+      "index": 81,
+      "title": "R\u00e9seaux Intelligents Adaptatifs: optimisations et pr\u00e9dictions dans les MANETs",
+      "authors": [
+        "P Larrenie"
+      ],
+      "publication_year": 2024,
+      "source": "NA",
+      "url": "https://theses.hal.science/tel-05351543/",
+      "pdf_link": "https://theses.hal.science/tel-05351543/document",
+      "citation_count": 0,
+      "snippet": "drone swarms, autonomous cars, Internet Of Things (IoT), rescue, or military radio-communication  International Telecommunication Union (ITU) since 2020 for the prediction of latency"
+    },
+    {
+      "index": 82,
+      "title": "Future communication systems using artificial intelligence, internet of things and data science",
+      "authors": [
+        "I Ullah",
+        "IU Khan",
+        "M Ouaissa",
+        "M Ouaissa",
+        "S El Hajjami"
+      ],
+      "publication_year": 2024,
+      "source": "NA",
+      "url": "https://books.google.com/books?hl=en&lr=&id=k6QBEQAAQBAJ&oi=fnd&pg=PT9&dq=drone+swarm+MANET+communication+since:2020&ots=EpHvD-nuwZ&sig=kiEefKbDhxj5ZKvOMhsE7cgik6w",
+      "pdf_link": "",
+      "citation_count": 56,
+      "snippet": "She is serving as a reviewer for international journals and conferences including IEEE  Access, Wireless Communications and Mobile Computing. Since 2020, she has been a member"
+    },
+    {
+      "index": 83,
+      "title": "Contributions to energy-aware demand-response systems using SDN and NFV for fog computing",
+      "authors": [
+        "CJ Tipantu\u00f1a Tenelema"
+      ],
+      "publication_year": 2022,
+      "source": "NA",
+      "url": "https://upcommons.upc.edu/entities/publication/3e899c0b-5913-475b-9db5-8233df995424",
+      "pdf_link": "https://upcommons.upc.edu/bitstreams/bbc66637-c041-4242-a0c0-64dc4e59bfc4/download",
+      "citation_count": 1,
+      "snippet": "provided by emerging communications such as the 5G systems, this thesis proposes a long-   in the fascinating area of communication systems enabled by unmanned aerial vehicles."
+    },
+    {
+      "index": 84,
+      "title": "Spatial Optimization of the Multi-Sensor Mesh Network Problem for Smart City",
+      "authors": [
+        "\ubc15\uc138\uc9c4"
+      ],
+      "publication_year": 2024,
+      "source": "NA",
+      "url": "https://s-space.snu.ac.kr/handle/10371/215616",
+      "pdf_link": "https://s-space.snu.ac.kr/bitstream/10371/215616/1/000000185322.pdf",
+      "citation_count": 0,
+      "snippet": "realize smart cities by providing guidelines for the efficient use  Since 2021, the city has  established LoRa networks and  , electric vehicle charging stations, drones, and city information"
+    },
+    {
+      "index": 85,
+      "title": "Frsicl: Llm-enabled in-context learning flight resource allocation for fresh data collection in uav-assisted wildfire monitoring",
+      "authors": [
+        "Y Emami",
+        "H Zhou",
+        "MG Gaitan",
+        "K Li"
+      ],
+      "publication_year": 2026,
+      "source": "IEEE Internet of Things \u2026",
+      "url": "https://ieeexplore.ieee.org/abstract/document/11399950/",
+      "pdf_link": "https://arxiv.org/pdf/2507.10134",
+      "citation_count": 7,
+      "snippet": "UAV-Assisted Wildfire Monitoring (UAWM) systems, jointly optimizing the data collection  schedule and UAV  the data collection schedule and UAV velocity along the trajectory in real"
+    },
+    {
+      "index": 86,
+      "title": "Autonomous detection and deterrence of pigeons on buildings by drones",
+      "authors": [
+        "F Schiano",
+        "D Natter",
+        "D Zambrano",
+        "D Floreano"
+      ],
+      "publication_year": 2021,
+      "source": "IEEE Access",
+      "url": "https://ieeexplore.ieee.org/abstract/document/9656717/",
+      "pdf_link": "https://ieeexplore.ieee.org/iel7/6287639/9668973/09656717.pdf",
+      "citation_count": 27,
+      "snippet": "and protocols are exempt from review board approval.  on building roofs using a drone.  The presence and position of  as the without drone experiment and the latter as the with drone"
+    },
+    {
+      "index": 87,
+      "title": "Distributed Edge Cloud Proposal Based on VNF/SDN Environment",
+      "authors": [
+        "CSM Babou",
+        "Y Owada",
+        "M Inoue",
+        "K Takizawa"
+      ],
+      "publication_year": 2024,
+      "source": "IEEE Access",
+      "url": "https://ieeexplore.ieee.org/abstract/document/10664513/",
+      "pdf_link": "https://ieeexplore.ieee.org/iel8/6287639/6514899/10664513.pdf",
+      "citation_count": 6,
+      "snippet": "This study shows significant improvements in UAV  SDN mesh network that leverages Virtual  Network Functions (VNF ICT Research Center, NICT, since 2021. He was involved in the"
+    },
+    {
+      "index": 88,
+      "title": "6G vision, value, use cases and technologies from European 6G flagship project Hexa-X",
+      "authors": [
+        "MA Uusitalo",
+        "P Rugeland",
+        "MR Boldi",
+        "EC Strinati"
+      ],
+      "publication_year": 2021,
+      "source": "IEEE \u2026",
+      "url": "https://ieeexplore.ieee.org/abstract/document/9625032/",
+      "pdf_link": "https://ieeexplore.ieee.org/iel7/6287639/6514899/09625032.pdf",
+      "citation_count": 379,
+      "snippet": "multi-purpose robots and drones, new human-machine haptic  capacity and coverage, mesh  networks for extreme reliability,  Since 2021 he leads the AI/ML work of the EU 6G Flagship"
+    },
+    {
+      "index": 89,
+      "title": "APPLICATION OF WIRELESS COMMUNICATION TECHNOLOGIES IN ROBOTICS",
+      "authors": [
+        "ZN Ramazonovna"
+      ],
+      "publication_year": 2026,
+      "source": "INTERDISCIPLINE INNOVATION AND \u2026",
+      "url": "https://internationalconf.org/index.php/british/article/view/2106",
+      "pdf_link": "https://internationalconf.org/index.php/british/article/download/2106/1557",
+      "citation_count": 0,
+      "snippet": "drones coordinating through LoRa mesh networks, or  outpaced industrial robotics growth  since 2021, reflecting the  radio frequency propagation, network protocols, and sensor fusion ["
+    },
+    {
+      "index": 90,
+      "title": "Bluetooth low energy for close detection in search and rescue missions with robotic platforms: An experimental evaluation",
+      "authors": [
+        "J Cantizani-Estepa",
+        "J Bravo-Arrabal"
+      ],
+      "publication_year": 2022,
+      "source": "IEEE \u2026",
+      "url": "https://ieeexplore.ieee.org/abstract/document/9877807/",
+      "pdf_link": "https://ieeexplore.ieee.org/iel7/6287639/9668973/09877807.pdf",
+      "citation_count": 18,
+      "snippet": "by using unmanned aerial vehicles (UAVs) or UAV-swarms  used in a previously deployed  Wireless Mesh Network (WMN)  operator in order to initiate SAR protocols. Other works like [36"
+    },
+    {
+      "index": 91,
+      "title": "Smart handover with predicted user behavior using convolutional neural networks for WiGig systems",
+      "authors": [
+        "TK Rodrigues",
+        "S Verma",
+        "Y Kawamoto",
+        "N Kato"
+      ],
+      "publication_year": 2024,
+      "source": "\u2026 Network",
+      "url": "https://ieeexplore.ieee.org/abstract/document/10397585/",
+      "pdf_link": "https://arxiv.org/pdf/2303.15731",
+      "citation_count": 40,
+      "snippet": "He has researched on computer networking, wireless mobile communications, satellite  communications, ad hoc & sensor & mesh networks, UAV networks, AI, IoT, Big Data, and pattern"
+    },
+    {
+      "index": 92,
+      "title": "Boosting UAVs live uplink streaming by video stabilization",
+      "authors": [
+        "E Di Salvo",
+        "A Beghdadi",
+        "T Cattai",
+        "F Cuomo"
+      ],
+      "publication_year": 2024,
+      "source": "IEEE \u2026",
+      "url": "https://ieeexplore.ieee.org/abstract/document/10659864/",
+      "pdf_link": "https://ieeexplore.ieee.org/iel8/6287639/6514899/10659864.pdf",
+      "citation_count": 6,
+      "snippet": "After identifying protocol architectures for implementing video stabilization, we show how  reinforcement learning can optimize resources for overall gains in stabilization and"
+    },
+    {
+      "index": 93,
+      "title": "Beacon-based time synchronization protocol design for layered ultraviolet communication network",
+      "authors": [
+        "Y Pan",
+        "F Long",
+        "Y Zhang",
+        "S Yu",
+        "J Chen"
+      ],
+      "publication_year": 2025,
+      "source": "IEEE Transactions \u2026",
+      "url": "https://ieeexplore.ieee.org/abstract/document/11106476/",
+      "pdf_link": "/scholar?output=instlink&q=info:fVcUFX8dCXcJ:scholar.google.com/&hl=en&as_sdt=0,33&scillfp=1831060452140555317&oi=lle",
+      "citation_count": 2,
+      "snippet": "success probability and 15% larger network synchronization range. Moreover, the proposed   meshed emergent firefly synchronization (MEMFIS), with approximately 40% lower network"
+    },
+    {
+      "index": 94,
+      "title": "Hierarchical low-altitude wireless network empowered air traffic management",
+      "authors": [
+        "Z Jia",
+        "J He",
+        "Y Cui",
+        "Q Zhu",
+        "L Yuan",
+        "F Zhou"
+      ],
+      "publication_year": 2026,
+      "source": "IEEE \u2026",
+      "url": "https://ieeexplore.ieee.org/abstract/document/11457394/",
+      "pdf_link": "https://arxiv.org/pdf/2509.03386",
+      "citation_count": 12,
+      "snippet": "corridor separates the trajectories of unmanned aircraft and manned aircraft by altitudes. This   the vertical coarse-grained mesh division, and horizontal fine-grained mesh division. The"
+    },
+    {
+      "index": 95,
+      "title": "Micro-Doppler-coded drone identification via resonant tagging",
+      "authors": [
+        "D Vovchuk",
+        "M Khobzei",
+        "V Tkach"
+      ],
+      "publication_year": 2025,
+      "source": "\u2026 on Antennas and \u2026",
+      "url": "https://ieeexplore.ieee.org/abstract/document/10890908/",
+      "pdf_link": "/scholar?output=instlink&q=info:3kQacv7ykmIJ:scholar.google.com/&hl=en&as_sdt=0,33&scillfp=2626981055248211713&oi=lle",
+      "citation_count": 5,
+      "snippet": "between the drone and the antenna. On one hand, it complicates the learning procedure on   Since 2021, he has been continuing his research at Yuriy Fedkovych Chernivtsi National"
+    },
+    {
+      "index": 96,
+      "title": "An IoT LoRaWAN network for environmental radiation monitoring",
+      "authors": [
+        "LG Manzano",
+        "H Boukabache"
+      ],
+      "publication_year": 2021,
+      "source": "IEEE Transactions \u2026",
+      "url": "https://ieeexplore.ieee.org/abstract/document/9457239/",
+      "pdf_link": "https://ieeexplore.ieee.org/iel7/19/9259274/09457239.pdf",
+      "citation_count": 79,
+      "snippet": "was emptied according to the standard garbage collection procedure. Data from the three  slaves  Ke, \u201cMonitoring of large-area IoT sensors using a LoRa wireless mesh network system:"
+    },
+    {
+      "index": 97,
+      "title": "TLS and image-based acquisition geometry for evaluating surface characterization",
+      "authors": [
+        "G Patrucco",
+        "S Perri",
+        "A Span\u00f2"
+      ],
+      "publication_year": 2021,
+      "source": "Proceedings of the \u2026",
+      "url": "https://www.academia.edu/download/80235537/483596.pdf",
+      "pdf_link": "https://www.academia.edu/download/80235537/483596.pdf",
+      "citation_count": 8,
+      "snippet": "a particular focus on the mini UAV solutions compliant to the  At the end of this procedure  the observed accuracy on the  analysis; roughness analysis; 3D mesh computation) has been"
+    },
+    {
+      "index": 98,
+      "title": "Probabilistic Modeling and Control for Multi-UAV Search Over Uneven Terrain",
+      "authors": [
+        "L Lan\u010da",
+        "K Jakac",
+        "S Ivi\u0107"
+      ],
+      "publication_year": 2025,
+      "source": "IEEE Transactions on Robotics",
+      "url": "https://ieeexplore.ieee.org/abstract/document/11304178/",
+      "pdf_link": "https://ieeexplore.ieee.org/iel8/8860/11297026/11304178.pdf",
+      "citation_count": 1,
+      "snippet": "starts the collision avoidance procedure (described as follows).  Domain and mesh details  can be found in Table II along with  Since 2021, he has been with the Faculty of Engineering,"
+    },
+    {
+      "index": 99,
+      "title": "ArticlesLAS: An Effective LoRa-Based Ad Hoc Wireless System to Monitor Water Environments",
+      "authors": [
+        "H Luo",
+        "H Yang",
+        "R Ming",
+        "J Zhang"
+      ],
+      "publication_year": null,
+      "source": "NA",
+      "url": "https://hcisj.com/articles/issue_view.php?wr_id=526&page=1",
+      "pdf_link": "https://hcisj.com/articles/issue_view.php?wr_id=526&page=1",
+      "citation_count": 0,
+      "snippet": "Furthermore, we propose a LoRa-centric ad hoc networking protocol that  unmanned aerial  vehicle-aided emergency environmental monitoring system using a LoRa mesh networking"
+    },
+    {
+      "index": 100,
+      "title": "Reliability of Wi-Fi, LTE, and 5G-based UAV RC links in ISM bands: Uplink interference asymmetry analysis and HARQ design",
+      "authors": [
+        "D Lee",
+        "SJ Maeng",
+        "O Ozdemir"
+      ],
+      "publication_year": 2025,
+      "source": "IEEE Open Journal \u2026",
+      "url": "https://ieeexplore.ieee.org/abstract/document/11317939/",
+      "pdf_link": "https://ieeexplore.ieee.org/iel8/8782661/11343983/11317939.pdf",
+      "citation_count": 4,
+      "snippet": "uncrewed aerial vehicles (UAVs) is often realized through air , may degrade the link quality.  Such interference problems are  evaluation of unmanned aerial vehicle ad hoc networks,\u201d in"
+    }
+  ]
+}

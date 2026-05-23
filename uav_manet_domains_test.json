@@ -1,0 +1,127 @@
+{
+  "source_file": "uav_manet_papers.json",
+  "purpose": "test URLs \u2014 second distinct paper per domain for strategy validation",
+  "unique_domain_count": 24,
+  "domains": [
+    {
+      "domain": "ieeexplore.ieee.org",
+      "occurrences": 94,
+      "test_url": "https://ieeexplore.ieee.org/abstract/document/10143193/"
+    },
+    {
+      "domain": "arxiv.org",
+      "occurrences": 16,
+      "test_url": "https://arxiv.org/pdf/2409.17048"
+    },
+    {
+      "domain": "www.mdpi.com",
+      "occurrences": 10,
+      "test_url": "https://www.mdpi.com/2076-3417/15/6/2891"
+    },
+    {
+      "domain": "link.springer.com",
+      "occurrences": 7,
+      "test_url": "https://link.springer.com/article/10.1007/s40010-026-01038-w"
+    },
+    {
+      "domain": "www.sciopen.com",
+      "occurrences": 4,
+      "test_url": "https://www.sciopen.com/local/article_pdf/10.32604/cmc.2025.059043.pdf"
+    },
+    {
+      "domain": "books.google.com",
+      "occurrences": 4,
+      "test_url": "https://books.google.com/books?hl=en&lr=&id=I8ipEQAAQBAJ&oi=fnd&pg=PR11&dq=unmanned+aerial+vehicle+mobile+ad+hoc+network+since:2021&ots=ou8F4neJGg&sig=AMLwcLjC9momEqtCiuYnwEtW-G8"
+    },
+    {
+      "domain": "www.espublisher.com",
+      "occurrences": 2,
+      "test_url": "https://www.espublisher.com/uploads/article_pdf/es895.pdf"
+    },
+    {
+      "domain": "www.utupub.fi",
+      "occurrences": 2,
+      "test_url": "https://www.utupub.fi/bitstreams/849d0b04-2a00-4ad8-8784-4f7270fbd462/download"
+    },
+    {
+      "domain": "www.sciencedirect.com",
+      "occurrences": 2,
+      "test_url": "https://www.sciencedirect.com/science/article/pii/S1570870524002038"
+    },
+    {
+      "domain": "commons.erau.edu",
+      "occurrences": 2,
+      "test_url": "https://commons.erau.edu/cgi/viewcontent.cgi?article=1885&context=edt"
+    },
+    {
+      "domain": "dl.acm.org",
+      "occurrences": 2,
+      "test_url": "https://dl.acm.org/doi/full/10.1145/3732945.3732981"
+    },
+    {
+      "domain": "jisis.org",
+      "occurrences": 2,
+      "test_url": "https://jisis.org/wp-content/uploads/2025/11/2025.I3.044.pdf"
+    },
+    {
+      "domain": "wires.onlinelibrary.wiley.com",
+      "occurrences": 2,
+      "test_url": "https://wires.onlinelibrary.wiley.com/doi/full/10.1002/wfs2.1496"
+    },
+    {
+      "domain": "theses.hal.science",
+      "occurrences": 2,
+      "test_url": "https://theses.hal.science/tel-05351543/document"
+    },
+    {
+      "domain": "upcommons.upc.edu",
+      "occurrences": 2,
+      "test_url": "https://upcommons.upc.edu/bitstreams/bbc66637-c041-4242-a0c0-64dc4e59bfc4/download"
+    },
+    {
+      "domain": "s-space.snu.ac.kr",
+      "occurrences": 2,
+      "test_url": "https://s-space.snu.ac.kr/bitstream/10371/215616/1/000000185322.pdf"
+    },
+    {
+      "domain": "internationalconf.org",
+      "occurrences": 2,
+      "test_url": "https://internationalconf.org/index.php/british/article/download/2106/1557"
+    },
+    {
+      "domain": "www.academia.edu",
+      "occurrences": 2,
+      "test_url": "https://www.academia.edu/download/80235537/483596.pdf"
+    },
+    {
+      "domain": "hcisj.com",
+      "occurrences": 2,
+      "test_url": "https://hcisj.com/articles/issue_view.php?wr_id=526&page=1"
+    },
+    {
+      "domain": "inria.hal.science",
+      "occurrences": 1,
+      "test_url": "https://inria.hal.science/hal-03450952/file/Drone_Networking_6G.pdf"
+    },
+    {
+      "domain": "www.researchgate.net",
+      "occurrences": 1,
+      "test_url": "https://www.researchgate.net/profile/Anita-Rani-17/publication/385546684_Performance_Analysis_of_Routing_Protocols_for_FANETs/links/673780dba78ba469f062afd1/Performance-Analysis-of-Routing-Protocols-for-FANETs.pdf"
+    },
+    {
+      "domain": "repository.essex.ac.uk",
+      "occurrences": 1,
+      "test_url": "https://repository.essex.ac.uk/42414/1/A_Novel_UAV_assisted_VANET_Routing_Protocol_for_Post_Disaster_Emergency_Communications%20%281%29.pdf"
+    },
+    {
+      "domain": "par.nsf.gov",
+      "occurrences": 1,
+      "test_url": "https://par.nsf.gov/servlets/purl/10540521"
+    },
+    {
+      "domain": "openurl.ebsco.com",
+      "occurrences": 1,
+      "test_url": "https://openurl.ebsco.com/fulltext/gcd:159127296?sid=ebsco:plink:crawler-gcd&id=ebsco:gcd:159127296&crl=f&jrnl=19767277"
+    }
+  ]
+}

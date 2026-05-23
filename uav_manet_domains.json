@@ -1,0 +1,126 @@
+{
+  "source_file": "uav_manet_papers.json",
+  "unique_domain_count": 24,
+  "domains": [
+    {
+      "domain": "ieeexplore.ieee.org",
+      "occurrences": 94,
+      "example_url": "https://ieeexplore.ieee.org/abstract/document/10104142/"
+    },
+    {
+      "domain": "arxiv.org",
+      "occurrences": 16,
+      "example_url": "https://arxiv.org/pdf/2306.14281"
+    },
+    {
+      "domain": "www.mdpi.com",
+      "occurrences": 10,
+      "example_url": "https://www.mdpi.com/2504-446X/6/3/57"
+    },
+    {
+      "domain": "link.springer.com",
+      "occurrences": 7,
+      "example_url": "https://link.springer.com/content/pdf/10.1007/978-3-030-97113-7.pdf"
+    },
+    {
+      "domain": "www.sciopen.com",
+      "occurrences": 4,
+      "example_url": "https://www.sciopen.com/article/10.32604/cmc.2025.059043"
+    },
+    {
+      "domain": "books.google.com",
+      "occurrences": 4,
+      "example_url": "https://books.google.com/books?hl=en&lr=&id=prJ5EQAAQBAJ&oi=fnd&pg=PA370&dq=unmanned+aerial+vehicle+mobile+ad+hoc+network+since:2021&ots=5S7G9o8ZLp&sig=oUndXqlo2D0r7qgpn_d0UgeUopA"
+    },
+    {
+      "domain": "www.espublisher.com",
+      "occurrences": 2,
+      "example_url": "https://www.espublisher.com/journals/articledetails/895/"
+    },
+    {
+      "domain": "www.utupub.fi",
+      "occurrences": 2,
+      "example_url": "https://www.utupub.fi/items/671b79c4-2ab4-4819-b4da-58fabf1b2415"
+    },
+    {
+      "domain": "www.sciencedirect.com",
+      "occurrences": 2,
+      "example_url": "https://www.sciencedirect.com/science/article/pii/S1570870524002038"
+    },
+    {
+      "domain": "commons.erau.edu",
+      "occurrences": 2,
+      "example_url": "https://commons.erau.edu/edt/851/"
+    },
+    {
+      "domain": "dl.acm.org",
+      "occurrences": 2,
+      "example_url": "https://dl.acm.org/doi/abs/10.1145/3732945.3732981"
+    },
+    {
+      "domain": "jisis.org",
+      "occurrences": 2,
+      "example_url": "https://jisis.org/wp-content/uploads/2025/11/2025.I3.044.pdf"
+    },
+    {
+      "domain": "wires.onlinelibrary.wiley.com",
+      "occurrences": 2,
+      "example_url": "https://wires.onlinelibrary.wiley.com/doi/abs/10.1002/wfs2.1496"
+    },
+    {
+      "domain": "theses.hal.science",
+      "occurrences": 2,
+      "example_url": "https://theses.hal.science/tel-05351543/"
+    },
+    {
+      "domain": "upcommons.upc.edu",
+      "occurrences": 2,
+      "example_url": "https://upcommons.upc.edu/entities/publication/3e899c0b-5913-475b-9db5-8233df995424"
+    },
+    {
+      "domain": "s-space.snu.ac.kr",
+      "occurrences": 2,
+      "example_url": "https://s-space.snu.ac.kr/handle/10371/215616"
+    },
+    {
+      "domain": "internationalconf.org",
+      "occurrences": 2,
+      "example_url": "https://internationalconf.org/index.php/british/article/view/2106"
+    },
+    {
+      "domain": "www.academia.edu",
+      "occurrences": 2,
+      "example_url": "https://www.academia.edu/download/80235537/483596.pdf"
+    },
+    {
+      "domain": "hcisj.com",
+      "occurrences": 2,
+      "example_url": "https://hcisj.com/articles/issue_view.php?wr_id=526&page=1"
+    },
+    {
+      "domain": "inria.hal.science",
+      "occurrences": 1,
+      "example_url": "https://inria.hal.science/hal-03450952/file/Drone_Networking_6G.pdf"
+    },
+    {
+      "domain": "www.researchgate.net",
+      "occurrences": 1,
+      "example_url": "https://www.researchgate.net/profile/Anita-Rani-17/publication/385546684_Performance_Analysis_of_Routing_Protocols_for_FANETs/links/673780dba78ba469f062afd1/Performance-Analysis-of-Routing-Protocols-for-FANETs.pdf"
+    },
+    {
+      "domain": "repository.essex.ac.uk",
+      "occurrences": 1,
+      "example_url": "https://repository.essex.ac.uk/42414/1/A_Novel_UAV_assisted_VANET_Routing_Protocol_for_Post_Disaster_Emergency_Communications%20%281%29.pdf"
+    },
+    {
+      "domain": "par.nsf.gov",
+      "occurrences": 1,
+      "example_url": "https://par.nsf.gov/servlets/purl/10540521"
+    },
+    {
+      "domain": "openurl.ebsco.com",
+      "occurrences": 1,
+      "example_url": "https://openurl.ebsco.com/fulltext/gcd:159127296?sid=ebsco:plink:crawler-gcd&id=ebsco:gcd:159127296&crl=f&jrnl=19767277"
+    }
+  ]
+}
