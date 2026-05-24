@@ -271,10 +271,10 @@ def _dismiss_cookie_banners(page: Any) -> None:
     for sel in _COOKIE_REJECT_SELECTORS:
         try:
             loc = page.locator(sel).first
-            if loc.count() and loc.is_visible(timeout=1000):
-                loc.click(timeout=3000)
+            if loc.count() and loc.is_visible(timeout=300):
+                loc.click(timeout=2000)
                 log_event("cookie_banner_dismissed", selector=sel)
-                page.wait_for_timeout(1500)
+                page.wait_for_timeout(800)
                 return
         except PlaywrightError:
             continue
@@ -286,7 +286,7 @@ def _click_element(page: Any, selector: str, out_path: Path) -> dict[str, Any] |
     Returns a result dict on success, None if element not found or download failed.
     """
     try:
-        page.wait_for_selector(selector, state="attached", timeout=10000)
+        page.wait_for_selector(selector, state="attached", timeout=3000)
     except PlaywrightError:
         log_event("element_not_found", selector=selector)
         return None
@@ -326,9 +326,9 @@ def _find_and_click_pdf_button(page: Any, out_path: Path) -> dict[str, Any] | No
     for sel in _PDF_DROPDOWN_SELECTORS:
         try:
             loc = page.locator(sel).first
-            if loc.count() and loc.is_visible(timeout=2000):
-                loc.click(timeout=3000)
-                page.wait_for_timeout(1000)
+            if loc.count() and loc.is_visible(timeout=300):
+                loc.click(timeout=2000)
+                page.wait_for_timeout(500)
                 log_event("dropdown_opened", selector=sel)
                 break
         except PlaywrightError:
@@ -337,7 +337,7 @@ def _find_and_click_pdf_button(page: Any, out_path: Path) -> dict[str, Any] | No
     for sel in _PDF_BUTTON_SELECTORS:
         try:
             loc = page.locator(sel).first
-            if not (loc.count() and loc.is_visible(timeout=2000)):
+            if not (loc.count() and loc.is_visible(timeout=300)):
                 continue
         except PlaywrightError:
             continue
@@ -419,7 +419,7 @@ def _replay_strategy(page: Any, strategy: dict[str, Any], out_path: Path) -> dic
         # Wait for JS to settle before replaying clicks.
         for state in ("load", "networkidle"):
             try:
-                page.wait_for_load_state(state, timeout=10000)
+                page.wait_for_load_state(state, timeout=5000)
             except PlaywrightError:
                 pass
 

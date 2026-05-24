@@ -1,0 +1,6 @@
+{
+  "domain": "www.academia.edu",
+  "accessible": false,
+  "inaccessible_reason": "Academia.edu requires account login to download papers. Automated download is not supported.",
+  "steps": []
+}
