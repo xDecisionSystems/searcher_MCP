@@ -207,6 +207,8 @@ mcp = FastApiMCP(
         "Do not retry automatically — always wait for explicit user confirmation. "
         "If the response has status='inaccessible', inform the user that the institution "
         "does not have access to that publisher and show the 'message' field verbatim. "
+        "If the response has status='no_access', inform the user that the institution does "
+        "not have access to that specific paper and show the 'message' field verbatim. "
         "If the response contains a 'strategy_hint' field, show that message to the user verbatim. "
         "Call get_logs to inspect recent download events for self-diagnosis when a "
         "download fails or behaves unexpectedly."

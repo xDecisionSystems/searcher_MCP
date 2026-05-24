@@ -9,6 +9,10 @@
     "auth_domains": ["idp.", "shibboleth.", "auth.", "login."],
     "threshold": 1
   },
+  "no_access_signals": [
+    "your institution has not purchased this content",
+    "please get in touch with your librarian to recommend this"
+  ],
   "steps": [
     {
       "type": "click",

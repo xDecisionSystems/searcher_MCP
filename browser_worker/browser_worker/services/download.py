@@ -24,6 +24,28 @@ _DEFAULT_LOGIN_SIGNALS = [
 _DEFAULT_AUTH_DOMAINS = ["login.", "accounts.", "auth.", "shibboleth.", "idp."]
 _DEFAULT_LOGIN_THRESHOLD = 2
 
+# ── No-access detection ────────────────────────────────────────────────────────
+
+_DEFAULT_NO_ACCESS_SIGNALS = [
+    "your institution has not purchased",
+    "your institution does not have access",
+    "institution does not have access",
+    "not available to your institution",
+    "please get in touch with your librarian",
+    "recommend this title to your librarian",
+    "purchase this content",
+    "buy this article",
+    "rent or buy",
+    "full access isn't included in your subscription",
+    "this article is not included",
+    "no access",
+    "access denied",
+    "this content is not available",
+    "you do not have access to this content",
+    "full text access",
+    "get access",
+]
+
 # ── Cookie banner selectors ────────────────────────────────────────────────────
 
 _COOKIE_REJECT_SELECTORS = [
@@ -170,6 +192,17 @@ def _is_login_page(html: str, url: str, login_detection: dict[str, Any] | None =
     if any(d in urlparse(url).netloc.lower() for d in auth_domains):
         return True
     return sum(1 for s in signals if s in lower) >= threshold
+
+
+def _is_no_access_page(html: str, strategy: dict[str, Any] | None = None) -> bool:
+    """Return True if the page indicates this specific paper is paywalled."""
+    lower = html.lower()
+    signals = _DEFAULT_NO_ACCESS_SIGNALS
+    if strategy is not None:
+        extra = strategy.get("no_access_signals", [])
+        if extra:
+            signals = signals + [s.lower() for s in extra]
+    return any(s in lower for s in signals)
 
 
 def _no_strategy_hint(domain: str, url: str) -> str:
@@ -716,6 +749,22 @@ def download_paper_via_browser(url: str, filename: str | None = None) -> dict[st
                     result["size_bytes"] = out_path.stat().st_size
                     log_event("download_success", **result)
                     return result
+
+                # No-access check — specific paper/book not covered by institution.
+                current_html = page.content()
+                if _is_no_access_page(current_html, strategy):
+                    log_event("download_no_access", url=url, domain=nav_domain)
+                    _close_context_if_needed(ctx)
+                    return {
+                        "status": "no_access",
+                        "message": (
+                            f"Your institution does not have access to this specific paper on {nav_domain}. "
+                            "Try finding a preprint on arxiv.org, the author's institutional page, "
+                            "or request via interlibrary loan."
+                        ),
+                        "requested_url": url,
+                        "domain": nav_domain,
+                    }
 
                 # Login check.
                 is_login = _is_login_page(html, current_url, login_detection=login_detection)
