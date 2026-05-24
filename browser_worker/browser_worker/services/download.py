@@ -586,6 +586,17 @@ def download_paper_via_browser(url: str, filename: str | None = None) -> dict[st
             login_detection = strategy.get("login_detection") if strategy else None
             post_process = strategy.get("post_process", {}) if strategy else {}
 
+            # Inaccessible domain — return early with clear message.
+            if strategy is not None and not strategy.get("accessible", True):
+                _close_context_if_needed(ctx)
+                log_event("download_inaccessible", domain=nav_domain, url=url)
+                return {
+                    "status": "inaccessible",
+                    "message": strategy.get("inaccessible_reason", f"No institutional access to {nav_domain}."),
+                    "requested_url": url,
+                    "domain": nav_domain,
+                }
+
             # Strategy replay.
             if strategy is not None:
                 log_event("strategy_found", domain=nav_domain, steps=len(strategy.get("steps", [])))

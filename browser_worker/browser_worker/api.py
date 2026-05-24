@@ -166,6 +166,8 @@ mcp = FastApiMCP(
         "If the response has status='login_required', show the user_prompt to the user "
         "and wait for them to press OK (then retry the same call) or Stop (then abort). "
         "Do not retry automatically — always wait for explicit user confirmation. "
+        "If the response has status='inaccessible', inform the user that the institution "
+        "does not have access to that publisher and show the 'message' field verbatim. "
         "If the response contains a 'strategy_hint' field, show that message to the user verbatim. "
         "Call get_logs to inspect recent download events for self-diagnosis when a "
         "download fails or behaves unexpectedly."
