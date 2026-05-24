@@ -1,0 +1,25 @@
+{
+  "domain": "journals.sagepub.com",
+  "source_url": "https://journals.sagepub.com/doi/abs/10.1518/001872001775870421",
+  "recorded_at": "2026-05-24T01:00:00.000000+00:00",
+  "timeout_seconds": 120,
+  "login_detection": {
+    "enabled": true,
+    "signals": ["log in", "sign in", "access denied", "institutional access", "purchase access", "subscribe"],
+    "auth_domains": ["idp.", "shibboleth.", "auth.", "login."],
+    "threshold": 1
+  },
+  "steps": [
+    {
+      "type": "click",
+      "selector": "a:has-text('PDF')",
+      "element_text": "PDF",
+      "note": "SAGE article page PDF link — navigates to epdf viewer which fires pdfdirect response"
+    },
+    {
+      "type": "wait_for_pdf_response",
+      "url_pattern": "https://journals\\.sagepub\\.com/doi/pdfdirect/.*",
+      "example_url": "https://journals.sagepub.com/doi/pdfdirect/10.1518/001872001775870421"
+    }
+  ]
+}
