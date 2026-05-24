@@ -509,6 +509,77 @@ def _apply_post_processing(path: Path, post_process: dict[str, Any]) -> None:
               original_pages=total, remaining_pages=end - start)
 
 
+# ── Google Scholar browser search ─────────────────────────────────────────────
+
+def search_google_scholar_via_browser(
+    query: str,
+    limit: int,
+    start_index: int = 0,
+    year_low: int | None = None,
+    year_high: int | None = None,
+    page_delay_seconds: float = 1.0,
+) -> dict:
+    """Search Google Scholar in the real Chromium browser, paginating via Next button.
+
+    Navigates to the first results page, collects HTML, clicks the Next button,
+    waits page_delay_seconds, then repeats until limit results are collected or
+    no Next button is found. Returns raw HTML per page for the caller to parse.
+    """
+    from urllib.parse import quote_plus
+
+    params = f"q={quote_plus(query)}&hl=en"
+    if start_index:
+        params += f"&start={start_index}"
+    if year_low:
+        params += f"&as_ylo={year_low}"
+    if year_high:
+        params += f"&as_yhi={year_high}"
+    first_url = f"https://scholar.google.com/scholar?{params}"
+
+    log_event("scholar_search_start", query=query, limit=limit, url=first_url)
+
+    pages_html: list[str] = []
+    try:
+        with sync_playwright() as playwright:
+            ctx = _get_browser_context(playwright)
+            pages = ctx.pages
+            page = pages[0] if pages else ctx.new_page()
+
+            # Navigate to first page and wait for results to load.
+            page.goto(first_url, wait_until="domcontentloaded", timeout=30000)
+            page.wait_for_timeout(1500)
+
+            collected = 0
+            while collected < limit:
+                html = page.content()
+                pages_html.append(html)
+                log_event("scholar_page_collected", page_num=len(pages_html), html_len=len(html))
+
+                # Count results on this page (rough estimate — caller will parse exactly).
+                collected += html.count("class=\"gs_r gs_or gs_scl\"")
+
+                if collected >= limit:
+                    break
+
+                # Click the Next button.
+                next_btn = page.query_selector("button#gs_n td.gs_n a, a.gs_ico_nav_next, td.gs_n a[href]")
+                if not next_btn:
+                    log_event("scholar_no_next_button", page_num=len(pages_html))
+                    break
+
+                next_btn.click()
+                page.wait_for_load_state("domcontentloaded", timeout=15000)
+                page.wait_for_timeout(int(page_delay_seconds * 1000))
+
+            _close_context_if_needed(ctx)
+
+    except PlaywrightError as exc:
+        raise HTTPException(status_code=502, detail=f"Scholar browser search failed: {exc}") from exc
+
+    log_event("scholar_search_done", pages=len(pages_html), estimated_results=collected)
+    return {"pages_html": pages_html, "page_count": len(pages_html)}
+
+
 # ── Generic page fetch ─────────────────────────────────────────────────────────
 
 def fetch_page_via_browser(url: str) -> dict[str, Any]:

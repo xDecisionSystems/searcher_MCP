@@ -7,7 +7,7 @@ from pydantic import BaseModel, Field
 
 from .config import VERSION_NAME
 from .logger import tail_log
-from .services.download import download_paper_via_browser, fetch_page_via_browser
+from .services.download import download_paper_via_browser, fetch_page_via_browser, search_google_scholar_via_browser
 from .services.recorder import (
     delete_strategy,
     get_recording_status,
@@ -140,6 +140,32 @@ def delete_strategy_endpoint(domain: str) -> dict[str, Any]:
     if not deleted:
         raise HTTPException(status_code=404, detail=f"No strategy found for domain '{domain}'.")
     return {"status": "deleted", "domain": domain}
+
+
+@app.get("/search_google_scholar")
+def search_google_scholar(
+    query: str = Query(..., description="Search query."),
+    limit: int = Query(default=200, ge=1, description="Maximum number of results to collect."),
+    start_index: int = Query(default=0, ge=0, description="Result offset (multiple of 10)."),
+    year_low: int | None = Query(default=None, description="Earliest publication year (inclusive)."),
+    year_high: int | None = Query(default=None, description="Latest publication year (inclusive)."),
+    page_delay_seconds: float = Query(default=1.0, ge=0.0, description="Seconds to wait between pages."),
+) -> dict[str, Any]:
+    """Search Google Scholar using the real Chromium browser.
+
+    Navigates to the first results page, scrapes it, clicks the Next button,
+    waits page_delay_seconds, then repeats until limit results are collected.
+    Returns a list of raw HTML pages for the searcher service to parse.
+    Session cookies persist, so a CAPTCHA solved once via noVNC stays solved.
+    """
+    return search_google_scholar_via_browser(
+        query=query,
+        limit=limit,
+        start_index=start_index,
+        year_low=year_low,
+        year_high=year_high,
+        page_delay_seconds=page_delay_seconds,
+    )
 
 
 @app.get("/fetch_page")

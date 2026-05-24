@@ -1,7 +1,7 @@
 import threading
 import time
 from typing import Any
-from urllib.parse import quote_plus, urljoin
+
 
 from bs4 import BeautifulSoup
 from fastapi import HTTPException
@@ -409,22 +409,41 @@ def search_scholar(
     return {"provider": provider, "query": query, **data}
 
 
-def _fetch_scholar_html_via_browser(url: str) -> str:
-    """Fetch a Scholar page through the browser_worker's Chromium instance."""
+def _fetch_scholar_pages_via_browser(
+    query: str,
+    limit: int,
+    start_index: int = 0,
+    year_low: int | None = None,
+    year_high: int | None = None,
+) -> list[str]:
+    """Drive browser_worker to search Scholar and return a list of page HTML strings."""
+    params: dict[str, Any] = {
+        "query": query,
+        "limit": limit,
+        "start_index": start_index,
+        "page_delay_seconds": 1.0,
+    }
+    if year_low is not None:
+        params["year_low"] = year_low
+    if year_high is not None:
+        params["year_high"] = year_high
     try:
         resp = session.get(
-            f"{BROWSER_WORKER_URL}/fetch_page",
-            params={"url": url},
-            timeout=60,
+            f"{BROWSER_WORKER_URL}/search_google_scholar",
+            params=params,
+            timeout=600,
         )
         resp.raise_for_status()
         data = resp.json()
     except Exception as exc:
-        raise HTTPException(status_code=502, detail=f"browser_worker fetch failed: {exc}") from exc
-    html = data.get("html", "")
-    if not html or html == "__AUTO_DOWNLOAD__":
-        raise HTTPException(status_code=502, detail="browser_worker returned no HTML for Scholar page.")
-    return html
+        raise HTTPException(status_code=502, detail=f"browser_worker scholar search failed: {exc}") from exc
+    pages = data.get("pages_html", [])
+    if not pages:
+        raise HTTPException(
+            status_code=503,
+            detail="Scholar returned no pages. Open noVNC, solve any CAPTCHA, then retry.",
+        )
+    return pages
 
 
 _re_year = __import__("re").compile(r"\b(?:19|20)\d{2}\b")
@@ -513,38 +532,22 @@ def _search_google_scholar_browser(
 ) -> dict[str, Any]:
     """Search Google Scholar by driving the real Chromium browser.
 
-    Reuses any existing browser session (including a solved CAPTCHA). Paginates
-    through Scholar results pages (10 results per page) until limit is reached.
+    Delegates to browser_worker which runs a single persistent Playwright session:
+    navigate → scrape → click Next → wait 1s → scrape → repeat.
     """
     blocked = set(exclude_domains if exclude_domains is not None else _DEFAULT_EXCLUDE_DOMAINS)
+
+    pages_html = _fetch_scholar_pages_via_browser(
+        query=query,
+        limit=limit,
+        start_index=start_index,
+        year_low=year_low,
+        year_high=year_high,
+    )
+
     results: list[dict[str, Any]] = []
-    start = start_index
-
-    while len(results) < limit:
-        params = f"q={quote_plus(query)}&start={start}&hl=en"
-        if year_low:
-            params += f"&as_ylo={year_low}"
-        if year_high:
-            params += f"&as_yhi={year_high}"
-        url = f"https://scholar.google.com/scholar?{params}"
-
-        html = _fetch_scholar_html_via_browser(url)
-
-        # CAPTCHA / bot-check detection
-        if "scholar_share_token" not in html and "gs_r" not in html:
-            raise HTTPException(
-                status_code=503,
-                detail=(
-                    "Google Scholar returned a CAPTCHA or empty page. "
-                    "Open the noVNC browser, solve the CAPTCHA, then retry."
-                ),
-            )
-
-        page_results = _parse_scholar_results_page(html)
-        if not page_results:
-            break
-
-        for item in page_results:
+    for html in pages_html:
+        for item in _parse_scholar_results_page(html):
             if len(results) >= limit:
                 break
             pub_url = item.get("url", "")
@@ -552,10 +555,8 @@ def _search_google_scholar_browser(
                 continue
             item["index"] = len(results) + 1
             results.append(item)
-
-        if len(page_results) < 10:
+        if len(results) >= limit:
             break
-        start += 10
 
     return {"total_records": None, "results": results}
 
