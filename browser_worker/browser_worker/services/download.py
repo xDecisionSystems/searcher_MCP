@@ -639,138 +639,128 @@ def download_paper_via_browser(url: str, filename: str | None = None) -> dict[st
         with sync_playwright() as playwright:
             ctx = _get_browser_context(playwright)
 
-            # Use the first existing page so navigation is visible in noVNC.
-            # Close stale extra tabs — they can pollute popup/sniff detection.
-            pages = ctx.pages
-            page = pages[0] if pages else ctx.new_page()
-            for extra in pages[1:]:
-                try:
-                    log_event("closing_background_tab", url=extra.url)
-                    extra.close()
-                except PlaywrightError:
-                    pass
+            # Open a fresh tab for this download so it is visible in noVNC and
+            # isolated from other concurrent requests. The tab is always closed
+            # when the download finishes (success, login wall, or failure).
+            page = ctx.new_page()
+            try:
+                response, current_url, html = _navigate(page, url)
 
-            response, current_url, html = _navigate(page, url)
+                if html == "__AUTO_DOWNLOAD__":
+                    log_event("auto_download_detected", url=url)
+                    result = _click_element(page, "body", out_path)
+                    if result is None:
+                        raise HTTPException(status_code=502, detail="Auto-download triggered but could not be captured.")
+                    log_event("download_success", **result)
+                    return result
 
-            if html == "__AUTO_DOWNLOAD__":
-                # Navigation itself triggered a file download — save it.
-                log_event("auto_download_detected", url=url)
-                result = _click_element(page, "body", out_path)  # triggers nothing; just captures
-                if result is None:
-                    raise HTTPException(status_code=502, detail="Auto-download triggered but could not be captured.")
-                log_event("download_success", **result)
-                _close_context_if_needed(ctx)
-                return result
+                content_type = ""
+                if response is not None:
+                    content_type = (response.header_value("content-type") or "").lower()
+                log_event("page_loaded", requested_url=url, final_url=current_url,
+                          http_status=response.status if response else None,
+                          content_type=content_type)
 
-            content_type = ""
-            if response is not None:
-                content_type = (response.header_value("content-type") or "").lower()
-            log_event("page_loaded", requested_url=url, final_url=current_url,
-                      http_status=response.status if response else None,
-                      content_type=content_type)
+                _dismiss_cookie_banners(page)
 
-            _dismiss_cookie_banners(page)
+                # Direct PDF response — stream it.
+                if "pdf" in content_type:
+                    _stream_to_disk(page.url, out_path)
+                    nav_domain = urlparse(current_url).netloc.lower().split(":")[0]
+                    strategy = load_strategy(nav_domain) or load_strategy(
+                        urlparse(url).netloc.lower().split(":")[0]
+                    )
+                    post_process = strategy.get("post_process", {}) if strategy else {}
+                    _apply_post_processing(out_path, post_process)
+                    result = {
+                        "path": str(out_path), "filename": out_path.name,
+                        "size_bytes": out_path.stat().st_size, "source_url": page.url,
+                        "method": "direct_pdf_stream",
+                    }
+                    log_event("download_success", **result)
+                    return result
 
-            # Direct PDF response — stream it.
-            if "pdf" in content_type:
-                _stream_to_disk(page.url, out_path)
-                # Load strategy now so post_process is available.
+                # Load strategy for this domain.
                 nav_domain = urlparse(current_url).netloc.lower().split(":")[0]
                 strategy = load_strategy(nav_domain) or load_strategy(
                     urlparse(url).netloc.lower().split(":")[0]
                 )
+                login_detection = strategy.get("login_detection") if strategy else None
                 post_process = strategy.get("post_process", {}) if strategy else {}
-                _apply_post_processing(out_path, post_process)
-                result = {
-                    "path": str(out_path), "filename": out_path.name,
-                    "size_bytes": out_path.stat().st_size, "source_url": page.url,
-                    "method": "direct_pdf_stream",
-                }
-                log_event("download_success", **result)
-                _close_context_if_needed(ctx)
-                return result
 
-            # Load strategy for this domain.
-            nav_domain = urlparse(current_url).netloc.lower().split(":")[0]
-            strategy = load_strategy(nav_domain) or load_strategy(
-                urlparse(url).netloc.lower().split(":")[0]
-            )
-            login_detection = strategy.get("login_detection") if strategy else None
-            post_process = strategy.get("post_process", {}) if strategy else {}
+                # Inaccessible domain — return early with clear message.
+                if strategy is not None and not strategy.get("accessible", True):
+                    log_event("download_inaccessible", domain=nav_domain, url=url)
+                    return {
+                        "status": "inaccessible",
+                        "message": strategy.get("inaccessible_reason", f"No institutional access to {nav_domain}."),
+                        "requested_url": url,
+                        "domain": nav_domain,
+                    }
 
-            # Inaccessible domain — return early with clear message.
-            if strategy is not None and not strategy.get("accessible", True):
-                _close_context_if_needed(ctx)
-                log_event("download_inaccessible", domain=nav_domain, url=url)
-                return {
-                    "status": "inaccessible",
-                    "message": strategy.get("inaccessible_reason", f"No institutional access to {nav_domain}."),
-                    "requested_url": url,
-                    "domain": nav_domain,
-                }
+                # Strategy replay.
+                if strategy is not None:
+                    log_event("strategy_found", domain=nav_domain, steps=len(strategy.get("steps", [])))
+                    result = _replay_strategy(page, strategy, out_path)
+                    if result is not None:
+                        _apply_post_processing(out_path, post_process)
+                        result["size_bytes"] = out_path.stat().st_size
+                        log_event("download_success", **result)
+                        return result
+                    log_event("strategy_replay_no_result", domain=nav_domain)
 
-            # Strategy replay.
-            if strategy is not None:
-                log_event("strategy_found", domain=nav_domain, steps=len(strategy.get("steps", [])))
-                result = _replay_strategy(page, strategy, out_path)
+                # Generic PDF button fallback.
+                result = _find_and_click_pdf_button(page, out_path)
                 if result is not None:
                     _apply_post_processing(out_path, post_process)
                     result["size_bytes"] = out_path.stat().st_size
                     log_event("download_success", **result)
-                    _close_context_if_needed(ctx)
                     return result
-                log_event("strategy_replay_no_result", domain=nav_domain)
 
-            # Generic PDF button fallback.
-            result = _find_and_click_pdf_button(page, out_path)
-            if result is not None:
-                _apply_post_processing(out_path, post_process)
-                result["size_bytes"] = out_path.stat().st_size
-                log_event("download_success", **result)
-                _close_context_if_needed(ctx)
-                return result
+                # Login check.
+                is_login = _is_login_page(html, current_url, login_detection=login_detection)
+                log_event("login_check", url=current_url, is_login_page=is_login)
+                if is_login:
+                    if not html.strip() or "login" in html and len(html) < 200:
+                        try:
+                            page.goto(url, wait_until="domcontentloaded", timeout=30000)
+                        except PlaywrightError:
+                            pass
+                    log_event("download_login_required", url=url, final_url=current_url)
+                    return _login_required_response(url, current_url, strategy=strategy)
 
-            # Login check.
-            is_login = _is_login_page(html, current_url, login_detection=login_detection)
-            log_event("login_check", url=current_url, is_login_page=is_login)
-            if is_login:
-                # Show the login page in noVNC if it's a blank/synthetic page.
-                if not html.strip() or "login" in html and len(html) < 200:
-                    try:
-                        page.goto(url, wait_until="domcontentloaded", timeout=30000)
-                    except PlaywrightError:
-                        pass
-                log_event("download_login_required", url=url, final_url=current_url)
-                _close_context_if_needed(ctx)
-                return _login_required_response(url, current_url, strategy=strategy)
+                # Static href scrape.
+                pdf_link = _extract_pdf_link(current_url, html)
+                log_event("pdf_link_scrape", found=pdf_link is not None, link=pdf_link)
+                if pdf_link:
+                    _stream_to_disk(pdf_link, out_path)
+                    _apply_post_processing(out_path, post_process)
+                    result = {
+                        "path": str(out_path), "filename": out_path.name,
+                        "size_bytes": out_path.stat().st_size, "source_url": pdf_link,
+                        "method": "static_href_stream",
+                    }
+                    log_event("download_success", **result)
+                    return result
 
-            # Static href scrape.
-            pdf_link = _extract_pdf_link(current_url, html)
-            log_event("pdf_link_scrape", found=pdf_link is not None, link=pdf_link)
-            if pdf_link:
-                _stream_to_disk(pdf_link, out_path)
-                _apply_post_processing(out_path, post_process)
-                result = {
-                    "path": str(out_path), "filename": out_path.name,
-                    "size_bytes": out_path.stat().st_size, "source_url": pdf_link,
-                    "method": "static_href_stream",
+                # Nothing worked.
+                log_event("download_failed", url=url, final_url=current_url)
+                detail: dict[str, Any] = {
+                    "status": "failed",
+                    "message": "No PDF found. The page may require a recorded strategy or interactive login.",
+                    "requested_url": url,
+                    "current_url": current_url,
                 }
-                log_event("download_success", **result)
-                _close_context_if_needed(ctx)
-                return result
+                if strategy is None:
+                    detail["strategy_hint"] = _no_strategy_hint(nav_domain, url)
+                raise HTTPException(status_code=404, detail=detail)
 
-            # Nothing worked.
-            _close_context_if_needed(ctx)
-            log_event("download_failed", url=url, final_url=current_url)
-            detail: dict[str, Any] = {
-                "status": "failed",
-                "message": "No PDF found. The page may require a recorded strategy or interactive login.",
-                "requested_url": url,
-                "current_url": current_url,
-            }
-            if strategy is None:
-                detail["strategy_hint"] = _no_strategy_hint(nav_domain, url)
-            raise HTTPException(status_code=404, detail=detail)
+            finally:
+                try:
+                    page.close()
+                except PlaywrightError:
+                    pass
+                _close_context_if_needed(ctx)
 
     except HTTPException:
         if out_path.exists():
