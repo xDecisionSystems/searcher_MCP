@@ -606,32 +606,17 @@ def search_ebsco_via_browser(
                     except PlaywrightError:
                         pass
                     page.wait_for_timeout(2000)
-                    # Navigate back to the search URL now that session is established.
-                    page.goto(search_url, wait_until="domcontentloaded", timeout=30000)
-                    try:
-                        page.wait_for_load_state("networkidle", timeout=15000)
-                    except PlaywrightError:
-                        pass
-                    page.wait_for_timeout(2000)
                     log_event("ebsco_signed_in", url=page.url)
                 except PlaywrightError as exc:
                     log_event("ebsco_sign_in_failed", error=str(exc))
                     # Sign-in click failed — session may still be valid, continue.
 
-            # Click the search submit button to trigger the results fetch.
-            # EBSCO's React app requires this even when the query is in the URL.
+            # Wait for results to finish loading after sign-in redirect.
             try:
-                page.locator("button[type='submit']").first.click(timeout=5000)
-            except PlaywrightError:
-                try:
-                    page.locator("button:has(svg)").first.click(timeout=3000)
-                except PlaywrightError:
-                    pass
-            try:
-                page.wait_for_load_state("networkidle", timeout=15000)
+                page.wait_for_load_state("networkidle", timeout=10000)
             except PlaywrightError:
                 pass
-            page.wait_for_timeout(2000)
+            page.wait_for_timeout(1500)
 
             # Drag the browser's right-side scrollbar to the bottom, exactly as
             # the user does manually. The scrollbar thumb sits near the top-right
