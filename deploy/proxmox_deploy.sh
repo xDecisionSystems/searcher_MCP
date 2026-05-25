@@ -375,8 +375,26 @@ ssh_run "$PROXMOX_HOST" \
 log "Waiting for LXC to be ready ..."
 ssh_run "$PROXMOX_HOST" "sleep 6"
 
+# ─── Locale setup ─────────────────────────────────────────────────────────────
+log "Configuring locale ..."
+lxc_exec "$VMID" "
+  apt-get update -qq
+  apt-get install -y -qq locales
+  sed -i 's/^# *en_US.UTF-8/en_US.UTF-8/' /etc/locale.gen
+  locale-gen en_US.UTF-8
+  update-locale LANG=en_US.UTF-8 LC_ALL=en_US.UTF-8
+"
+
+# ─── System packages ──────────────────────────────────────────────────────────
+log "Installing system packages ..."
+lxc_exec "$VMID" "DEBIAN_FRONTEND=noninteractive apt-get install -y -qq python3 python3-venv git curl chromium"
+
+# ─── Clone repo ───────────────────────────────────────────────────────────────
+log "Cloning ${REPO_URL} (branch: ${REPO_BRANCH}) ..."
+lxc_exec "$VMID" "git clone --branch ${REPO_BRANCH} --depth 1 ${REPO_URL} /opt/searcher"
+
 # ─── Upload shared env file ───────────────────────────────────────────────────
-# Upload once to /opt/searcher/.env; each service symlinks to it.
+# Uploaded after clone so /opt/searcher/ exists. Each service symlinks to it.
 SHARED_ENV_DEST="/opt/searcher/.env"
 if [[ -n "$SHARED_ENV_FILE" && -f "$SHARED_ENV_FILE" ]]; then
   log "Uploading ${SHARED_ENV_FILE} → LXC:${SHARED_ENV_DEST} ..."
@@ -406,24 +424,6 @@ if [[ -n "$LXC_HOSTNAME_POSTFIX" ]]; then
       echo 'BROWSER_ROOT_PATH=${BROWSER_ROOT_PATH}' >> /opt/searcher/.env
   "
 fi
-
-# ─── Locale setup ─────────────────────────────────────────────────────────────
-log "Configuring locale ..."
-lxc_exec "$VMID" "
-  apt-get update -qq
-  apt-get install -y -qq locales
-  sed -i 's/^# *en_US.UTF-8/en_US.UTF-8/' /etc/locale.gen
-  locale-gen en_US.UTF-8
-  update-locale LANG=en_US.UTF-8 LC_ALL=en_US.UTF-8
-"
-
-# ─── System packages ──────────────────────────────────────────────────────────
-log "Installing system packages ..."
-lxc_exec "$VMID" "DEBIAN_FRONTEND=noninteractive apt-get install -y -qq python3 python3-venv git curl chromium"
-
-# ─── Clone repo ───────────────────────────────────────────────────────────────
-log "Cloning ${REPO_URL} (branch: ${REPO_BRANCH}) ..."
-lxc_exec "$VMID" "git clone --branch ${REPO_BRANCH} --depth 1 ${REPO_URL} /opt/searcher"
 
 # ─── Install searcher ─────────────────────────────────────────────────────────
 log "Installing searcher ..."
