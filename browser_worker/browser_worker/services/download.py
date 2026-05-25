@@ -594,9 +594,32 @@ def search_ebsco_via_browser(
                 pass
             page.wait_for_timeout(1500)
 
-            # EBSCO requires clicking the search submit button (rendered as an SVG
-            # icon inside the search bar) to actually trigger the results fetch.
-            # Without this click the results container stays in its loading state.
+            # If EBSCO shows a guest session, click the "Sign in" button to
+            # establish the institutional session before results will load.
+            html_check = page.content()
+            if "Sign in to your institution" in html_check or "Welcome, Guest" in html_check:
+                log_event("ebsco_guest_banner_detected")
+                try:
+                    page.locator("button:has-text('Sign in')").first.click(timeout=5000)
+                    try:
+                        page.wait_for_load_state("networkidle", timeout=15000)
+                    except PlaywrightError:
+                        pass
+                    page.wait_for_timeout(2000)
+                    # Navigate back to the search URL now that session is established.
+                    page.goto(search_url, wait_until="domcontentloaded", timeout=30000)
+                    try:
+                        page.wait_for_load_state("networkidle", timeout=15000)
+                    except PlaywrightError:
+                        pass
+                    page.wait_for_timeout(2000)
+                    log_event("ebsco_signed_in", url=page.url)
+                except PlaywrightError as exc:
+                    log_event("ebsco_sign_in_failed", error=str(exc))
+                    return _login_required_response(search_url, page.url)
+
+            # Click the search submit button to trigger the results fetch.
+            # EBSCO's React app requires this even when the query is in the URL.
             try:
                 page.locator("button[type='submit']").first.click(timeout=5000)
             except PlaywrightError:
