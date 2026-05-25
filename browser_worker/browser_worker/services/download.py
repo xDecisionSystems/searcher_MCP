@@ -616,43 +616,18 @@ def search_ebsco_via_browser(
                 page.wait_for_load_state("networkidle", timeout=10000)
             except PlaywrightError:
                 pass
-            page.wait_for_timeout(1500)
-
-            # Drag the browser's right-side scrollbar to the bottom, exactly as
-            # the user does manually. The scrollbar thumb sits near the top-right
-            # of the viewport; dragging it to the bottom of the viewport scrolls
-            # the page and fires the native scroll events EBSCO listens to.
-            viewport = page.viewport_size or {"width": 1280, "height": 720}
-            sb_x = viewport["width"] - 8        # scrollbar track, ~8px from right edge
-            sb_top = 60                          # below the header
-            sb_bottom = viewport["height"] - 10  # bottom of track
-            page.mouse.move(sb_x, sb_top)
-            page.mouse.down()
-            # Drag incrementally to the bottom so scroll events fire throughout.
-            steps = 10
-            for i in range(1, steps + 1):
-                y = sb_top + (sb_bottom - sb_top) * i // steps
-                page.mouse.move(sb_x, y)
-                page.wait_for_timeout(200)
-            page.mouse.up()
-            page.wait_for_timeout(1500)
-
-            # Snapshot the page and log selectors to diagnose if results are empty.
-            html = page.content()
-            import re as _re
-            data_autos = sorted(set(_re.findall(r'data-auto="([^"]+)"', html)))
-            log_event("ebsco_page_ready", html_len=len(html), data_autos=data_autos)
 
             result_selector = "[data-auto='search-result-item']"
-            log_event("ebsco_result_selector", selector=result_selector,
-                      count=page.locator(result_selector).count())
+            # Wait for at least one result card to appear in the DOM.
+            try:
+                page.wait_for_selector(result_selector, timeout=10000)
+            except PlaywrightError:
+                pass
+            log_event("ebsco_page_ready", count=page.locator(result_selector).count())
 
             while True:
-                html = page.content()
-                pages_html.append(html)
                 collected = page.locator(result_selector).count()
-                log_event("ebsco_page_collected", snapshot=len(pages_html),
-                          html_len=len(html), estimated_results=collected)
+                log_event("ebsco_page_collected", collected=collected)
 
                 if collected >= limit:
                     break
@@ -660,16 +635,24 @@ def search_ebsco_via_browser(
                 # Click "Show more results" to load the next batch.
                 show_more = page.locator("[data-auto='show-more-button']").first
                 if not show_more.count():
-                    log_event("ebsco_no_show_more", snapshot=len(pages_html))
+                    log_event("ebsco_no_show_more", collected=collected)
                     break
 
                 show_more.scroll_into_view_if_needed()
                 show_more.click()
-                page.wait_for_timeout(int(page_delay_seconds * 1000))
+                # Wait until the DOM item count grows, then settle.
                 try:
-                    page.wait_for_load_state("networkidle", timeout=8000)
+                    page.wait_for_function(
+                        f"document.querySelectorAll(\"[data-auto='search-result-item']\").length > {collected}",
+                        timeout=12000,
+                    )
                 except PlaywrightError:
                     pass
+                page.wait_for_timeout(int(page_delay_seconds * 1000))
+
+            # Take a single snapshot after all items are loaded.
+            html = page.content()
+            pages_html.append(html)
 
             _close_context_if_needed(ctx)
 
