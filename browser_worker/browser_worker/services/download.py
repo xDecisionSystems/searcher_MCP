@@ -633,12 +633,15 @@ def search_ebsco_via_browser(
                 pass
             page.wait_for_timeout(2000)
 
-            # Scroll to the bottom so EBSCO lazy-renders all visible result cards
-            # and reveals the "Show more results" button.
+            # Scroll incrementally to the bottom so EBSCO lazy-renders all
+            # visible result cards and reveals the "Show more results" button.
+            for _ in range(5):
+                page.evaluate("window.scrollBy(0, window.innerHeight)")
+                page.wait_for_timeout(400)
             page.evaluate("window.scrollTo(0, document.body.scrollHeight)")
             page.wait_for_timeout(1500)
 
-            # Snapshot the page and log selectors to help diagnose if results are empty.
+            # Snapshot the page and log selectors to diagnose if results are empty.
             html = page.content()
             import re as _re
             data_autos = sorted(set(_re.findall(r'data-auto="([^"]+)"', html)))
@@ -649,8 +652,10 @@ def search_ebsco_via_browser(
                       count=page.locator(result_selector).count())
 
             while collected < limit:
-                # Scroll to bottom before each snapshot so all rendered cards are
-                # visible and the "Show more results" button is in the DOM.
+                # Scroll incrementally then jump to bottom before each snapshot.
+                for _ in range(3):
+                    page.evaluate("window.scrollBy(0, window.innerHeight)")
+                    page.wait_for_timeout(300)
                 page.evaluate("window.scrollTo(0, document.body.scrollHeight)")
                 page.wait_for_timeout(800)
 

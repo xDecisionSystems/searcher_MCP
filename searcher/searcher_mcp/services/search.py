@@ -692,6 +692,21 @@ def _parse_ebsco_results_page(html: str) -> list[dict[str, Any]]:
     return results
 
 
+def _extract_ebsco_total(html: str) -> int | None:
+    """Extract the total result count from EBSCO's result-count element."""
+    soup = BeautifulSoup(html, "html.parser")
+    tag = soup.find(attrs={"data-auto": "result-count"})
+    if tag:
+        text = tag.get_text(" ", strip=True)
+        m = __import__("re").search(r"[\d,]+", text)
+        if m:
+            try:
+                return int(m.group(0).replace(",", ""))
+            except ValueError:
+                pass
+    return None
+
+
 def _search_ebsco_browser(
     query: str,
     limit: int,
@@ -707,13 +722,15 @@ def _search_ebsco_browser(
 
     # Use the last snapshot — it has the most accumulated results after "Show more" clicks.
     results: list[dict[str, Any]] = []
+    total_records: int | None = None
     if pages_html:
+        total_records = _extract_ebsco_total(pages_html[-1])
         results = _parse_ebsco_results_page(pages_html[-1])
         results = results[:limit]
         for i, r in enumerate(results):
             r["index"] = i + 1
 
-    return {"total_records": None, "results": results}
+    return {"total_records": total_records, "results": results}
 
 
 def search_ebsco_browser(
