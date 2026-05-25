@@ -648,16 +648,6 @@ def search_ebsco_via_browser(
                       count=page.locator(result_selector).count())
 
             while collected < limit:
-                # Drag scrollbar to bottom before each snapshot.
-                page.mouse.move(sb_x, sb_top)
-                page.mouse.down()
-                for i in range(1, steps + 1):
-                    y = sb_top + (sb_bottom - sb_top) * i // steps
-                    page.mouse.move(sb_x, y)
-                    page.wait_for_timeout(150)
-                page.mouse.up()
-                page.wait_for_timeout(1000)
-
                 html = page.content()
                 pages_html.append(html)
                 collected = page.locator(result_selector).count()
@@ -667,26 +657,13 @@ def search_ebsco_via_browser(
                 if collected >= limit:
                     break
 
-                show_more = None
-                try:
-                    loc = page.locator("[data-auto='show-more-button']").first
-                    if loc.count():
-                        show_more = loc
-                except PlaywrightError:
-                    pass
-                if show_more is None:
-                    for btn in page.query_selector_all("button"):
-                        try:
-                            if "Show more" in (btn.inner_text() or ""):
-                                show_more = btn
-                                break
-                        except PlaywrightError:
-                            continue
-
-                if not show_more:
+                # Click "Show more results" to load the next batch.
+                show_more = page.locator("[data-auto='show-more-button']").first
+                if not show_more.count():
                     log_event("ebsco_no_show_more", snapshot=len(pages_html))
                     break
 
+                show_more.scroll_into_view_if_needed()
                 show_more.click()
                 page.wait_for_timeout(int(page_delay_seconds * 1000))
                 try:
