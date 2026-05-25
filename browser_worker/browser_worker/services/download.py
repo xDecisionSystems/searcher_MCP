@@ -1,4 +1,5 @@
 import re
+import threading
 import uuid
 from pathlib import Path
 from typing import Any
@@ -654,10 +655,38 @@ def fetch_page_via_browser(url: str) -> dict[str, Any]:
         raise HTTPException(status_code=502, detail=f"Browser fetch failed: {exc}") from exc
 
 
+# ── Download lock (one at a time) ─────────────────────────────────────────────
+
+_download_lock = threading.Lock()
+
+
 # ── Main entry point ───────────────────────────────────────────────────────────
 
 def download_paper_via_browser(url: str, filename: str | None = None) -> dict[str, Any]:
     _validate_http_url(url)
+
+    if not _download_lock.acquire(blocking=False):
+        log_event("download_busy", url=url)
+        raise HTTPException(
+            status_code=409,
+            detail={
+                "status": "busy",
+                "message": (
+                    "A download is already in progress. "
+                    "Wait for it to complete (or resolve any login/CAPTCHA prompt) "
+                    "before starting another download."
+                ),
+                "requested_url": url,
+            },
+        )
+
+    try:
+        return _download_paper_locked(url=url, filename=filename)
+    finally:
+        _download_lock.release()
+
+
+def _download_paper_locked(url: str, filename: str | None = None) -> dict[str, Any]:
     DOWNLOAD_DIR.mkdir(parents=True, exist_ok=True)
 
     base_name = filename.strip() if filename else _safe_filename(url)

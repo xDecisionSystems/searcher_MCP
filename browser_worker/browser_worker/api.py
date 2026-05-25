@@ -201,7 +201,9 @@ mcp = FastApiMCP(
     name="Browser Worker MCP",
     description=(
         "Download academic papers from publisher portals using a real Chromium browser. "
+        "Only one download runs at a time. "
         "Call download_paper with the paper URL. "
+        "If the response has status='busy', inform the user and do NOT retry until the current download finishes. "
         "If the response has status='login_required', show the user_prompt to the user "
         "and wait for them to press OK (then retry the same call) or Stop (then abort). "
         "Do not retry automatically — always wait for explicit user confirmation. "
