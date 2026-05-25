@@ -6,7 +6,7 @@ Requires=xvfb.service
 [Service]
 Type=simple
 User=root
-EnvironmentFile=/opt/repo/.env
+EnvironmentFile=/opt/searcher/.env
 ExecStart=/usr/bin/x11vnc \
     -display :99 \
     -forever \

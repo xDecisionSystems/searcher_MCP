@@ -16,8 +16,8 @@ Each service has its own `requirements.txt` and `deploy/` folder. There is a sin
 ## Deployment Policy
 
 - Production deployment is a single Debian-based Proxmox LXC with `systemd`.
-- All services deploy to `/opt/repo/` inside the LXC (git clone of this repo).
-- Shared env lives at `/opt/repo/.env`; each service symlinks to it.
+- All services deploy to `/opt/searcher/` inside the LXC (git clone of this repo).
+- Shared env lives at `/opt/searcher/.env`; each service symlinks to it.
 - Local deployment using `.venv` + `uvicorn` is allowed for testing and validation only.
 - Use `.env.dev` at the repo root for local development.
 - Do not add additional deployment targets unless explicitly requested.

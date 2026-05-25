@@ -4,11 +4,10 @@ Guidance for programming agents contributing to this repository.
 
 ## 1. Mission
 
-Maintain three FastAPI services and one Chromium process deployed together as a single stack:
+Maintain two FastAPI services and a browser stack deployed together as a single stack:
 
 - `searcher/` — scholarly search, web page retrieval, and PDF download via HTTP APIs.
 - `browser_worker/` — browser-driven paper download for authenticated publisher portals.
-- `cdp_gateway/` — JWT-authenticated login page and WebSocket proxy for Chromium CDP access.
 
 Prioritize correctness, safe defaults, and predictable API behavior.
 
@@ -37,23 +36,17 @@ searcher_MCP/
 │   ├── browser_worker/
 │   │   ├── api.py
 │   │   ├── config.py
-│   │   └── services/download.py
+│   │   ├── logger.py
+│   │   └── services/
+│   │       ├── download.py          # Core download logic, lock, no_access detection
+│   │       └── recorder.py          # Session recording and strategy persistence
+│   │   └── strategies/              # Per-domain download strategy JSON files
 │   ├── requirements.txt
 │   ├── deploy/
 │   │   ├── browser-worker.service
 │   │   └── chromium-cdp.service
 │   └── README.md
-├── cdp_gateway/                     # Authenticated CDP login page + WebSocket proxy
-│   ├── app.py
-│   ├── cdp_gateway/
-│   │   ├── api.py
-│   │   ├── config.py
-│   │   ├── session.py
-│   │   └── templates/login.html
-│   ├── requirements.txt
-│   └── deploy/cdp-gateway.service
 ├── deploy/                          # Stack-level deployment scripts
-│   ├── proxmox_deploy.sh            # Creates LXC and deploys all services
 │   ├── update.sh                    # Updates code and restarts in the LXC
 │   └── restart.sh                   # Restarts all services in dependency order
 ├── exploration/                     # Standalone evaluation scripts (not production)
@@ -68,9 +61,9 @@ If you add or change behavior in a service, update that service's `README.md` an
 
 ## 3. Deployment Policy
 
-- Production: single Debian-based Proxmox LXC with `systemd`, running four services.
-- Code is deployed to `/opt/repo/` inside the LXC (git clone of this repo).
-- Shared env lives at `/opt/repo/.env`; each service symlinks to it.
+- Production: single Debian-based Proxmox LXC with `systemd`, running two FastAPI services plus browser stack.
+- Code is deployed to `/opt/searcher/` inside the LXC (git clone of this repo).
+- Shared env lives at `/opt/searcher/.env`; each service symlinks to it.
 - Local `.venv` + `uvicorn` is for testing only.
 - Use `deploy/update.sh` inside the LXC for code updates — no full redeploy needed.
 - Do not run per-service `install.sh` or `update.sh` — these are legacy and unused.

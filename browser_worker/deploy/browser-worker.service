@@ -5,9 +5,9 @@ After=network.target
 [Service]
 Type=simple
 User=root
-WorkingDirectory=/opt/repo/browser_worker
-EnvironmentFile=/opt/repo/.env
-ExecStart=/opt/repo/browser_worker/.venv/bin/uvicorn app:app --host 0.0.0.0 --port 8010 --root-path ${BROWSER_ROOT_PATH}
+WorkingDirectory=/opt/searcher/browser_worker
+EnvironmentFile=/opt/searcher/.env
+ExecStart=/opt/searcher/browser_worker/.venv/bin/uvicorn app:app --host 0.0.0.0 --port 8010 --root-path ${BROWSER_ROOT_PATH}
 Restart=always
 RestartSec=3
 

@@ -376,8 +376,8 @@ log "Waiting for LXC to be ready ..."
 ssh_run "$PROXMOX_HOST" "sleep 6"
 
 # ─── Upload shared env file ───────────────────────────────────────────────────
-# Upload once to /opt/repo/.env; each service symlinks to it.
-SHARED_ENV_DEST="/opt/repo/.env"
+# Upload once to /opt/searcher/.env; each service symlinks to it.
+SHARED_ENV_DEST="/opt/searcher/.env"
 if [[ -n "$SHARED_ENV_FILE" && -f "$SHARED_ENV_FILE" ]]; then
   log "Uploading ${SHARED_ENV_FILE} → LXC:${SHARED_ENV_DEST} ..."
   if [[ "$DRY_RUN" == "1" ]]; then
@@ -398,12 +398,12 @@ if [[ -n "$LXC_HOSTNAME_POSTFIX" ]]; then
   BROWSER_ROOT_PATH="/${LXC_HOSTNAME_POSTFIX}/browser"
   log "Setting root paths: SEARCHER_ROOT_PATH=${SEARCHER_ROOT_PATH}  BROWSER_ROOT_PATH=${BROWSER_ROOT_PATH}"
   lxc_exec "$VMID" "
-    grep -q 'SEARCHER_ROOT_PATH' /opt/repo/.env && \
-      sed -i 's|^SEARCHER_ROOT_PATH=.*|SEARCHER_ROOT_PATH=${SEARCHER_ROOT_PATH}|' /opt/repo/.env || \
-      echo 'SEARCHER_ROOT_PATH=${SEARCHER_ROOT_PATH}' >> /opt/repo/.env
-    grep -q 'BROWSER_ROOT_PATH' /opt/repo/.env && \
-      sed -i 's|^BROWSER_ROOT_PATH=.*|BROWSER_ROOT_PATH=${BROWSER_ROOT_PATH}|' /opt/repo/.env || \
-      echo 'BROWSER_ROOT_PATH=${BROWSER_ROOT_PATH}' >> /opt/repo/.env
+    grep -q 'SEARCHER_ROOT_PATH' /opt/searcher/.env && \
+      sed -i 's|^SEARCHER_ROOT_PATH=.*|SEARCHER_ROOT_PATH=${SEARCHER_ROOT_PATH}|' /opt/searcher/.env || \
+      echo 'SEARCHER_ROOT_PATH=${SEARCHER_ROOT_PATH}' >> /opt/searcher/.env
+    grep -q 'BROWSER_ROOT_PATH' /opt/searcher/.env && \
+      sed -i 's|^BROWSER_ROOT_PATH=.*|BROWSER_ROOT_PATH=${BROWSER_ROOT_PATH}|' /opt/searcher/.env || \
+      echo 'BROWSER_ROOT_PATH=${BROWSER_ROOT_PATH}' >> /opt/searcher/.env
   "
 fi
 
@@ -423,17 +423,17 @@ lxc_exec "$VMID" "DEBIAN_FRONTEND=noninteractive apt-get install -y -qq python3 
 
 # ─── Clone repo ───────────────────────────────────────────────────────────────
 log "Cloning ${REPO_URL} (branch: ${REPO_BRANCH}) ..."
-lxc_exec "$VMID" "git clone --branch ${REPO_BRANCH} --depth 1 ${REPO_URL} /opt/repo"
+lxc_exec "$VMID" "git clone --branch ${REPO_BRANCH} --depth 1 ${REPO_URL} /opt/searcher"
 
 # ─── Install searcher ─────────────────────────────────────────────────────────
 log "Installing searcher ..."
 lxc_exec "$VMID" "
-  cd /opt/repo/searcher
+  cd /opt/searcher/searcher
   python3 -m venv .venv
   .venv/bin/python -m pip install --quiet --upgrade pip
   .venv/bin/python -m pip install --quiet -r requirements.txt
-  if [ -f /opt/repo/.env ]; then ln -sf /opt/repo/.env /opt/repo/searcher/.env; else cp /opt/repo/.env.example /opt/repo/.env && ln -sf /opt/repo/.env /opt/repo/searcher/.env; fi
-  cp /opt/repo/searcher/deploy/searcher-mcp.service /etc/systemd/system/searcher-mcp.service
+  if [ -f /opt/searcher/.env ]; then ln -sf /opt/searcher/.env /opt/searcher/searcher/.env; else cp /opt/searcher/.env.example /opt/searcher/.env && ln -sf /opt/searcher/.env /opt/searcher/searcher/.env; fi
+  cp /opt/searcher/searcher/deploy/searcher-mcp.service /etc/systemd/system/searcher-mcp.service
   systemctl daemon-reload
   systemctl enable searcher-mcp
   systemctl start searcher-mcp
@@ -446,7 +446,7 @@ log "searcher-mcp PASSED."
 # ─── Install browser_worker ───────────────────────────────────────────────────
 log "Installing browser_worker ..."
 lxc_exec "$VMID" "
-  cd /opt/repo/browser_worker
+  cd /opt/searcher/browser_worker
   python3 -m venv .venv
   .venv/bin/python -m pip install --quiet --upgrade pip
   .venv/bin/python -m pip install --quiet -r requirements.txt
@@ -454,7 +454,7 @@ lxc_exec "$VMID" "
 
 log "Installing Playwright Chromium ..."
 lxc_exec "$VMID" "
-  cd /opt/repo/browser_worker
+  cd /opt/searcher/browser_worker
   DEBIAN_FRONTEND=noninteractive .venv/bin/python -m playwright install-deps chromium 2>&1 | tail -5
   .venv/bin/python -m playwright install chromium 2>&1 | tail -5
 "
@@ -468,12 +468,12 @@ lxc_exec "$VMID" "
 
 log "Installing display/VNC/noVNC systemd services ..."
 lxc_exec "$VMID" "
-  mkdir -p /opt/repo/browser_worker/chromium-profile
+  mkdir -p /opt/searcher/browser_worker/chromium-profile
 
-  cp /opt/repo/browser_worker/deploy/xvfb.service            /etc/systemd/system/xvfb.service
-  cp /opt/repo/browser_worker/deploy/x11vnc.service          /etc/systemd/system/x11vnc.service
-  cp /opt/repo/browser_worker/deploy/chromium-display.service /etc/systemd/system/chromium-display.service
-  cp /opt/repo/browser_worker/deploy/novnc.service           /etc/systemd/system/novnc.service
+  cp /opt/searcher/browser_worker/deploy/xvfb.service            /etc/systemd/system/xvfb.service
+  cp /opt/searcher/browser_worker/deploy/x11vnc.service          /etc/systemd/system/x11vnc.service
+  cp /opt/searcher/browser_worker/deploy/chromium-display.service /etc/systemd/system/chromium-display.service
+  cp /opt/searcher/browser_worker/deploy/novnc.service           /etc/systemd/system/novnc.service
 
   systemctl daemon-reload
   systemctl enable xvfb x11vnc chromium-display novnc
@@ -509,8 +509,8 @@ log "noVNC PASSED."
 # ─── Start browser-worker ─────────────────────────────────────────────────────
 log "Configuring and starting browser-worker ..."
 lxc_exec "$VMID" "
-  ln -sf /opt/repo/.env /opt/repo/browser_worker/.env
-  cp /opt/repo/browser_worker/deploy/browser-worker.service /etc/systemd/system/browser-worker.service
+  ln -sf /opt/searcher/.env /opt/searcher/browser_worker/.env
+  cp /opt/searcher/browser_worker/deploy/browser-worker.service /etc/systemd/system/browser-worker.service
   systemctl daemon-reload
   systemctl enable browser-worker
   systemctl start browser-worker
@@ -545,8 +545,8 @@ fi
 echo ""
 echo "  Next steps:"
 if [[ -z "$SHARED_ENV_FILE" ]]; then
-  echo "    1. Add API keys to /opt/repo/.env on VMID ${VMID},"
-  echo "       then: pct exec ${VMID} -- bash /opt/repo/deploy/restart.sh"
+  echo "    1. Add API keys to /opt/searcher/.env on VMID ${VMID},"
+  echo "       then: pct exec ${VMID} -- bash /opt/searcher/deploy/restart.sh"
 else
   echo "    1. Shared env uploaded from ${SHARED_ENV_FILE} — API keys are set."
 fi
@@ -554,7 +554,7 @@ echo ""
 echo "    2. To log into publisher portals (ScienceDirect, IEEE, etc.):"
 echo "       Open http://${LXC_ACTUAL_IP}:${NOVNC_PORT}/vnc.html"
 echo "       Enter your VNC password, then log in to the portal in the browser."
-echo "       Session saves to /opt/repo/browser_worker/chromium-profile — persists across restarts."
+echo "       Session saves to /opt/searcher/browser_worker/chromium-profile — persists across restarts."
 
 # ─── Optional Tailscale install ───────────────────────────────────────────────
 echo ""

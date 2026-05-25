@@ -4,7 +4,7 @@ Architecture overview for the Searcher MCP FastAPI service.
 
 ## 1. High-Level Design
 
-This project is a single-service HTTP API built with FastAPI.
+Single-service HTTP API built with FastAPI.
 
 Core responsibilities:
 
@@ -22,20 +22,13 @@ The implementation is modular:
 
 ## 2. Runtime Components
 
-- FastAPI app object:
-  Defines HTTP routes and OpenAPI docs.
-- Shared `requests.Session`:
-  Reused for outbound HTTP calls with a configured User-Agent.
-- Provider adapters:
-  Internal functions that normalize upstream scholarly results into project JSON shapes.
-- Extraction/parsing layer:
-  Uses BeautifulSoup for HTML cleanup and content extraction.
-- Download manager:
-  Streams PDF bytes to disk with size checks.
+- FastAPI app object: defines HTTP routes and OpenAPI docs.
+- Shared `requests.Session`: reused for outbound HTTP calls with a configured User-Agent.
+- Provider adapters: internal functions that normalize upstream scholarly results into project JSON shapes.
+- Extraction/parsing layer: uses BeautifulSoup for HTML cleanup and content extraction.
+- Download manager: streams PDF bytes to disk with size checks.
 
 ## 3. Request Flow
-
-Generic request lifecycle:
 
 1. FastAPI route receives and validates query parameters.
 2. Route selects helper function(s).
@@ -45,24 +38,16 @@ Generic request lifecycle:
 
 ## 4. Endpoint Map
 
-- `/health`:
-  Lightweight liveness endpoint.
-- `/search_scholar`:
-  Unified scholarly search router for Semantic Scholar, SerpAPI Google Scholar, IEEE Xplore, Web of Science, and Scopus.
-- `/search_google_scholar`:
-  Explicit SerpAPI-backed Google Scholar search.
-- `/search_ieeexplore`:
-  IEEE Xplore metadata search using API key authentication.
-- `/search_web_of_science`:
-  Clarivate Web of Science Starter API search using API key authentication.
-- `/search_scopus`:
-  Elsevier Scopus Search API using API key authentication.
-- `/fetch_page`:
-  Retrieves HTML and returns extracted textual content.
-- `/review_page`:
-  Extends fetch output with headings and readability metrics.
-- `/download_pdf`:
-  Streams PDF to disk with content-type and max-size enforcement.
+- `/health`: lightweight liveness endpoint.
+- `/search_scholar`: unified scholarly search router — Semantic Scholar, IEEE Xplore, Web of Science, and Scopus.
+- `/search_google_scholar`: Google Scholar search via the `scholarly` library. Supports `limit` (up to 200), `start_index`, `year_low`, `year_high`, and `exclude_domains`.
+- `/search_google_scholar_browser`: Google Scholar search using the persistent Chromium browser. Same parameters and response schema as `/search_google_scholar`. Use when `scholarly` hits CAPTCHA blocks.
+- `/search_ieeexplore`: IEEE Xplore metadata search using API key authentication.
+- `/search_web_of_science`: Clarivate Web of Science Starter API search using API key authentication.
+- `/search_scopus`: Elsevier Scopus Search API using API key authentication.
+- `/fetch_page`: retrieves HTML and returns extracted textual content.
+- `/review_page`: extends fetch output with headings and readability metrics.
+- `/download_pdf`: streams PDF to disk with content-type and max-size enforcement.
 
 ## 5. Provider Selection Logic
 
@@ -73,16 +58,16 @@ Scholar provider selection in `/search_scholar` when `provider=auto`:
 Explicit provider names supported by `/search_scholar`:
 
 - `semantic_scholar`
-- `google_scholar_serpapi`
 - `ieeexplore`
 - `web_of_science`
 - `scopus`
+
+Google Scholar is accessed via dedicated endpoints (`/search_google_scholar`, `/search_google_scholar_browser`) rather than through `/search_scholar`.
 
 ## 6. Configuration Model
 
 Configuration is environment-driven:
 
-- `SERPAPI_API_KEY`
 - `IEEE_XPLORE_API_KEY`
 - `SEMANTIC_SCHOLAR_API_KEY`
 - `WEB_OF_SCIENCE_API_KEY`
@@ -111,8 +96,8 @@ Primary production environment is Debian-based Proxmox LXC with systemd manageme
 Local `.venv` + `uvicorn` deployment is also supported for testing only.
 
 - Service file: `deploy/searcher-mcp.service`
-- Working directory: `/opt/repo/searcher`
-- Env file: `/opt/repo/.env` (shared with all services)
+- Working directory: `/opt/searcher/searcher`
+- Env file: `/opt/searcher/.env` (shared with all services)
 - Process manager: `systemd`
 - App server: `uvicorn`
 
@@ -126,11 +111,4 @@ Local `.venv` + `uvicorn` deployment is also supported for testing only.
 
 ## 10. Exploration Directory
 
-`../exploration/` (repository root) contains standalone scripts used to test, explore, and evaluate options being considered for integration into the app. Scripts there are not part of the production codebase, may have additional dependencies beyond `requirements.txt`, and are not subject to the standard API contracts or deployment policies.
-
-## 11. Recommended Future Refactors
-
-- Split API definitions into dedicated route modules by domain.
-- Add Pydantic response models for stronger contracts.
-- Add test coverage for provider-specific normalization branches.
-- Add structured logging and request IDs.
+`../exploration/` (repository root) contains standalone scripts used to test and evaluate options being considered for integration. Scripts there are not part of the production codebase and are not subject to standard API contracts or deployment policies.

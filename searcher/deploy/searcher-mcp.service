@@ -5,9 +5,9 @@ After=network.target
 [Service]
 Type=simple
 User=root
-WorkingDirectory=/opt/repo/searcher
-EnvironmentFile=/opt/repo/.env
-ExecStart=/opt/repo/searcher/.venv/bin/uvicorn app:app --host 0.0.0.0 --port 8000 --root-path ${SEARCHER_ROOT_PATH}
+WorkingDirectory=/opt/searcher/searcher
+EnvironmentFile=/opt/searcher/.env
+ExecStart=/opt/searcher/searcher/.venv/bin/uvicorn app:app --host 0.0.0.0 --port 8000 --root-path ${SEARCHER_ROOT_PATH}
 Restart=always
 RestartSec=3
 

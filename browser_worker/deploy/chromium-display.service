@@ -12,7 +12,7 @@ ExecStart=/usr/bin/chromium \
     --disable-gpu \
     --remote-debugging-port=9222 \
     --remote-debugging-address=127.0.0.1 \
-    --user-data-dir=/opt/repo/browser_worker/chromium-profile \
+    --user-data-dir=/opt/searcher/browser_worker/chromium-profile \
     --disable-dev-shm-usage \
     --no-first-run \
     --no-default-browser-check \

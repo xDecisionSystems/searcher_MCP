@@ -4,20 +4,20 @@
 # Updates all searcher-stack services on the LXC by pulling the latest code
 # from GitHub, reinstalling dependencies, and restarting services in order.
 #
-# Must be run as root inside the LXC (or via: pct exec <vmid> -- bash /opt/repo/deploy/update.sh)
+# Must be run as root inside the LXC (or via: pct exec <vmid> -- bash /opt/searcher/deploy/update.sh)
 #
 # Usage:
 #   ./deploy/update.sh [--branch <branch>] [--dry-run]
 
 set -euo pipefail
 
-REPO_DIR="/opt/repo"
+REPO_DIR="/opt/searcher"
 REPO_URL="https://github.com/xDecisionSystems/searcher_MCP"
 BRANCH="${BRANCH:-main}"
 DRY_RUN=0
 
-SEARCHER_DIR="/opt/repo/searcher"
-WORKER_DIR="/opt/repo/browser_worker"
+SEARCHER_DIR="/opt/searcher/searcher"
+WORKER_DIR="/opt/searcher/browser_worker"
 CDP_PORT=9222
 NOVNC_PORT=6080
 SEARCHER_PORT=8000
