@@ -586,32 +586,52 @@ def search_ebsco_via_browser(
             pages = ctx.pages
             page = pages[0] if pages else ctx.new_page()
 
-            page.goto(search_url, wait_until="domcontentloaded", timeout=30000)
+            # EBSCO is a React SPA — navigate with networkidle so results render.
+            page.goto(search_url, wait_until="networkidle", timeout=45000)
+            page.wait_for_timeout(2000)
 
-            # EBSCO is a React SPA — wait for the result cards to render.
-            try:
-                page.wait_for_selector("[data-auto='result-list-item']", timeout=15000)
-            except PlaywrightError:
-                # Fallback: networkidle gives the SPA time to finish.
+            # Scroll to the bottom of the initial page so EBSCO lazy-renders all
+            # visible result cards and reveals the "Show more results" button.
+            page.evaluate("window.scrollTo(0, document.body.scrollHeight)")
+            page.wait_for_timeout(1500)
+
+            # Snapshot the page and log selectors to help diagnose if results are empty.
+            html = page.content()
+            import re as _re
+            data_autos = sorted(set(_re.findall(r'data-auto="([^"]+)"', html)))
+            log_event("ebsco_page_ready", html_len=len(html), data_autos=data_autos)
+
+            # Determine which selector EBSCO is actually using for result cards.
+            _RESULT_SELECTORS = [
+                "[data-auto='result-list-item']",
+                "li[data-auto]",
+                "article[data-auto]",
+            ]
+            result_selector = _RESULT_SELECTORS[0]
+            for sel in _RESULT_SELECTORS:
                 try:
-                    page.wait_for_load_state("networkidle", timeout=10000)
+                    if page.locator(sel).count() > 0:
+                        result_selector = sel
+                        break
                 except PlaywrightError:
-                    pass
+                    continue
+            log_event("ebsco_result_selector", selector=result_selector,
+                      count=page.locator(result_selector).count())
 
             while collected < limit:
+                # Scroll to bottom before each snapshot so all rendered cards are
+                # visible and the "Show more results" button is in the DOM.
+                page.evaluate("window.scrollTo(0, document.body.scrollHeight)")
+                page.wait_for_timeout(800)
+
                 html = page.content()
                 pages_html.append(html)
-                # Count rendered result cards (exact parse happens in searcher service).
-                collected = html.count('data-auto="result-list-item"')
+                collected = page.locator(result_selector).count()
                 log_event("ebsco_page_collected", snapshot=len(pages_html),
                           html_len=len(html), estimated_results=collected)
 
                 if collected >= limit:
                     break
-
-                # Scroll to reveal the "Show more results" button.
-                page.evaluate("window.scrollTo(0, document.body.scrollHeight)")
-                page.wait_for_timeout(800)
 
                 show_more = None
                 for btn in page.query_selector_all("button"):
