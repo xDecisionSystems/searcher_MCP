@@ -586,12 +586,32 @@ def search_ebsco_via_browser(
             pages = ctx.pages
             page = pages[0] if pages else ctx.new_page()
 
-            # EBSCO is a React SPA — navigate with networkidle so results render.
-            page.goto(search_url, wait_until="networkidle", timeout=45000)
+            # Navigate to the search results page.
+            page.goto(search_url, wait_until="domcontentloaded", timeout=30000)
+            try:
+                page.wait_for_load_state("networkidle", timeout=10000)
+            except PlaywrightError:
+                pass
+            page.wait_for_timeout(1500)
+
+            # EBSCO requires clicking the search submit button (rendered as an SVG
+            # icon inside the search bar) to actually trigger the results fetch.
+            # Without this click the results container stays in its loading state.
+            try:
+                page.locator("button[type='submit']").first.click(timeout=5000)
+            except PlaywrightError:
+                try:
+                    page.locator("button:has(svg)").first.click(timeout=3000)
+                except PlaywrightError:
+                    pass
+            try:
+                page.wait_for_load_state("networkidle", timeout=15000)
+            except PlaywrightError:
+                pass
             page.wait_for_timeout(2000)
 
-            # Scroll to the bottom of the initial page so EBSCO lazy-renders all
-            # visible result cards and reveals the "Show more results" button.
+            # Scroll to the bottom so EBSCO lazy-renders all visible result cards
+            # and reveals the "Show more results" button.
             page.evaluate("window.scrollTo(0, document.body.scrollHeight)")
             page.wait_for_timeout(1500)
 
