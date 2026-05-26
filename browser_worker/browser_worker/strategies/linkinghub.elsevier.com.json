@@ -1,7 +1,6 @@
 {
-  "domain": "www.sciencedirect.com",
-  "source_url": "https://www.sciencedirect.com/science/article/pii/S138912862400714X",
-  "recorded_at": "2026-05-26T22:18:52.492764+00:00",
+  "domain": "linkinghub.elsevier.com",
+  "source_url": "https://linkinghub.elsevier.com/retrieve/pii/S138912862400714X",
   "login_detection": {
     "enabled": true,
     "signals": ["sign in", "log in", "institutional access", "purchase access", "access denied", "subscribe", "captcha", "verify you are human", "press & hold", "checking your browser"],
@@ -12,8 +11,8 @@
   "steps": [
     {
       "type": "navigate",
-      "url_pattern": "https://www.sciencedirect.com/science/article/pii/",
-      "example_url": "https://www.sciencedirect.com/science/article/pii/S138912862400714X"
+      "url_pattern": "https://linkinghub.elsevier.com/retrieve/pii/",
+      "example_url": "https://linkinghub.elsevier.com/retrieve/pii/S138912862400714X"
     },
     {
       "type": "click",

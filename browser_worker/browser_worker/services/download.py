@@ -438,7 +438,13 @@ def _replay_strategy(page: Any, strategy: dict[str, Any], out_path: Path) -> dic
         try:
             ct = (response.headers.get("content-type") or "").lower()
             url = response.url
-            if "pdf" in ct or url.lower().endswith(".pdf"):
+            url_lower = url.lower()
+            is_pdf = (
+                "pdf" in ct
+                or url_lower.endswith(".pdf")
+                or ("sciencedirectassets.com" in url_lower and "main.pdf" in url_lower)
+            )
+            if is_pdf:
                 data = response.body()
                 if data and len(data) > 10000:
                     captured_pdf.append((url, data))
