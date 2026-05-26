@@ -551,7 +551,7 @@ def _apply_post_processing(path: Path, post_process: dict[str, Any]) -> None:
 
 # ── EBSCO browser search ──────────────────────────────────────────────────────
 
-def _ebsco_ensure_signed_in(page: Any) -> None:
+def _ebsco_ensure_signed_in(page: Any, wait_for_selector: str | None = None) -> None:
     """If EBSCO shows a guest banner, click Sign in to establish institutional session."""
     try:
         page.wait_for_load_state("networkidle", timeout=10000)
@@ -568,6 +568,12 @@ def _ebsco_ensure_signed_in(page: Any) -> None:
                 pass
             page.wait_for_timeout(2000)
             log_event("ebsco_signed_in", url=page.url)
+            # Wait for a specific element to confirm the page is ready post sign-in.
+            if wait_for_selector:
+                try:
+                    page.wait_for_selector(wait_for_selector, timeout=10000)
+                except PlaywrightError:
+                    pass
         except PlaywrightError as exc:
             log_event("ebsco_sign_in_failed", error=str(exc))
 
@@ -611,8 +617,8 @@ def download_ebsco_paper(url: str) -> dict:
             try:
                 page.goto(url, wait_until="domcontentloaded", timeout=30000)
 
-                # Handle guest banner / institutional sign-in.
-                _ebsco_ensure_signed_in(page)
+                # Handle guest banner / institutional sign-in, wait for Download button.
+                _ebsco_ensure_signed_in(page, wait_for_selector="button[data-auto='card-call-to-action-download-button']")
 
                 # Wait for detail content to render after sign-in.
                 try:
@@ -623,7 +629,7 @@ def download_ebsco_paper(url: str) -> dict:
 
                 # First click opens the download popup.
                 try:
-                    page.locator("button:has-text('Download')").first.click(timeout=10000)
+                    page.locator("button[data-auto='card-call-to-action-download-button']").first.click(timeout=10000)
                     log_event("ebsco_download_click1")
                 except PlaywrightError as exc:
                     log_event("ebsco_download_click1_failed", error=str(exc))
