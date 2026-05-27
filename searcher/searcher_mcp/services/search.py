@@ -124,41 +124,87 @@ def search_semantic_scholar(query: str, limit: int) -> dict[str, Any]:
     return _envelope("semantic_scholar", query, data["results"], data.get("total_records"))
 
 
-def _search_ieeexplore(query: str, limit: int, start_record: int) -> dict[str, Any]:
+_IEEE_PAGE_SIZE = 200  # API hard cap per request
+
+
+def _search_ieeexplore(
+    query: str,
+    limit: int,
+    start_record: int,
+    year_low: int | None = None,
+    year_high: int | None = None,
+    content_type: str | None = None,
+    open_access: bool | None = None,
+    sort_field: str | None = None,
+    sort_order: str | None = None,
+    author: str | None = None,
+) -> dict[str, Any]:
     if not IEEE_XPLORE_API_KEY:
         raise HTTPException(status_code=400, detail="IEEE_XPLORE_API_KEY is not configured.")
 
-    payload = request_json(
-        "https://ieeexploreapi.ieee.org/api/v1/search/articles",
-        params={
-            "apikey": IEEE_XPLORE_API_KEY,
-            "querytext": query,
-            "max_records": limit,
-            "start_record": start_record,
-        },
-    )
+    base_params: dict[str, Any] = {"apikey": IEEE_XPLORE_API_KEY, "querytext": query}
+    if year_low is not None:
+        base_params["start_year"] = year_low
+    if year_high is not None:
+        base_params["end_year"] = year_high
+    if content_type:
+        base_params["content_type"] = content_type
+    if open_access is not None:
+        base_params["open_access"] = "True" if open_access else "False"
+    if sort_field:
+        base_params["sort_field"] = sort_field
+    if sort_order:
+        base_params["sort_order"] = sort_order
+    if author:
+        base_params["author"] = author
 
     results: list[dict[str, Any]] = []
-    for item in payload.get("articles", [])[:limit]:
-        authors = item.get("authors", {}).get("authors", [])
-        author_names = [a.get("full_name", "") for a in authors if a.get("full_name")]
-        doi = item.get("doi", "") or ""
-        url = item.get("html_url", "") or item.get("pdf_url", "") or (f"https://doi.org/{doi}" if doi else "")
-        results.append(_result(
-            title=item.get("title", "") or item.get("article_title", ""),
-            url=url,
-            snippet=item.get("abstract", ""),
-            publication_year=item.get("publication_year"),
-            authors=author_names,
-            doi=doi,
-            source=item.get("publication_title") or "",
-            pdf_link=item.get("pdf_url", "") or "",
-        ))
+    total_records: int | None = None
+    offset = start_record
+
+    while len(results) < limit:
+        batch_size = min(_IEEE_PAGE_SIZE, limit - len(results))
+        params = {**base_params, "max_records": batch_size, "start_record": offset}
+        payload = request_json(
+            "https://ieeexploreapi.ieee.org/api/v1/search/articles",
+            params=params,
+        )
+
+        if total_records is None:
+            total_raw = payload.get("total_records")
+            try:
+                total_records = int(total_raw) if total_raw is not None else None
+            except (TypeError, ValueError):
+                pass
+
+        articles = payload.get("articles", [])
+        if not articles:
+            break
+
+        for item in articles:
+            authors = item.get("authors", {}).get("authors", [])
+            author_names = [a.get("full_name", "") for a in authors if a.get("full_name")]
+            doi = item.get("doi", "") or ""
+            url = item.get("html_url", "") or item.get("pdf_url", "") or (f"https://doi.org/{doi}" if doi else "")
+            results.append(_result(
+                title=item.get("article_title", "") or item.get("title", ""),
+                url=url,
+                snippet=item.get("abstract", ""),
+                publication_year=item.get("publication_year"),
+                authors=author_names,
+                doi=doi,
+                source=item.get("publication_title") or "",
+                pdf_link=item.get("pdf_url", "") or "",
+            ))
+
+        offset += len(articles)
+        if len(articles) < batch_size:
+            break
 
     return {
         "start_record": start_record,
-        "total_records": payload.get("total_records"),
-        "results": results,
+        "total_records": total_records,
+        "results": results[:limit],
     }
 
 
@@ -777,8 +823,30 @@ def search_google_scholar_browser(
     return _envelope("google_scholar_browser", query, data["results"], data.get("total_records"))
 
 
-def search_ieeexplore(query: str, limit: int, start_record: int) -> dict[str, Any]:
-    data = _search_ieeexplore(query=query, limit=limit, start_record=start_record)
+def search_ieeexplore(
+    query: str,
+    limit: int,
+    start_record: int,
+    year_low: int | None = None,
+    year_high: int | None = None,
+    content_type: str | None = None,
+    open_access: bool | None = None,
+    sort_field: str | None = None,
+    sort_order: str | None = None,
+    author: str | None = None,
+) -> dict[str, Any]:
+    data = _search_ieeexplore(
+        query=query,
+        limit=limit,
+        start_record=start_record,
+        year_low=year_low,
+        year_high=year_high,
+        content_type=content_type,
+        open_access=open_access,
+        sort_field=sort_field,
+        sort_order=sort_order,
+        author=author,
+    )
     return _envelope("ieeexplore", query, data["results"], data.get("total_records"))
 
 

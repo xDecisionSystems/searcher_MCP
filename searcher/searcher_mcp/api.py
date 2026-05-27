@@ -165,10 +165,33 @@ def search_google_scholar_browser(
 @app.get("/search_ieeexplore")
 def search_ieeexplore(
     query: str,
-    limit: int = Query(default=5, ge=1),
-    start_record: int = Query(default=1, ge=1),
+    limit: int = Query(default=25, ge=1, description="Maximum results to return. Fetched in pages of 200."),
+    start_record: int = Query(default=1, ge=1, description="Sequence number of first record (1-based)."),
+    year_low: int | None = Query(default=None, description="Earliest publication year (inclusive)."),
+    year_high: int | None = Query(default=None, description="Latest publication year (inclusive)."),
+    content_type: str | None = Query(default=None, description="Filter by content type: Books, Conferences, Courses, Early Access, Journals, Magazines, Standards."),
+    open_access: bool | None = Query(default=None, description="If true, restrict to open access articles only."),
+    sort_field: str | None = Query(default=None, description="Sort field: article_number, article_title, publication_title."),
+    sort_order: str | None = Query(default=None, description="Sort direction: asc or desc."),
+    author: str | None = Query(default=None, description="Filter by author name (first or last, min 3 chars)."),
 ) -> dict[str, Any]:
-    return search_ieeexplore_service(query=query, limit=limit, start_record=start_record)
+    """Search IEEE Xplore via the IEEE Xplore Metadata API.
+
+    Supports Boolean operators (AND, OR, NOT) in query. Paginates automatically
+    in pages of 200 (the API maximum) to reach the requested limit.
+    """
+    return search_ieeexplore_service(
+        query=query,
+        limit=limit,
+        start_record=start_record,
+        year_low=year_low,
+        year_high=year_high,
+        content_type=content_type,
+        open_access=open_access,
+        sort_field=sort_field,
+        sort_order=sort_order,
+        author=author,
+    )
 
 
 @app.get("/search_web_of_science")
