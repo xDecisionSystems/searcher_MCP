@@ -66,12 +66,12 @@ def review_page(
 @app.get("/search_scopus")
 def search_scopus(
     query: str,
-    limit: int = Query(default=500, ge=1, description="Maximum number of results to return. Fetched in pages of 25."),
+    limit: int = Query(default=200, ge=1, description="Maximum number of results to return. Fetched in pages of 25."),
     start: int = Query(default=0, ge=0),
     year_low: int | None = Query(default=None, description="Earliest publication year (inclusive)."),
     year_high: int | None = Query(default=None, description="Latest publication year (inclusive)."),
     subj: str | None = Query(default="ENGI", description="Subject area code (e.g. ENGI, COMP, MATE, PHYS). See Scopus subject list."),
-    include_abstract: bool = Query(default=False, description="If true, fetch the full abstract for each result via the Abstract Retrieval API. Makes one extra API call per result — use with small limits."),
+    include_abstract: bool = Query(default=True, description="If true (default), fetch the full abstract for each result via the Abstract Retrieval API. Makes one extra API call per result — use a small limit when fetching many results."),
 ) -> dict[str, Any]:
     """Search Scopus (Elsevier) via the Scopus Search API.
 
@@ -79,8 +79,8 @@ def search_scopus(
     to return up to limit results. Use subj to filter by subject area
     (ENGI=Engineering, COMP=Computer Science, MATE=Materials Science, etc).
 
-    Set include_abstract=true to populate the snippet field with the full abstract.
-    This makes one additional API call per result, so use a small limit when enabled.
+    Abstracts are fetched by default via the Abstract Retrieval API (one extra call per result).
+    Set include_abstract=false to skip abstract fetching for faster bulk retrieval.
     """
     return search_scopus_service(query=query, limit=limit, start=start, year_low=year_low, year_high=year_high, subj=subj, include_abstract=include_abstract)
 
@@ -88,7 +88,7 @@ def search_scopus(
 @app.get("/search_sciencedirect")
 def search_sciencedirect(
     query: str,
-    limit: int = Query(default=20, ge=1),
+    limit: int = Query(default=200, ge=1),
     start: int = Query(default=0, ge=0),
     year_low: int | None = Query(default=None, description="Earliest publication year (inclusive)."),
     year_high: int | None = Query(default=None, description="Latest publication year (inclusive)."),
@@ -100,7 +100,7 @@ def search_sciencedirect(
 @app.get("/search_semantic_scholar")
 def search_semantic_scholar(
     query: str,
-    limit: int = Query(default=10, ge=1),
+    limit: int = Query(default=200, ge=1),
 ) -> dict[str, Any]:
     """Search Semantic Scholar via their public API."""
     return search_semantic_scholar_service(query=query, limit=limit)
@@ -109,7 +109,7 @@ def search_semantic_scholar(
 @app.get("/search_openalex")
 def search_openalex(
     query: str,
-    limit: int = Query(default=25, ge=1, description="Maximum number of results to return. Fetched in pages of 100."),
+    limit: int = Query(default=200, ge=1, description="Maximum number of results to return. Fetched in pages of 100."),
     year_low: int | None = Query(default=None, description="Earliest publication year (inclusive)."),
     year_high: int | None = Query(default=None, description="Latest publication year (inclusive)."),
     is_oa: bool | None = Query(default=None, description="If true, restrict to open access works only."),
@@ -135,7 +135,7 @@ def search_openalex(
 @app.get("/search_ebsco")
 def search_ebsco(
     query: str,
-    limit: int = Query(default=100, ge=1),
+    limit: int = Query(default=200, ge=1),
     year_low: int | None = Query(default=None, description="Earliest publication year (inclusive)."),
     year_high: int | None = Query(default=None, description="Latest publication year (inclusive)."),
 ) -> dict[str, Any]:
@@ -206,7 +206,7 @@ def search_google_scholar_browser(
 @app.get("/search_ieeexplore")
 def search_ieeexplore(
     query: str,
-    limit: int = Query(default=25, ge=1, description="Maximum results to return. Fetched in pages of 200."),
+    limit: int = Query(default=200, ge=1, description="Maximum results to return. Fetched in pages of 200."),
     start_record: int = Query(default=1, ge=1, description="Sequence number of first record (1-based)."),
     year_low: int | None = Query(default=None, description="Earliest publication year (inclusive)."),
     year_high: int | None = Query(default=None, description="Latest publication year (inclusive)."),
@@ -238,7 +238,7 @@ def search_ieeexplore(
 @app.get("/search_web_of_science")
 def search_web_of_science(
     query: str,
-    limit: int = Query(default=10, ge=1),
+    limit: int = Query(default=200, ge=1),
     year_low: int | None = Query(default=None, description="Earliest publication year (inclusive)."),
     year_high: int | None = Query(default=None, description="Latest publication year (inclusive)."),
 ) -> dict[str, Any]:

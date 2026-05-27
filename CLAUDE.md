@@ -69,7 +69,13 @@ Each service has its own `requirements.txt` and `deploy/` folder. There is a sin
 - When code changes affect behavior, update docs in the same change.
 - Keep API responses stable unless a breaking change is explicitly requested.
 - Validate all input and return clear HTTP errors.
-- **API reference page:** whenever an endpoint is added, removed, or its parameters change, update `searcher/api/static/api_reference.html` in the same commit. This file is served live at `/api-reference` and is the authoritative reference for AI agents.
+- **API reference page (`searcher/api/static/api_reference.html`) must be updated in the same change whenever any of the following occur:**
+  - An endpoint is added or removed.
+  - An endpoint's path, method, or parameters change (name, type, default, description, required/optional).
+  - A response field is added, removed, renamed, or its semantics change.
+  - A new environment variable or config key is introduced that affects searcher behavior.
+  - The behavior of an existing endpoint changes in a way a caller would observe.
+  - This file is served live at `/api-reference` and is the authoritative reference for AI agents consuming this API.
 
 ## 5. Security Basics
 

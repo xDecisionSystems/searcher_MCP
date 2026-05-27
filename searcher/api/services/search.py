@@ -41,6 +41,7 @@ def _result(
     source: str = "",
     snippet: str = "",
     pdf_link: str = "",
+    is_abstract: bool = False,
 ) -> dict[str, Any]:
     return {
         "title": title,
@@ -50,6 +51,7 @@ def _result(
         "doi": doi,
         "source": source,
         "snippet": snippet,
+        "is_abstract": is_abstract,
         "pdf_link": pdf_link,
     }
 
@@ -111,6 +113,7 @@ def _search_semantic_scholar(query: str, limit: int) -> dict[str, Any]:
             title=item.get("title", ""),
             url=item.get("url", ""),
             snippet=item.get("abstract", "") or "",
+            is_abstract=True,
             publication_year=item.get("year"),
             authors=authors,
             source=item.get("venue") or "",
@@ -189,6 +192,7 @@ def _search_ieeexplore(
                 title=item.get("article_title", "") or item.get("title", ""),
                 url=url,
                 snippet=item.get("abstract", ""),
+                is_abstract=True,
                 publication_year=item.get("publication_year"),
                 authors=author_names,
                 doi=doi,
@@ -273,6 +277,7 @@ def _parse_wos_bibtex(bibtex: str) -> list[dict[str, Any]]:
                 title=title,
                 url=url,
                 snippet=snippet,
+                is_abstract=bool(snippet),
                 publication_year=pub_year,
                 authors=authors,
                 source=source,
@@ -420,7 +425,7 @@ def _search_scopus(
     year_low: int | None = None,
     year_high: int | None = None,
     subj: str | None = None,
-    include_abstract: bool = False,
+    include_abstract: bool = True,
 ) -> dict[str, Any]:
     if not ELSEVIER_API_KEY:
         raise HTTPException(status_code=400, detail="ELSEVIER_API_KEY is not configured.")
@@ -474,7 +479,9 @@ def _search_scopus(
         for item in results:
             abstract_url = item.pop("_abstract_url", "")
             if abstract_url:
-                item["snippet"] = _fetch_scopus_abstract(abstract_url)
+                abstract = _fetch_scopus_abstract(abstract_url)
+                item["snippet"] = abstract
+                item["is_abstract"] = bool(abstract)
     else:
         for item in results:
             item.pop("_abstract_url", None)
@@ -489,7 +496,7 @@ def search_scopus(
     year_low: int | None = None,
     year_high: int | None = None,
     subj: str | None = None,
-    include_abstract: bool = False,
+    include_abstract: bool = True,
 ) -> dict[str, Any]:
     data = _search_scopus(query=query, limit=limit, start=start, year_low=year_low, year_high=year_high, subj=subj, include_abstract=include_abstract)
     return _envelope("scopus", query, data["results"], data.get("total_records"))
@@ -1000,13 +1007,16 @@ def _search_openalex(
             if best_oa:
                 pdf_link = best_oa.get("pdf_url", "") or ""
 
-            # Abstract from inverted index
+            # Abstract from inverted index — strip leading "Abstract" header if present
             abstract = _reconstruct_abstract(item.get("abstract_inverted_index"))
+            if abstract.lower().startswith("abstract"):
+                abstract = abstract[len("abstract"):].lstrip(" .:—-")
 
             results.append(_result(
                 title=item.get("display_name", ""),
                 url=url,
                 snippet=abstract,
+                is_abstract=bool(abstract),
                 publication_year=item.get("publication_year"),
                 authors=authors,
                 doi=doi,

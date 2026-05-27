@@ -125,7 +125,13 @@ When using multiple agents in parallel, assign disjoint file ownership.
 3. Implement the smallest coherent change.
 4. Run syntax checks for the affected service.
 5. Update that service's docs and the root `.env.example` if config keys changed.
-6. **API reference page:** whenever an endpoint is added, removed, or its parameters change, update `searcher/api/static/api_reference.html` in the same change. This file is served live at `/api-reference` and is the authoritative reference for AI agents.
+6. **API reference page (`searcher/api/static/api_reference.html`) must be updated in the same change whenever any of the following occur:**
+   - An endpoint is added or removed.
+   - An endpoint's path, method, or parameters change (name, type, default, description, required/optional).
+   - A response field is added, removed, renamed, or its semantics change.
+   - A new environment variable or config key is introduced that affects searcher behavior.
+   - The behavior of an existing endpoint changes in a way a caller would observe.
+   - This file is served live at `/api-reference` and is the authoritative reference for AI agents consuming this API.
 7. Summarize changes, assumptions, and residual risks.
 
 ## 11. Domain Strategy Generation Protocol (Required)

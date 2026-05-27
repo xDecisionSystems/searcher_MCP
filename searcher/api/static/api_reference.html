@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Searcher API Reference</title>
   <style>
-    /* ── Reset & base ─────────────────────────────────────────────── */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html { scroll-behavior: smooth; }
     body {
@@ -15,17 +14,14 @@
       color: #1a1a2e;
       background: #f6f7fb;
     }
-
-    /* ── Layout ───────────────────────────────────────────────────── */
     .layout { display: flex; min-height: 100vh; }
 
-    /* ── Sidebar ──────────────────────────────────────────────────── */
     nav {
       position: sticky;
       top: 0;
       height: 100vh;
-      width: 240px;
-      min-width: 240px;
+      width: 250px;
+      min-width: 250px;
       overflow-y: auto;
       background: #0f172a;
       color: #94a3b8;
@@ -56,8 +52,8 @@
       display: flex;
       align-items: center;
       gap: 8px;
-      padding: 6px 20px;
-      font-size: 13px;
+      padding: 5px 20px;
+      font-size: 12px;
       color: #94a3b8;
       text-decoration: none;
       border-left: 3px solid transparent;
@@ -66,7 +62,7 @@
     nav a:hover { color: #e2e8f0; background: #1e293b; }
     nav a.active { color: #38bdf8; border-left-color: #38bdf8; background: #1e293b; }
     nav a .method-badge {
-      font-size: 10px;
+      font-size: 9px;
       font-weight: 700;
       padding: 1px 5px;
       border-radius: 3px;
@@ -76,21 +72,15 @@
     .get  { background: #064e3b; color: #6ee7b7; }
     .post { background: #1e3a5f; color: #93c5fd; }
 
-    /* ── Main ─────────────────────────────────────────────────────── */
     main {
       flex: 1;
-      max-width: 880px;
+      max-width: 900px;
       padding: 48px 48px 80px;
     }
 
-    /* ── Header ───────────────────────────────────────────────────── */
     .page-header { margin-bottom: 40px; }
     .page-header h1 { font-size: 28px; font-weight: 800; color: #0f172a; }
-    .page-header .subtitle {
-      margin-top: 6px;
-      font-size: 14px;
-      color: #64748b;
-    }
+    .page-header .subtitle { margin-top: 6px; font-size: 14px; color: #64748b; }
     .page-header .base-url {
       display: inline-flex;
       align-items: center;
@@ -111,19 +101,13 @@
       text-transform: uppercase;
       letter-spacing: .06em;
     }
-    .pill {
-      display: inline-block;
-      font-size: 11px;
-      font-weight: 600;
-      padding: 2px 8px;
-      border-radius: 999px;
-    }
+    .pill { display: inline-block; font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 999px; }
     .pill-blue   { background: #dbeafe; color: #1d4ed8; }
     .pill-green  { background: #dcfce7; color: #15803d; }
     .pill-amber  { background: #fef3c7; color: #92400e; }
     .pill-slate  { background: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; }
+    .pill-purple { background: #f3e8ff; color: #7e22ce; }
 
-    /* ── Sections ─────────────────────────────────────────────────── */
     section { margin-bottom: 64px; }
     section h2 {
       font-size: 11px;
@@ -136,7 +120,6 @@
       margin-bottom: 24px;
     }
 
-    /* ── Envelope & result boxes ──────────────────────────────────── */
     .info-box {
       background: #fff;
       border: 1px solid #e2e8f0;
@@ -145,9 +128,8 @@
       margin-bottom: 16px;
     }
     .info-box h3 { font-size: 14px; font-weight: 700; margin-bottom: 8px; color: #0f172a; }
-    .info-box p { font-size: 13px; color: #475569; margin-bottom: 10px; }
+    .info-box p  { font-size: 13px; color: #475569; margin-bottom: 10px; }
 
-    /* ── Endpoint card ────────────────────────────────────────────── */
     .endpoint {
       background: #fff;
       border: 1px solid #e2e8f0;
@@ -161,10 +143,7 @@
       gap: 14px;
       padding: 20px 24px 16px;
       border-bottom: 1px solid #f1f5f9;
-      cursor: pointer;
-      user-select: none;
     }
-    .endpoint-header:hover { background: #f8fafc; }
     .method-pill {
       font-size: 11px;
       font-weight: 800;
@@ -175,21 +154,11 @@
     }
     .method-pill.GET  { background: #dcfce7; color: #15803d; }
     .method-pill.POST { background: #dbeafe; color: #1d4ed8; }
-    .endpoint-header .path {
-      font-family: ui-monospace, monospace;
-      font-size: 15px;
-      font-weight: 700;
-      color: #0f172a;
-    }
-    .endpoint-header .desc {
-      font-size: 13px;
-      color: #64748b;
-      margin-top: 3px;
-    }
+    .endpoint-header .path { font-family: ui-monospace, monospace; font-size: 15px; font-weight: 700; color: #0f172a; }
+    .endpoint-header .desc { font-size: 13px; color: #64748b; margin-top: 3px; }
     .endpoint-header .badges { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
     .endpoint-body { padding: 20px 24px 24px; }
 
-    /* ── Parameter table ──────────────────────────────────────────── */
     .param-table { width: 100%; border-collapse: collapse; font-size: 13px; margin: 14px 0; }
     .param-table th {
       text-align: left;
@@ -201,31 +170,13 @@
       padding: 6px 10px;
       border-bottom: 1px solid #e2e8f0;
     }
-    .param-table td {
-      padding: 8px 10px;
-      border-bottom: 1px solid #f1f5f9;
-      vertical-align: top;
-    }
+    .param-table td { padding: 8px 10px; border-bottom: 1px solid #f1f5f9; vertical-align: top; }
     .param-table tr:last-child td { border-bottom: none; }
-    .param-table .param-name {
-      font-family: ui-monospace, monospace;
-      font-size: 12px;
-      font-weight: 700;
-      color: #0f172a;
-    }
-    .param-table .param-type {
-      font-family: ui-monospace, monospace;
-      font-size: 11px;
-      color: #7c3aed;
-    }
-    .param-table .param-default {
-      font-family: ui-monospace, monospace;
-      font-size: 11px;
-      color: #059669;
-    }
+    .param-name    { font-family: ui-monospace, monospace; font-size: 12px; font-weight: 700; color: #0f172a; }
+    .param-type    { font-family: ui-monospace, monospace; font-size: 11px; color: #7c3aed; }
+    .param-default { font-family: ui-monospace, monospace; font-size: 11px; color: #059669; }
     .required-star { color: #ef4444; margin-left: 2px; }
 
-    /* ── Code blocks ──────────────────────────────────────────────── */
     pre {
       background: #0f172a;
       color: #e2e8f0;
@@ -246,24 +197,19 @@
       font-size: 12px;
     }
 
-    /* ── Notes list ───────────────────────────────────────────────── */
     .notes { margin: 12px 0 0; padding-left: 18px; }
     .notes li { font-size: 13px; color: #475569; margin-bottom: 5px; }
     .notes li::marker { color: #38bdf8; }
-    .subhead { font-size: 11px; font-weight: 700; text-transform: uppercase;
-               letter-spacing: .07em; color: #94a3b8; margin: 18px 0 6px; }
+    .subhead {
+      font-size: 11px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: .07em; color: #94a3b8; margin: 18px 0 6px;
+    }
 
-    /* ── Env table ────────────────────────────────────────────────── */
     .env-table { width: 100%; border-collapse: collapse; font-size: 13px; }
     .env-table th {
-      text-align: left;
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: .06em;
-      text-transform: uppercase;
-      color: #94a3b8;
-      padding: 6px 10px;
-      border-bottom: 2px solid #e2e8f0;
+      text-align: left; font-size: 11px; font-weight: 700;
+      letter-spacing: .06em; text-transform: uppercase; color: #94a3b8;
+      padding: 6px 10px; border-bottom: 2px solid #e2e8f0;
     }
     .env-table td { padding: 9px 10px; border-bottom: 1px solid #f1f5f9; vertical-align: top; }
     .env-table tr:last-child td { border-bottom: none; }
@@ -271,7 +217,6 @@
     .env-table .required { color: #ef4444; font-weight: 700; font-size: 12px; }
     .env-table .optional { color: #059669; font-weight: 700; font-size: 12px; }
 
-    /* ── Scroll-spy active state ──────────────────────────────────── */
     @media (max-width: 768px) {
       nav { display: none; }
       main { padding: 24px 20px 60px; }
@@ -279,16 +224,16 @@
   </style>
 </head>
 <body>
-
 <div class="layout">
 
-  <!-- ── Sidebar nav ──────────────────────────────────────────────── -->
+  <!-- ── Sidebar ── -->
   <nav id="sidebar">
     <div class="nav-logo">Searcher <span>API</span></div>
 
     <div class="nav-section">Overview</div>
     <a href="#overview">Introduction</a>
     <a href="#response-format">Response Format</a>
+    <a href="#abstract-coverage">Abstract Coverage</a>
     <a href="#env-vars">Environment Variables</a>
 
     <div class="nav-section">Utility</div>
@@ -298,6 +243,7 @@
     <a href="#download_pdf"><span class="method-badge get">GET</span>/download_pdf</a>
 
     <div class="nav-section">Search</div>
+    <a href="#search_openalex"><span class="method-badge get">GET</span>/search_openalex</a>
     <a href="#search_semantic_scholar"><span class="method-badge get">GET</span>/search_semantic_scholar</a>
     <a href="#search_ieeexplore"><span class="method-badge get">GET</span>/search_ieeexplore</a>
     <a href="#search_scopus"><span class="method-badge get">GET</span>/search_scopus</a>
@@ -314,7 +260,7 @@
     <a href="#patterns">Agent Patterns</a>
   </nav>
 
-  <!-- ── Main content ─────────────────────────────────────────────── -->
+  <!-- ── Main ── -->
   <main>
 
     <!-- Header -->
@@ -322,7 +268,7 @@
       <h1>Searcher API Reference</h1>
       <p class="subtitle">
         Scholarly search, web content extraction, and PDF download service.
-        All endpoints return JSON. This page is served live by the API at <code>/api-reference</code>.
+        All endpoints return JSON. Served live at <code>/api-reference</code>.
       </p>
       <div class="base-url">
         <span class="label">Prod</span>
@@ -334,40 +280,40 @@
         http://127.0.0.1:8000
       </div>
       <p style="margin-top:14px;font-size:13px;color:#64748b;">
-        Interactive OpenAPI docs: <code>&lt;base&gt;/docs</code> &nbsp;·&nbsp;
-        MCP endpoint: <code>&lt;base&gt;/mcp</code>
+        Interactive OpenAPI docs: <code>&lt;base&gt;/docs</code>
       </p>
     </div>
 
-    <!-- ── Response format ────────────────────────────────────────── -->
+    <!-- ── Response Format ── -->
     <section id="response-format">
       <h2>Response Format</h2>
 
       <div class="info-box">
         <h3>Search Envelope</h3>
-        <p>All search endpoints wrap results in a common envelope. Exceptions: <code>/fetch_page</code>, <code>/review_page</code>, <code>/download_pdf</code>.</p>
+        <p>All search endpoints wrap results in a common envelope.</p>
         <pre>{
-  "provider":               "ieeexplore",
-  "query":                  "UAV trajectory optimization",
-  "search_date":            "2026-05-27",
-  "total_records_available": 1842,      <span style="color:#64748b">// null for browser-scraped sources</span>
-  "total_records_downloaded": 25,
+  "provider":                "openalex",
+  "query":                   "UAV trajectory optimization",
+  "search_date":             "2026-05-27",
+  "total_records_available": 69114,   <span style="color:#64748b">// null for browser-scraped sources</span>
+  "total_records_downloaded": 200,
   "results": [ ... ]
 }</pre>
       </div>
 
       <div class="info-box">
         <h3>Result Record</h3>
-        <p>Every item in <code>results</code> uses this shape. Empty string or <code>null</code> when a field is unavailable. <code>authors</code> is always an array.</p>
+        <p>Every item in <code>results</code> uses this shape. Empty string when a field is unavailable. <code>authors</code> is always an array. <code>is_abstract</code> is <code>true</code> when <code>snippet</code> contains a full abstract.</p>
         <pre>{
-  "title":            "Trajectory Optimization in UAV-Assisted Cellular Networks",
-  "url":              "https://ieeexplore.ieee.org/document/8714567/",
-  "publication_year": 2019,
-  "authors":          ["Md Moin Uddin Chowdhury", "Eyuphan Bulut", "Ismail Guvenc"],
-  "doi":              "10.1109/RWS.2019.8714567",
-  "source":           "2019 IEEE Radio and Wireless Symposium (RWS)",
-  "snippet":          "Abstract text...",
-  "pdf_link":         "https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&amp;arnumber=8714567"
+  "title":            "Energy-Efficient UAV Communication With Trajectory Optimization",
+  "url":              "https://doi.org/10.1109/twc.2017.2688328",
+  "publication_year": 2017,
+  "authors":          ["Yong Zeng", "Rui Zhang"],
+  "doi":              "10.1109/twc.2017.2688328",
+  "source":           "IEEE Transactions on Wireless Communications",
+  "snippet":          "Wireless communication with unmanned aerial vehicles (UAVs) is a promising...",
+  "is_abstract":      true,
+  "pdf_link":         "https://arxiv.org/pdf/1608.04792"
 }</pre>
       </div>
 
@@ -380,12 +326,34 @@
             <tr><td><code>/search_scopus</code></td><td><code class="param-name">start</code></td><td>0-based integer</td></tr>
             <tr><td><code>/search_sciencedirect</code></td><td><code class="param-name">start</code></td><td>0-based integer</td></tr>
             <tr><td><code>/search_google_scholar_browser</code></td><td><code class="param-name">start_index</code></td><td>0-based integer</td></tr>
+            <tr><td><code>/search_openalex</code></td><td colspan="2">Cursor-based (automatic — pass <code>limit</code> only)</td></tr>
           </tbody>
         </table>
       </div>
     </section>
 
-    <!-- ── ENV VARS ───────────────────────────────────────────────── -->
+    <!-- ── Abstract Coverage ── -->
+    <section id="abstract-coverage">
+      <h2>Abstract Coverage</h2>
+      <div class="info-box">
+        <p>The <code>snippet</code> field carries the abstract text when available. <code>is_abstract: true</code> indicates a full abstract. <code>is_abstract: false</code> means only a short excerpt or nothing.</p>
+        <table class="param-table" style="margin-top:8px">
+          <thead><tr><th>Endpoint</th><th>Abstract?</th><th>Notes</th></tr></thead>
+          <tbody>
+            <tr><td><code>/search_openalex</code></td><td><span class="pill pill-green">Always</span></td><td>Full abstract reconstructed from OpenAlex inverted index</td></tr>
+            <tr><td><code>/search_semantic_scholar</code></td><td><span class="pill pill-green">Always</span></td><td>Full abstract from Semantic Scholar API</td></tr>
+            <tr><td><code>/search_ieeexplore</code></td><td><span class="pill pill-green">Always</span></td><td>Full abstract from IEEE Xplore API</td></tr>
+            <tr><td><code>/search_web_of_science</code></td><td><span class="pill pill-green">Usually</span></td><td>From BibTeX export; included when WoS exports it</td></tr>
+            <tr><td><code>/search_scopus</code></td><td><span class="pill pill-green">Default</span></td><td>Fetched via Abstract Retrieval API (1 extra call/result). Set <code>include_abstract=false</code> to skip.</td></tr>
+            <tr><td><code>/search_sciencedirect</code></td><td><span class="pill pill-amber">Partial</span></td><td>Short <code>dc:description</code> from search API — not always a full abstract</td></tr>
+            <tr><td><code>/search_ebsco</code></td><td><span class="pill pill-amber">Partial</span></td><td>Scraped excerpt when visible on results page</td></tr>
+            <tr><td><code>/search_google_scholar_browser</code></td><td><span class="pill pill-amber">Excerpt</span></td><td>2–3 sentence Google Scholar snippet only</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ── Environment Variables ── -->
     <section id="env-vars">
       <h2>Environment Variables</h2>
       <div class="info-box">
@@ -405,7 +373,13 @@
               <td class="var">ELSEVIER_API_KEY</td>
               <td><code>/search_scopus</code>, <code>/search_sciencedirect</code></td>
               <td class="required">Yes</td>
-              <td>Elsevier API key</td>
+              <td>Elsevier API key (Scopus + ScienceDirect + Abstract Retrieval)</td>
+            </tr>
+            <tr>
+              <td class="var">OPENALEX_API_KEY</td>
+              <td><code>/search_openalex</code></td>
+              <td class="optional">Optional</td>
+              <td>OpenAlex API key. Unauthenticated access is allowed; key raises rate limits.</td>
             </tr>
             <tr>
               <td class="var">SEMANTIC_SCHOLAR_API_KEY</td>
@@ -415,21 +389,15 @@
             </tr>
             <tr>
               <td class="var">BROWSER_WORKER_URL</td>
-              <td>Browser-backed endpoints</td>
+              <td>All browser-backed endpoints</td>
               <td class="required">Yes</td>
               <td>Internal URL of the browser_worker service (default: <code>http://127.0.0.1:8010</code>)</td>
             </tr>
             <tr>
-              <td class="var">VNC_PASSWORD</td>
-              <td>noVNC</td>
-              <td class="required">Yes</td>
-              <td>Password for the noVNC remote desktop</td>
-            </tr>
-            <tr>
-              <td class="var">DOWNLOAD_DIR</td>
-              <td><code>/download_pdf</code></td>
+              <td class="var">REQUEST_TIMEOUT_SECONDS</td>
+              <td>All HTTP endpoints</td>
               <td class="optional">Optional</td>
-              <td>Server-side directory where PDFs are saved (default: system temp dir)</td>
+              <td>Per-request timeout in seconds (default: <code>20</code>)</td>
             </tr>
             <tr>
               <td class="var">PDF_MAX_MB</td>
@@ -438,19 +406,25 @@
               <td>Maximum PDF size in MB (default: <code>50</code>)</td>
             </tr>
             <tr>
-              <td class="var">REQUEST_TIMEOUT_SECONDS</td>
+              <td class="var">DOWNLOAD_DIR</td>
+              <td><code>/download_pdf</code></td>
+              <td class="optional">Optional</td>
+              <td>Server-side directory where PDFs are saved (default: <code>downloads/</code> at repo root)</td>
+            </tr>
+            <tr>
+              <td class="var">USER_AGENT</td>
               <td>All HTTP endpoints</td>
               <td class="optional">Optional</td>
-              <td>Per-request timeout in seconds (default: <code>20</code>)</td>
+              <td>HTTP User-Agent header (default: <code>searcher/1.0 (+https://localhost)</code>)</td>
             </tr>
           </tbody>
         </table>
       </div>
     </section>
 
-    <!-- ════════════════════════════════════════════════════════════ -->
-    <!-- UTILITY ENDPOINTS                                           -->
-    <!-- ════════════════════════════════════════════════════════════ -->
+    <!-- ════════════════════════════════════════════════════════ -->
+    <!-- UTILITY                                                  -->
+    <!-- ════════════════════════════════════════════════════════ -->
     <section id="utility-endpoints">
       <h2>Utility Endpoints</h2>
 
@@ -466,7 +440,7 @@
         <div class="endpoint-body">
           <p class="subhead">No parameters</p>
           <p class="subhead">Example response</p>
-          <pre>{ "status": "ok", "version_name": "searcher-stack-v1.1.152" }</pre>
+          <pre>{ "status": "ok", "version_name": "searcher-stack-v1.1.168" }</pre>
         </div>
       </div>
 
@@ -486,8 +460,7 @@
             <tbody>
               <tr>
                 <td><span class="param-name">url</span><span class="required-star">*</span></td>
-                <td><span class="param-type">string</span></td>
-                <td>—</td>
+                <td><span class="param-type">string</span></td><td>—</td>
                 <td>Page URL to fetch</td>
               </tr>
               <tr>
@@ -504,16 +477,13 @@
               </tr>
             </tbody>
           </table>
-          <p class="subhead">Example</p>
-          <pre>GET /fetch_page?url=https://ieeexplore.ieee.org/document/8714567/</pre>
-          <p class="subhead">Response</p>
+          <p class="subhead">Example response</p>
           <pre>{
   "url":              "https://ieeexplore.ieee.org/document/8714567/",
-  "title":            "Page title from &lt;title&gt; tag",
-  "meta_description": "Meta description content",
-  "text":             "Extracted body text (up to max_chars)...",
-  "links":            ["https://...", "https://...", "...up to 25 hrefs"],
-  "html":             "&lt;html&gt;...&lt;/html&gt;"   <span style="color:#64748b">// only when include_html=true</span>
+  "title":            "Page title",
+  "meta_description": "Meta description",
+  "text":             "Extracted body text...",
+  "links":            ["https://...", "...up to 25 hrefs"]
 }</pre>
         </div>
       </div>
@@ -534,8 +504,7 @@
             <tbody>
               <tr>
                 <td><span class="param-name">url</span><span class="required-star">*</span></td>
-                <td><span class="param-type">string</span></td>
-                <td>—</td>
+                <td><span class="param-type">string</span></td><td>—</td>
                 <td>Page URL to fetch</td>
               </tr>
               <tr>
@@ -552,14 +521,11 @@
               </tr>
             </tbody>
           </table>
-          <p class="subhead">Example</p>
-          <pre>GET /review_page?url=https://ieeexplore.ieee.org/document/8714567/</pre>
-          <p class="subhead">Response</p>
-          <p>All fields from <code>/fetch_page</code>, plus:</p>
+          <p class="subhead">Additional response fields</p>
           <pre>{
-  "word_count":                    3200,
-  "estimated_read_time_minutes":   15,
-  "headings":                      ["Introduction", "Related Work", "...up to 15 h1/h2/h3"]
+  "word_count":                  3200,
+  "estimated_read_time_minutes": 15,
+  "headings":                    ["Introduction", "Related Work", "...up to 15 h1/h2/h3"]
 }</pre>
         </div>
       </div>
@@ -571,9 +537,7 @@
           <div>
             <div class="path">/download_pdf</div>
             <div class="desc">Stream a PDF from a direct URL and save it server-side. Does not use the browser session.</div>
-            <div class="badges">
-              <span class="pill pill-amber">max 50 MB by default</span>
-            </div>
+            <div class="badges"><span class="pill pill-amber">max 50 MB by default</span></div>
           </div>
         </div>
         <div class="endpoint-body">
@@ -583,51 +547,42 @@
             <tbody>
               <tr>
                 <td><span class="param-name">url</span><span class="required-star">*</span></td>
-                <td><span class="param-type">string</span></td>
-                <td>—</td>
+                <td><span class="param-type">string</span></td><td>—</td>
                 <td>Direct URL to a PDF file</td>
               </tr>
             </tbody>
           </table>
-          <p class="subhead">Example</p>
-          <pre>GET /download_pdf?url=https://arxiv.org/pdf/2104.02239</pre>
-          <p class="subhead">Response</p>
-          <pre>{
-  "path":       "/opt/searcher/downloads/2104.02239.pdf",
-  "filename":   "2104.02239.pdf",
-  "size_bytes": 843210
-}</pre>
+          <p class="subhead">Example response</p>
+          <pre>{ "path": "/opt/searcher/downloads/2104.02239.pdf", "filename": "2104.02239.pdf", "size_bytes": 843210 }</pre>
           <p class="subhead">Error codes</p>
           <ul class="notes">
-            <li><code>400</code> — URL does not appear to be a PDF (Content-Type mismatch)</li>
-            <li><code>413</code> — PDF exceeds configured max size (<code>PDF_MAX_MB</code>)</li>
-            <li><code>502</code> — Fetch failed (network error or bad HTTP status)</li>
+            <li><code>400</code> — URL does not appear to be a PDF</li>
+            <li><code>413</code> — PDF exceeds <code>PDF_MAX_MB</code></li>
+            <li><code>502</code> — Fetch failed</li>
           </ul>
-          <p class="subhead">Notes</p>
           <ul class="notes">
-            <li>Validates Content-Type header; follows redirects</li>
-            <li>Filename derived from URL path; a short UUID suffix is appended when a file with the same name already exists</li>
-            <li>For subscription PDFs use the <code>browser_worker</code> <code>/download_paper</code> endpoint instead</li>
+            <li>For subscription PDFs use the browser_worker <code>/download_paper</code> endpoint instead</li>
           </ul>
         </div>
       </div>
     </section>
 
-    <!-- ════════════════════════════════════════════════════════════ -->
-    <!-- SEARCH ENDPOINTS                                            -->
-    <!-- ════════════════════════════════════════════════════════════ -->
+    <!-- ════════════════════════════════════════════════════════ -->
+    <!-- SEARCH                                                   -->
+    <!-- ════════════════════════════════════════════════════════ -->
     <section id="search-endpoints">
       <h2>Search Endpoints</h2>
 
-      <!-- /search_semantic_scholar -->
-      <div class="endpoint" id="search_semantic_scholar">
+      <!-- /search_openalex -->
+      <div class="endpoint" id="search_openalex">
         <div class="endpoint-header">
           <span class="method-pill GET">GET</span>
           <div>
-            <div class="path">/search_semantic_scholar</div>
-            <div class="desc">Search Semantic Scholar via their public API. No API key required. Good for broad CS/STEM coverage with citation data.</div>
+            <div class="path">/search_openalex</div>
+            <div class="desc">Search OpenAlex — a free, open index of 250M+ scholarly works. Full abstracts always included. Cursor-based pagination, up to 10,000 results per query.</div>
             <div class="badges">
               <span class="pill pill-green">No key required</span>
+              <span class="pill pill-purple">Abstracts always included</span>
             </div>
           </div>
         </div>
@@ -638,24 +593,93 @@
             <tbody>
               <tr>
                 <td><span class="param-name">query</span><span class="required-star">*</span></td>
+                <td><span class="param-type">string</span></td><td>—</td>
+                <td>Full-text search query. Supports Boolean operators.</td>
+              </tr>
+              <tr>
+                <td><span class="param-name">limit</span></td>
+                <td><span class="param-type">int ≥ 1</span></td>
+                <td><span class="param-default">200</span></td>
+                <td>Maximum results to return. Fetched in pages of 100. Max 10,000.</td>
+              </tr>
+              <tr>
+                <td><span class="param-name">year_low</span></td>
+                <td><span class="param-type">int</span></td>
+                <td><span class="param-default">null</span></td>
+                <td>Earliest publication year (inclusive)</td>
+              </tr>
+              <tr>
+                <td><span class="param-name">year_high</span></td>
+                <td><span class="param-type">int</span></td>
+                <td><span class="param-default">null</span></td>
+                <td>Latest publication year (inclusive)</td>
+              </tr>
+              <tr>
+                <td><span class="param-name">is_oa</span></td>
+                <td><span class="param-type">bool</span></td>
+                <td><span class="param-default">null</span></td>
+                <td><code>true</code> restricts to open access works only. Open access results include <code>pdf_link</code>.</td>
+              </tr>
+              <tr>
+                <td><span class="param-name">work_type</span></td>
                 <td><span class="param-type">string</span></td>
-                <td>—</td>
+                <td><span class="param-default">null</span></td>
+                <td>Filter by work type: <code>article</code>, <code>book</code>, <code>dataset</code>, <code>preprint</code>, <code>review</code>, etc.</td>
+              </tr>
+            </tbody>
+          </table>
+          <p class="subhead">Examples</p>
+          <pre><span style="color:#94a3b8"># 500 results with abstracts</span>
+GET /search_openalex?query=UAV+trajectory+optimization&amp;limit=500
+
+<span style="color:#94a3b8"># Open access only, from 2020</span>
+GET /search_openalex?query=UAV+trajectory&amp;limit=200&amp;year_low=2020&amp;is_oa=true</pre>
+          <p class="subhead">Notes</p>
+          <ul class="notes">
+            <li>Abstracts are reconstructed from OpenAlex's inverted index format — leading "Abstract" header is stripped automatically</li>
+            <li>Set <code>OPENALEX_API_KEY</code> to raise rate limits beyond 100k requests/day</li>
+            <li>Pagination is automatic cursor-based — just increase <code>limit</code></li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- /search_semantic_scholar -->
+      <div class="endpoint" id="search_semantic_scholar">
+        <div class="endpoint-header">
+          <span class="method-pill GET">GET</span>
+          <div>
+            <div class="path">/search_semantic_scholar</div>
+            <div class="desc">Search Semantic Scholar via their public API. Good for CS/STEM coverage with citation data. Full abstracts always included.</div>
+            <div class="badges">
+              <span class="pill pill-green">No key required</span>
+              <span class="pill pill-purple">Abstracts always included</span>
+            </div>
+          </div>
+        </div>
+        <div class="endpoint-body">
+          <p class="subhead">Parameters</p>
+          <table class="param-table">
+            <thead><tr><th>Name</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
+            <tbody>
+              <tr>
+                <td><span class="param-name">query</span><span class="required-star">*</span></td>
+                <td><span class="param-type">string</span></td><td>—</td>
                 <td>Free-text search query</td>
               </tr>
               <tr>
                 <td><span class="param-name">limit</span></td>
                 <td><span class="param-type">int ≥ 1</span></td>
-                <td><span class="param-default">10</span></td>
+                <td><span class="param-default">200</span></td>
                 <td>Maximum results to return</td>
               </tr>
             </tbody>
           </table>
           <p class="subhead">Example</p>
-          <pre>GET /search_semantic_scholar?query=UAV+trajectory+optimization&amp;limit=20</pre>
+          <pre>GET /search_semantic_scholar?query=UAV+trajectory+optimization&amp;limit=50</pre>
           <p class="subhead">Notes</p>
           <ul class="notes">
             <li>Does not support Boolean operators or year filtering</li>
-            <li>Setting <code>SEMANTIC_SCHOLAR_API_KEY</code> raises rate limits</li>
+            <li>Set <code>SEMANTIC_SCHOLAR_API_KEY</code> for higher rate limits</li>
           </ul>
         </div>
       </div>
@@ -669,7 +693,8 @@
             <div class="desc">Search IEEE Xplore via the IEEE Xplore Metadata API. Supports Boolean operators and rich filtering. Auto-paginates in pages of 200.</div>
             <div class="badges">
               <span class="pill pill-blue">Requires IEEE_XPLORE_API_KEY</span>
-              <span class="pill pill-slate">Paginated · 1-based</span>
+              <span class="pill pill-purple">Abstracts always included</span>
+              <span class="pill pill-slate">1-based pagination</span>
             </div>
           </div>
         </div>
@@ -680,21 +705,20 @@
             <tbody>
               <tr>
                 <td><span class="param-name">query</span><span class="required-star">*</span></td>
-                <td><span class="param-type">string</span></td>
-                <td>—</td>
-                <td>Search query. Supports <code>AND</code>, <code>OR</code>, <code>NOT</code> Boolean operators</td>
+                <td><span class="param-type">string</span></td><td>—</td>
+                <td>Search query. Supports <code>AND</code>, <code>OR</code>, <code>NOT</code></td>
               </tr>
               <tr>
                 <td><span class="param-name">limit</span></td>
                 <td><span class="param-type">int ≥ 1</span></td>
-                <td><span class="param-default">25</span></td>
-                <td>Maximum results to return. The service auto-paginates in batches of 200.</td>
+                <td><span class="param-default">200</span></td>
+                <td>Maximum results to return. Auto-paginates in batches of 200.</td>
               </tr>
               <tr>
                 <td><span class="param-name">start_record</span></td>
                 <td><span class="param-type">int ≥ 1</span></td>
                 <td><span class="param-default">1</span></td>
-                <td><strong>1-based</strong> offset into the result set. Use for manual pagination.</td>
+                <td><strong>1-based</strong> offset. Use for manual pagination.</td>
               </tr>
               <tr>
                 <td><span class="param-name">year_low</span></td>
@@ -712,46 +736,43 @@
                 <td><span class="param-name">content_type</span></td>
                 <td><span class="param-type">string</span></td>
                 <td><span class="param-default">null</span></td>
-                <td>Filter by type: <code>Books</code>, <code>Conferences</code>, <code>Courses</code>, <code>Early Access</code>, <code>Journals</code>, <code>Magazines</code>, <code>Standards</code></td>
+                <td><code>Books</code>, <code>Conferences</code>, <code>Courses</code>, <code>Early Access</code>, <code>Journals</code>, <code>Magazines</code>, <code>Standards</code></td>
               </tr>
               <tr>
                 <td><span class="param-name">open_access</span></td>
                 <td><span class="param-type">bool</span></td>
                 <td><span class="param-default">null</span></td>
-                <td><code>true</code> restricts to open-access articles only. <code>false</code> / omitted = no filter.</td>
+                <td><code>true</code> restricts to open-access articles only</td>
               </tr>
               <tr>
                 <td><span class="param-name">sort_field</span></td>
                 <td><span class="param-type">string</span></td>
                 <td><span class="param-default">null</span></td>
-                <td>One of: <code>article_number</code>, <code>article_title</code>, <code>publication_title</code>. Invalid values return HTTP 422.</td>
+                <td><code>article_number</code>, <code>article_title</code>, or <code>publication_title</code></td>
               </tr>
               <tr>
                 <td><span class="param-name">sort_order</span></td>
                 <td><span class="param-type">string</span></td>
                 <td><span class="param-default">null</span></td>
-                <td><code>asc</code> or <code>desc</code>. Invalid values return HTTP 422.</td>
+                <td><code>asc</code> or <code>desc</code></td>
               </tr>
               <tr>
                 <td><span class="param-name">author</span></td>
-                <td><span class="param-type">string (min 3 chars)</span></td>
+                <td><span class="param-type">string (min 3)</span></td>
                 <td><span class="param-default">null</span></td>
-                <td>Filter by author first or last name. Fewer than 3 characters returns HTTP 422.</td>
+                <td>Filter by author first or last name (minimum 3 characters)</td>
               </tr>
             </tbody>
           </table>
           <p class="subhead">Examples</p>
-          <pre><span style="color:#94a3b8"># Filtered journal search</span>
-GET /search_ieeexplore?query=UAV+AND+trajectory&amp;limit=50&amp;year_low=2018&amp;content_type=Journals
+          <pre><span style="color:#94a3b8"># Journal search with year filter</span>
+GET /search_ieeexplore?query=UAV+AND+trajectory&amp;limit=200&amp;year_low=2018&amp;content_type=Journals
 
 <span style="color:#94a3b8"># Manual pagination — records 201–400</span>
-GET /search_ieeexplore?query=UAV+AND+trajectory&amp;limit=200&amp;start_record=201</pre>
-          <p class="subhead">Notes</p>
-          <ul class="notes">
-            <li>Returns HTTP 400 when <code>IEEE_XPLORE_API_KEY</code> is not configured</li>
-            <li><code>pdf_link</code> points to the IEEE stamp URL; full-text access depends on institutional subscription</li>
-            <li><code>open_access=false</code> and omitting <code>open_access</code> both produce unfiltered results — only <code>true</code> applies a filter</li>
-          </ul>
+GET /search_ieeexplore?query=UAV+AND+trajectory&amp;limit=200&amp;start_record=201
+
+<span style="color:#94a3b8"># Filter by author</span>
+GET /search_ieeexplore?query=UAV+trajectory&amp;author=Zeng</pre>
         </div>
       </div>
 
@@ -761,10 +782,11 @@ GET /search_ieeexplore?query=UAV+AND+trajectory&amp;limit=200&amp;start_record=2
           <span class="method-pill GET">GET</span>
           <div>
             <div class="path">/search_scopus</div>
-            <div class="desc">Search Scopus (Elsevier) via the Scopus Search API. Supports full Scopus field-code Boolean syntax. Auto-paginates in pages of 25.</div>
+            <div class="desc">Search Scopus (Elsevier) via the Scopus Search API. Supports full Scopus field-code Boolean syntax. Abstracts fetched by default via a separate API call per result.</div>
             <div class="badges">
               <span class="pill pill-blue">Requires ELSEVIER_API_KEY</span>
-              <span class="pill pill-slate">Paginated · 0-based</span>
+              <span class="pill pill-purple">Abstracts by default</span>
+              <span class="pill pill-slate">0-based pagination</span>
             </div>
           </div>
         </div>
@@ -775,15 +797,14 @@ GET /search_ieeexplore?query=UAV+AND+trajectory&amp;limit=200&amp;start_record=2
             <tbody>
               <tr>
                 <td><span class="param-name">query</span><span class="required-star">*</span></td>
-                <td><span class="param-type">string</span></td>
-                <td>—</td>
+                <td><span class="param-type">string</span></td><td>—</td>
                 <td>Scopus query. Field codes: <code>TITLE()</code>, <code>ABS()</code>, <code>AUTH()</code>, <code>TITLE-ABS-KEY()</code>, etc.</td>
               </tr>
               <tr>
                 <td><span class="param-name">limit</span></td>
                 <td><span class="param-type">int ≥ 1</span></td>
-                <td><span class="param-default">500</span></td>
-                <td>Maximum results to return</td>
+                <td><span class="param-default">200</span></td>
+                <td>Maximum results to return. Fetched in pages of 25.</td>
               </tr>
               <tr>
                 <td><span class="param-name">start</span></td>
@@ -807,16 +828,27 @@ GET /search_ieeexplore?query=UAV+AND+trajectory&amp;limit=200&amp;start_record=2
                 <td><span class="param-name">subj</span></td>
                 <td><span class="param-type">string</span></td>
                 <td><span class="param-default">ENGI</span></td>
-                <td>Scopus subject area code. Common: <code>ENGI</code>, <code>COMP</code>, <code>MATE</code>, <code>PHYS</code>. Default is <code>ENGI</code> and is always applied unless overridden.</td>
+                <td>Subject area code. Common: <code>ENGI</code>, <code>COMP</code>, <code>MATE</code>, <code>PHYS</code>, <code>MATH</code>. Default <code>ENGI</code> is always applied unless overridden.</td>
+              </tr>
+              <tr>
+                <td><span class="param-name">include_abstract</span></td>
+                <td><span class="param-type">bool</span></td>
+                <td><span class="param-default">true</span></td>
+                <td>Fetch full abstract via Abstract Retrieval API (one extra API call per result). Set to <code>false</code> for faster bulk retrieval without abstracts.</td>
               </tr>
             </tbody>
           </table>
           <p class="subhead">Examples</p>
-          <pre><span style="color:#94a3b8"># Field-code query with year filter</span>
-GET /search_scopus?query=TITLE-ABS-KEY(UAV+trajectory)&amp;limit=100&amp;year_low=2018&amp;subj=ENGI
+          <pre><span style="color:#94a3b8"># Field-code query with abstracts</span>
+GET /search_scopus?query=TITLE-ABS-KEY(UAV+trajectory)&amp;limit=50&amp;year_low=2018
 
-<span style="color:#94a3b8"># Second page of 25</span>
-GET /search_scopus?query=TITLE-ABS-KEY(UAV)&amp;limit=25&amp;start=25</pre>
+<span style="color:#94a3b8"># Fast bulk retrieval without abstracts</span>
+GET /search_scopus?query=TITLE-ABS-KEY(UAV)&amp;limit=200&amp;include_abstract=false</pre>
+          <p class="subhead">Notes</p>
+          <ul class="notes">
+            <li><code>include_abstract=true</code> makes one extra Elsevier API call per result — consumes Abstract Retrieval API quota (typically 20,000 requests/week per key)</li>
+            <li>Use small limits when fetching abstracts to avoid quota exhaustion</li>
+          </ul>
         </div>
       </div>
 
@@ -826,10 +858,11 @@ GET /search_scopus?query=TITLE-ABS-KEY(UAV)&amp;limit=25&amp;start=25</pre>
           <span class="method-pill GET">GET</span>
           <div>
             <div class="path">/search_sciencedirect</div>
-            <div class="desc">Search ScienceDirect (Elsevier) full-text journals via the Elsevier API.</div>
+            <div class="desc">Search ScienceDirect (Elsevier) full-text journals. Complements Scopus — covers Elsevier articles specifically.</div>
             <div class="badges">
               <span class="pill pill-blue">Requires ELSEVIER_API_KEY</span>
-              <span class="pill pill-slate">Paginated · 0-based</span>
+              <span class="pill pill-amber">Partial abstracts</span>
+              <span class="pill pill-slate">0-based pagination</span>
             </div>
           </div>
         </div>
@@ -840,14 +873,13 @@ GET /search_scopus?query=TITLE-ABS-KEY(UAV)&amp;limit=25&amp;start=25</pre>
             <tbody>
               <tr>
                 <td><span class="param-name">query</span><span class="required-star">*</span></td>
-                <td><span class="param-type">string</span></td>
-                <td>—</td>
+                <td><span class="param-type">string</span></td><td>—</td>
                 <td>Free-text search query</td>
               </tr>
               <tr>
                 <td><span class="param-name">limit</span></td>
                 <td><span class="param-type">int ≥ 1</span></td>
-                <td><span class="param-default">20</span></td>
+                <td><span class="param-default">200</span></td>
                 <td>Maximum results to return</td>
               </tr>
               <tr>
@@ -871,11 +903,7 @@ GET /search_scopus?query=TITLE-ABS-KEY(UAV)&amp;limit=25&amp;start=25</pre>
             </tbody>
           </table>
           <p class="subhead">Example</p>
-          <pre>GET /search_sciencedirect?query=UAV+trajectory+optimization&amp;limit=30&amp;year_low=2019</pre>
-          <p class="subhead">Notes</p>
-          <ul class="notes">
-            <li>Covers Elsevier full-text articles; complements Scopus which covers abstracts across many publishers</li>
-          </ul>
+          <pre>GET /search_sciencedirect?query=UAV+trajectory+optimization&amp;limit=50&amp;year_low=2019</pre>
         </div>
       </div>
 
@@ -885,10 +913,11 @@ GET /search_scopus?query=TITLE-ABS-KEY(UAV)&amp;limit=25&amp;start=25</pre>
           <span class="method-pill GET">GET</span>
           <div>
             <div class="path">/search_google_scholar_browser</div>
-            <div class="desc">Search Google Scholar by driving the persistent Chromium browser. Handles CAPTCHAs via the shared noVNC session.</div>
+            <div class="desc">Search Google Scholar by driving the persistent Chromium browser. Broad coverage including preprints and grey literature. Handles CAPTCHAs via noVNC.</div>
             <div class="badges">
               <span class="pill pill-amber">Requires browser_worker</span>
-              <span class="pill pill-slate">Paginated · 0-based</span>
+              <span class="pill pill-amber">Excerpt only (no full abstract)</span>
+              <span class="pill pill-slate">0-based pagination</span>
             </div>
           </div>
         </div>
@@ -899,8 +928,7 @@ GET /search_scopus?query=TITLE-ABS-KEY(UAV)&amp;limit=25&amp;start=25</pre>
             <tbody>
               <tr>
                 <td><span class="param-name">query</span><span class="required-star">*</span></td>
-                <td><span class="param-type">string</span></td>
-                <td>—</td>
+                <td><span class="param-type">string</span></td><td>—</td>
                 <td>Search query</td>
               </tr>
               <tr>
@@ -913,7 +941,7 @@ GET /search_scopus?query=TITLE-ABS-KEY(UAV)&amp;limit=25&amp;start=25</pre>
                 <td><span class="param-name">start_index</span></td>
                 <td><span class="param-type">int ≥ 0</span></td>
                 <td><span class="param-default">0</span></td>
-                <td><strong>0-based</strong> result offset for pagination</td>
+                <td><strong>0-based</strong> result offset</td>
               </tr>
               <tr>
                 <td><span class="param-name">year_low</span></td>
@@ -931,17 +959,17 @@ GET /search_scopus?query=TITLE-ABS-KEY(UAV)&amp;limit=25&amp;start=25</pre>
                 <td><span class="param-name">exclude_domains</span></td>
                 <td><span class="param-type">list[string]</span></td>
                 <td><span class="param-default">null</span></td>
-                <td>Domains to exclude. Default excludes <code>researchgate.net</code>, <code>books.google.com</code>, <code>search.proquest.com</code>. Pass <code>[]</code> to disable filtering. Repeat the parameter for multiple values.</td>
+                <td>Domains to exclude from results. Default excludes <code>researchgate.net</code>, <code>books.google.com</code>, <code>search.proquest.com</code>. Pass empty list to disable.</td>
               </tr>
             </tbody>
           </table>
           <p class="subhead">Example</p>
-          <pre>GET /search_google_scholar_browser?query=UAV+path+planning&amp;limit=50&amp;year_low=2020</pre>
+          <pre>GET /search_google_scholar_browser?query=UAV+path+planning&amp;limit=100&amp;year_low=2020</pre>
           <p class="subhead">Notes</p>
           <ul class="notes">
             <li><code>total_records_available</code> is always <code>null</code> — Google Scholar does not expose a total count</li>
+            <li><code>snippet</code> contains a 2–3 sentence excerpt only; <code>is_abstract</code> is <code>false</code></li>
             <li>If a CAPTCHA appears, open noVNC, solve it once — the browser session persists</li>
-            <li><code>pdf_link</code> is populated only when Google Scholar surfaces a direct PDF link</li>
           </ul>
         </div>
       </div>
@@ -952,9 +980,10 @@ GET /search_scopus?query=TITLE-ABS-KEY(UAV)&amp;limit=25&amp;start=25</pre>
           <span class="method-pill GET">GET</span>
           <div>
             <div class="path">/search_web_of_science</div>
-            <div class="desc">Search Web of Science by driving the persistent Chromium browser. Requires an active institutional WoS session.</div>
+            <div class="desc">Search Web of Science by driving the persistent Chromium browser. Exports results as BibTeX. Abstracts included when WoS exports them.</div>
             <div class="badges">
               <span class="pill pill-amber">Requires browser_worker + WoS session</span>
+              <span class="pill pill-purple">Abstracts usually included</span>
             </div>
           </div>
         </div>
@@ -965,14 +994,13 @@ GET /search_scopus?query=TITLE-ABS-KEY(UAV)&amp;limit=25&amp;start=25</pre>
             <tbody>
               <tr>
                 <td><span class="param-name">query</span><span class="required-star">*</span></td>
-                <td><span class="param-type">string</span></td>
-                <td>—</td>
+                <td><span class="param-type">string</span></td><td>—</td>
                 <td>Search query</td>
               </tr>
               <tr>
                 <td><span class="param-name">limit</span></td>
                 <td><span class="param-type">int ≥ 1</span></td>
-                <td><span class="param-default">10</span></td>
+                <td><span class="param-default">200</span></td>
                 <td>Maximum results to return</td>
               </tr>
               <tr>
@@ -990,11 +1018,10 @@ GET /search_scopus?query=TITLE-ABS-KEY(UAV)&amp;limit=25&amp;start=25</pre>
             </tbody>
           </table>
           <p class="subhead">Example</p>
-          <pre>GET /search_web_of_science?query=UAV+trajectory+optimization&amp;limit=20&amp;year_low=2019</pre>
+          <pre>GET /search_web_of_science?query=UAV+trajectory+optimization&amp;limit=50&amp;year_low=2019</pre>
           <p class="subhead">Notes</p>
           <ul class="notes">
             <li>Log in to Web of Science via noVNC before use if the session has expired</li>
-            <li><code>total_records_available</code> may be <code>null</code> depending on WoS page structure</li>
           </ul>
         </div>
       </div>
@@ -1008,6 +1035,7 @@ GET /search_scopus?query=TITLE-ABS-KEY(UAV)&amp;limit=25&amp;start=25</pre>
             <div class="desc">Search EBSCO Research by driving the persistent Chromium browser. Requires an active institutional EBSCO session.</div>
             <div class="badges">
               <span class="pill pill-amber">Requires browser_worker + EBSCO session</span>
+              <span class="pill pill-amber">Partial abstracts</span>
             </div>
           </div>
         </div>
@@ -1018,14 +1046,13 @@ GET /search_scopus?query=TITLE-ABS-KEY(UAV)&amp;limit=25&amp;start=25</pre>
             <tbody>
               <tr>
                 <td><span class="param-name">query</span><span class="required-star">*</span></td>
-                <td><span class="param-type">string</span></td>
-                <td>—</td>
+                <td><span class="param-type">string</span></td><td>—</td>
                 <td>Search query</td>
               </tr>
               <tr>
                 <td><span class="param-name">limit</span></td>
                 <td><span class="param-type">int ≥ 1</span></td>
-                <td><span class="param-default">100</span></td>
+                <td><span class="param-default">200</span></td>
                 <td>Maximum results to return</td>
               </tr>
               <tr>
@@ -1043,7 +1070,7 @@ GET /search_scopus?query=TITLE-ABS-KEY(UAV)&amp;limit=25&amp;start=25</pre>
             </tbody>
           </table>
           <p class="subhead">Example</p>
-          <pre>GET /search_ebsco?query=UAV+path+planning&amp;limit=50&amp;year_low=2020</pre>
+          <pre>GET /search_ebsco?query=UAV+path+planning&amp;limit=100&amp;year_low=2020</pre>
           <p class="subhead">Notes</p>
           <ul class="notes">
             <li>If access is blocked by a login wall, open noVNC, log in through the institution portal, then retry</li>
@@ -1052,9 +1079,9 @@ GET /search_scopus?query=TITLE-ABS-KEY(UAV)&amp;limit=25&amp;start=25</pre>
       </div>
     </section>
 
-    <!-- ════════════════════════════════════════════════════════════ -->
-    <!-- EBSCO DOWNLOAD                                              -->
-    <!-- ════════════════════════════════════════════════════════════ -->
+    <!-- ════════════════════════════════════════════════════════ -->
+    <!-- EBSCO DOWNLOAD                                           -->
+    <!-- ════════════════════════════════════════════════════════ -->
     <section id="ebsco-download">
       <h2>EBSCO Download Endpoints</h2>
 
@@ -1065,9 +1092,7 @@ GET /search_scopus?query=TITLE-ABS-KEY(UAV)&amp;limit=25&amp;start=25</pre>
           <div>
             <div class="path">/download_ebsco_paper</div>
             <div class="desc">Download a single paper from an EBSCO detail page URL using the browser.</div>
-            <div class="badges">
-              <span class="pill pill-amber">Requires browser_worker + EBSCO session</span>
-            </div>
+            <div class="badges"><span class="pill pill-amber">Requires browser_worker + EBSCO session</span></div>
           </div>
         </div>
         <div class="endpoint-body">
@@ -1077,19 +1102,15 @@ GET /search_scopus?query=TITLE-ABS-KEY(UAV)&amp;limit=25&amp;start=25</pre>
             <tbody>
               <tr>
                 <td><span class="param-name">url</span><span class="required-star">*</span></td>
-                <td><span class="param-type">string</span></td>
-                <td>—</td>
+                <td><span class="param-type">string</span></td><td>—</td>
                 <td>EBSCO paper detail page URL (e.g. <code>https://research.ebsco.com/c/.../search/details/...</code>)</td>
               </tr>
             </tbody>
           </table>
           <p class="subhead">Example</p>
           <pre>GET /download_ebsco_paper?url=https://research.ebsco.com/c/abc123/search/details/xyz789</pre>
-          <p class="subhead">Notes</p>
-          <ul class="notes">
-            <li>Navigates to the detail page, clicks Download twice (first opens popup, second confirms), then captures and saves the PDF</li>
-            <li>Response is proxied from <code>browser_worker</code> — typically <code>{ "path": "...", "filename": "...", "size_bytes": ... }</code></li>
-          </ul>
+          <p class="subhead">Response</p>
+          <pre>{ "path": "...", "filename": "...", "size_bytes": 843210 }</pre>
         </div>
       </div>
 
@@ -1100,9 +1121,7 @@ GET /search_scopus?query=TITLE-ABS-KEY(UAV)&amp;limit=25&amp;start=25</pre>
           <div>
             <div class="path">/download_ebsco_papers</div>
             <div class="desc">Download multiple EBSCO papers sequentially from a list of detail page URLs.</div>
-            <div class="badges">
-              <span class="pill pill-amber">Requires browser_worker + EBSCO session</span>
-            </div>
+            <div class="badges"><span class="pill pill-amber">Requires browser_worker + EBSCO session</span></div>
           </div>
         </div>
         <div class="endpoint-body">
@@ -1114,17 +1133,16 @@ GET /search_scopus?query=TITLE-ABS-KEY(UAV)&amp;limit=25&amp;start=25</pre>
 ]</pre>
           <p class="subhead">Notes</p>
           <ul class="notes">
-            <li>Each URL is processed in order; a failure on one URL does not stop the batch</li>
+            <li>Each URL is processed in order; a failure on one does not stop the batch</li>
             <li>Request timeout scales with URL count: <code>60s × n + 30s</code></li>
-            <li>Response is proxied from <code>browser_worker</code> — a dict with completed downloads and any failures</li>
           </ul>
         </div>
       </div>
     </section>
 
-    <!-- ════════════════════════════════════════════════════════════ -->
-    <!-- AGENT PATTERNS                                              -->
-    <!-- ════════════════════════════════════════════════════════════ -->
+    <!-- ════════════════════════════════════════════════════════ -->
+    <!-- AGENT PATTERNS                                           -->
+    <!-- ════════════════════════════════════════════════════════ -->
     <section id="patterns">
       <h2>Common Patterns for AI Agents</h2>
 
@@ -1133,10 +1151,11 @@ GET /search_scopus?query=TITLE-ABS-KEY(UAV)&amp;limit=25&amp;start=25</pre>
         <table class="param-table" style="margin-top:8px">
           <thead><tr><th>Goal</th><th>Recommended endpoint(s)</th></tr></thead>
           <tbody>
-            <tr><td>Peer-reviewed engineering / CS literature</td><td><code>/search_ieeexplore</code>, <code>/search_scopus</code></td></tr>
+            <tr><td>Full abstracts, free, broadest coverage</td><td><code>/search_openalex</code></td></tr>
+            <tr><td>Peer-reviewed engineering / CS with abstracts</td><td><code>/search_ieeexplore</code>, <code>/search_semantic_scholar</code></td></tr>
+            <tr><td>Broad Scopus coverage with abstracts</td><td><code>/search_scopus</code> (default <code>include_abstract=true</code>)</td></tr>
             <tr><td>Elsevier full-text articles</td><td><code>/search_sciencedirect</code></td></tr>
             <tr><td>Broad coverage incl. preprints &amp; grey lit</td><td><code>/search_google_scholar_browser</code></td></tr>
-            <tr><td>Quick query, no API key</td><td><code>/search_semantic_scholar</code></td></tr>
             <tr><td>WoS citation tracking</td><td><code>/search_web_of_science</code></td></tr>
             <tr><td>EBSCO database access</td><td><code>/search_ebsco</code></td></tr>
           </tbody>
@@ -1144,7 +1163,14 @@ GET /search_scopus?query=TITLE-ABS-KEY(UAV)&amp;limit=25&amp;start=25</pre>
       </div>
 
       <div class="info-box">
-        <h3>Retrieve paper details from a result URL</h3>
+        <h3>Check whether a result has a full abstract</h3>
+        <pre><span style="color:#94a3b8"># is_abstract=true means snippet contains a full abstract</span>
+if result["is_abstract"]:
+    abstract = result["snippet"]</pre>
+      </div>
+
+      <div class="info-box">
+        <h3>Fetch full page content from a result</h3>
         <pre>GET /fetch_page?url={result.url}
 <span style="color:#94a3b8"># Or for AI review tasks:</span>
 GET /review_page?url={result.url}</pre>
@@ -1162,7 +1188,7 @@ Content-Type: application/json
       </div>
 
       <div class="info-box">
-        <h3>Paginate through results</h3>
+        <h3>Manual pagination</h3>
         <pre><span style="color:#94a3b8"># IEEE — 1-based start_record</span>
 GET /search_ieeexplore?query=UAV&amp;limit=200&amp;start_record=1
 GET /search_ieeexplore?query=UAV&amp;limit=200&amp;start_record=201
@@ -1173,7 +1199,10 @@ GET /search_scopus?query=UAV&amp;limit=25&amp;start=25
 
 <span style="color:#94a3b8"># Google Scholar browser — 0-based start_index</span>
 GET /search_google_scholar_browser?query=UAV&amp;limit=10&amp;start_index=0
-GET /search_google_scholar_browser?query=UAV&amp;limit=10&amp;start_index=10</pre>
+GET /search_google_scholar_browser?query=UAV&amp;limit=10&amp;start_index=10
+
+<span style="color:#94a3b8"># OpenAlex — automatic cursor pagination, just increase limit</span>
+GET /search_openalex?query=UAV&amp;limit=1000</pre>
       </div>
     </section>
 
@@ -1181,7 +1210,6 @@ GET /search_google_scholar_browser?query=UAV&amp;limit=10&amp;start_index=10</pr
 </div>
 
 <script>
-  // Scroll-spy: highlight the active nav link
   const links = document.querySelectorAll('nav a[href^="#"]');
   const observer = new IntersectionObserver(entries => {
     entries.forEach(e => {
@@ -1192,7 +1220,6 @@ GET /search_google_scholar_browser?query=UAV&amp;limit=10&amp;start_index=10</pr
       }
     });
   }, { rootMargin: '-10% 0px -80% 0px' });
-
   document.querySelectorAll('[id]').forEach(el => observer.observe(el));
 </script>
 
