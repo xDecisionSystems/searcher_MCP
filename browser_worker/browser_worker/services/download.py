@@ -968,19 +968,16 @@ def search_web_of_science_via_browser(
                     page.wait_for_timeout(500)
                     log_event("wos_custom_selected")
 
-                    # Step 3: Fill start date.
+                    # Step 3 & 4: Fill the two YYYY-MM-DD text boxes that appear after "Custom".
+                    date_inputs = page.locator("input[placeholder='YYYY-MM-DD']")
+                    date_inputs.first.wait_for(state="visible", timeout=5000)
                     if year_low:
-                        start_input = page.locator("input[name='startDate']").first
-                        start_input.wait_for(state="visible", timeout=5000)
-                        start_input.click(click_count=3)
-                        start_input.fill(f"{year_low}-01-01")
+                        date_inputs.first.click(click_count=3)
+                        date_inputs.first.fill(f"{year_low}-01-01")
                         page.wait_for_timeout(300)
-                    # Step 4: Fill end date.
                     if year_high:
-                        end_input = page.locator("input[name='endDate']").first
-                        end_input.wait_for(state="visible", timeout=5000)
-                        end_input.click(click_count=3)
-                        end_input.fill(f"{year_high}-12-31")
+                        date_inputs.last.click(click_count=3)
+                        date_inputs.last.fill(f"{year_high}-12-31")
                         page.wait_for_timeout(300)
                     log_event("wos_date_filter_set", year_low=year_low, year_high=year_high)
                 except PlaywrightError as exc:
