@@ -980,15 +980,18 @@ def search_web_of_science_via_browser(
             if not export_clicked:
                 raise HTTPException(status_code=502, detail="Could not find WoS Export button.")
 
-            # Wait for export overlay URL.
+            # Wait for export overlay to appear (URL gains overlay:export/exbt suffix).
             try:
-                page.wait_for_url("**overlay:export/exbt**", timeout=10000)
+                page.wait_for_url("**overlay:export**", timeout=10000)
+                log_event("wos_export_overlay_url", url=page.url)
             except PlaywrightError:
-                pass
-            page.wait_for_timeout(1000)
+                log_event("wos_export_overlay_timeout", url=page.url)
+            page.wait_for_timeout(1500)
 
-            # Select BibTeX format.
-            page.locator("span:has-text('BibTeX')").first.click(timeout=8000)
+            # Select BibTeX format — recorded as clicking span with text "BibTeX".
+            bibtex_opt = page.get_by_text("BibTeX", exact=True).first
+            bibtex_opt.wait_for(state="visible", timeout=8000)
+            bibtex_opt.click(timeout=8000)
             log_event("wos_bibtex_selected")
             page.wait_for_timeout(500)
 
