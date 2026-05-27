@@ -123,12 +123,12 @@ def _search_ieeexplore(query: str, limit: int, start_record: int) -> dict[str, A
     }
 
 
-def _fetch_wos_pages_via_browser(
+def _fetch_wos_bibtex_via_browser(
     query: str,
     limit: int,
     year_low: int | None = None,
     year_high: int | None = None,
-) -> list[str]:
+) -> str:
     params: dict[str, Any] = {"query": query, "limit": limit}
     if year_low is not None:
         params["year_low"] = year_low
@@ -144,44 +144,45 @@ def _fetch_wos_pages_via_browser(
         data = resp.json()
     except Exception as exc:
         raise HTTPException(status_code=502, detail=f"browser_worker WoS search failed: {exc}") from exc
-    pages = data.get("pages_html", [])
-    if not pages:
-        raise HTTPException(status_code=503, detail="Web of Science returned no pages. Ensure you are logged in via noVNC and retry.")
-    return pages
+    bibtex = data.get("bibtex", "")
+    if not bibtex:
+        raise HTTPException(status_code=503, detail="Web of Science returned no records. Ensure you are logged in via noVNC and retry.")
+    return bibtex
 
 
-def _parse_wos_results_page(html: str) -> list[dict[str, Any]]:
-    soup = BeautifulSoup(html, "html.parser")
+def _parse_wos_bibtex(bibtex: str) -> list[dict[str, Any]]:
+    import re as _re
     results: list[dict[str, Any]] = []
+    # Split on BibTeX entry boundaries.
+    entries = _re.split(r"\n(?=@)", bibtex.strip())
+    for entry in entries:
+        if not entry.strip().startswith("@"):
+            continue
+        def _field(name: str) -> str:
+            m = _re.search(rf"{name}\s*=\s*[{{\"](.*?)[}}\"]", entry, _re.IGNORECASE | _re.DOTALL)
+            return m.group(1).strip() if m else ""
 
-    for record in soup.select("app-summary-title, wos-record-card, .search-results-item"):
-        title_tag = record.select_one("a.title, .title a, app-summary-title a")
-        title = title_tag.get_text(" ", strip=True) if title_tag else ""
-        url = str(title_tag.get("href", "")) if title_tag else ""
-        if url and url.startswith("/"):
-            url = "https://www.webofscience.com" + url
+        title = _field("title")
+        doi = _field("doi")
+        url = f"https://doi.org/{doi}" if doi else _field("url")
+        # WoS unique ID as fallback URL.
+        if not url:
+            uid = _field("unique-id")
+            if uid:
+                url = f"https://www.webofscience.com/wos/woscc/full-record/{uid}"
 
-        author_tags = record.select(".authors a, .author-name")
-        authors = [a.get_text(" ", strip=True) for a in author_tags if a.get_text(strip=True)]
+        year_raw = _field("year")
+        try:
+            pub_year: int | None = int(year_raw)
+        except (ValueError, TypeError):
+            pub_year = None
 
-        pub_year: int | None = None
-        year_match = _re_year.search(record.get_text(" ", strip=True))
-        if year_match:
-            pub_year = int(year_match.group(0))
+        # Authors: "Last, First and Last2, First2"
+        author_raw = _field("author")
+        authors = [a.strip() for a in _re.split(r"\s+and\s+", author_raw) if a.strip()] if author_raw else []
 
-        source_tag = record.select_one(".source-title, .journal-title")
-        source = source_tag.get_text(" ", strip=True) if source_tag else ""
-
-        snippet_tag = record.select_one(".abstract, .snippet")
-        snippet = snippet_tag.get_text(" ", strip=True) if snippet_tag else ""
-
-        doi = ""
-        for a in record.select("a[href*='doi.org']"):
-            href = str(a.get("href", ""))
-            doi_match = __import__("re").search(r"10\.\d{4,}/\S+", href)
-            if doi_match:
-                doi = doi_match.group(0).rstrip(".")
-                break
+        source = _field("journal") or _field("booktitle") or _field("source")
+        snippet = _field("abstract")
 
         if title or url:
             results.append({
@@ -194,7 +195,6 @@ def _parse_wos_results_page(html: str) -> list[dict[str, Any]]:
                 "doi": doi,
                 "pdf_link": "",
             })
-
     return results
 
 
@@ -204,14 +204,13 @@ def _search_web_of_science_browser(
     year_low: int | None = None,
     year_high: int | None = None,
 ) -> dict[str, Any]:
-    pages_html = _fetch_wos_pages_via_browser(query=query, limit=limit, year_low=year_low, year_high=year_high)
+    bibtex = _fetch_wos_bibtex_via_browser(query=query, limit=limit, year_low=year_low, year_high=year_high)
     results: list[dict[str, Any]] = []
-    for html in pages_html:
-        for item in _parse_wos_results_page(html):
-            if len(results) >= limit:
-                break
-            item["index"] = len(results) + 1
-            results.append(item)
+    for item in _parse_wos_bibtex(bibtex):
+        if len(results) >= limit:
+            break
+        item["index"] = len(results) + 1
+        results.append(item)
         if len(results) >= limit:
             break
     return {"total_records": None, "results": results}

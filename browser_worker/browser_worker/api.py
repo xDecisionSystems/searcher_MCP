@@ -246,23 +246,21 @@ def search_google_scholar(
 @app.get("/search_web_of_science")
 def search_web_of_science(
     query: str = Query(..., description="Search query."),
-    limit: int = Query(default=10, ge=1, description="Approximate number of results to collect."),
+    limit: int = Query(default=10, ge=1, description="Number of records to export."),
     year_low: int | None = Query(default=None, description="Earliest publication year (inclusive)."),
     year_high: int | None = Query(default=None, description="Latest publication year (inclusive)."),
-    page_delay_seconds: float = Query(default=2.0, ge=0.5, description="Seconds to wait between pages."),
 ) -> dict[str, Any]:
     """Search Web of Science using the real Chromium browser.
 
-    Navigates to webofscience.com, submits the query, and paginates via the
-    Next button until limit results are collected or no more pages exist.
-    Returns raw HTML per page for the searcher service to parse.
+    Submits the query, opens the Export overlay, selects BibTeX format,
+    and downloads the exported records. Returns raw BibTeX for the searcher
+    service to parse.
     """
     return search_web_of_science_via_browser(
         query=query,
         limit=limit,
         year_low=year_low,
         year_high=year_high,
-        page_delay_seconds=page_delay_seconds,
     )
 
 

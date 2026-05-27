@@ -906,20 +906,16 @@ def search_web_of_science_via_browser(
     limit: int,
     year_low: int | None = None,
     year_high: int | None = None,
-    page_delay_seconds: float = 2.0,
 ) -> dict:
-    """Search Web of Science via the real Chromium browser.
+    """Search Web of Science via the real Chromium browser using BibTeX export.
 
-    Types the query into the WoS smart-search box, clicks the search icon,
-    waits for the Angular SPA to navigate to the summary/ results URL, then
-    paginates via Next until limit results are collected.
-    Returns raw HTML per page for the caller to parse.
+    Types the query, waits for results, opens the Export overlay, selects BibTeX,
+    sets the record count to limit, and captures the downloaded BibTeX file content.
+    Returns the raw BibTeX text for the caller to parse.
     """
     log_event("wos_search_start", query=query, limit=limit)
 
-    pages_html: list[str] = []
-    collected = 0
-    result_selector = "app-summary-title"
+    bibtex_content: list[str] = []
 
     try:
         with sync_playwright() as playwright:
@@ -935,26 +931,23 @@ def search_web_of_science_via_browser(
                 pass
             page.wait_for_timeout(2000)
 
-            # Find and fill the search textarea (WoS smart search uses a textarea).
+            # Fill the search box and submit.
             search_box = page.locator("textarea, input[type='text']:not([name='startDate']):not([name='endDate'])").first
             search_box.wait_for(state="visible", timeout=10000)
             search_box.click()
             search_box.fill(query)
             page.wait_for_timeout(500)
-
-            # Click the purple search icon button to the right of the input.
             page.keyboard.press("Enter")
 
-            # Wait for navigation to the summary results URL.
+            # Wait for results summary URL.
             try:
                 page.wait_for_url("**/wos/woscc/summary/**", timeout=20000)
                 log_event("wos_summary_url", url=page.url)
             except PlaywrightError:
                 log_event("wos_summary_url_timeout", url=page.url)
 
-            # Wait for Angular to render result cards.
             try:
-                page.wait_for_selector(result_selector, timeout=20000)
+                page.wait_for_selector("app-summary-title", timeout=20000)
             except PlaywrightError:
                 log_event("wos_results_selector_timeout")
             try:
@@ -963,41 +956,55 @@ def search_web_of_science_via_browser(
                 pass
             page.wait_for_timeout(1500)
 
-            while collected < limit:
-                html = page.content()
-                pages_html.append(html)
-                collected += html.count("<app-summary-title")
-                log_event("wos_page_collected", page_num=len(pages_html), estimated=collected)
+            # Click Export button (recorded as mat-icon expand_more inside export button).
+            export_btn = page.locator("button mat-icon:has-text('expand_more'), button:has-text('Export')").first
+            export_btn.click(timeout=10000)
+            log_event("wos_export_clicked")
 
-                if collected >= limit:
-                    break
+            # Wait for export overlay URL.
+            try:
+                page.wait_for_url("**overlay:export/exbt**", timeout=10000)
+            except PlaywrightError:
+                pass
+            page.wait_for_timeout(1000)
 
-                page.evaluate("window.scrollTo(0, document.body.scrollHeight)")
-                page.wait_for_timeout(500)
+            # Select BibTeX format.
+            page.locator("span:has-text('BibTeX')").first.click(timeout=8000)
+            log_event("wos_bibtex_selected")
+            page.wait_for_timeout(500)
 
-                next_btn = page.locator("button[aria-label='Next page'], [data-ta='next-page-button']").first
-                try:
-                    next_btn.wait_for(state="visible", timeout=3000)
-                    if not next_btn.is_enabled():
-                        log_event("wos_next_disabled", page_num=len(pages_html))
-                        break
-                    next_btn.click()
-                    try:
-                        page.wait_for_load_state("networkidle", timeout=15000)
-                    except PlaywrightError:
-                        pass
-                    page.wait_for_timeout(int(page_delay_seconds * 1000))
-                except PlaywrightError:
-                    log_event("wos_no_next_page", page_num=len(pages_html))
-                    break
+            # Select "Records from" radio and set the count to limit.
+            page.locator("#radio3-input").click(timeout=5000)
+            count_input = page.locator("#mat-input-1")
+            count_input.click()
+            count_input.triple_click()
+            count_input.fill(str(limit))
+            page.wait_for_timeout(500)
+
+            # Select Full Record.
+            page.locator("#option-fullRecord").click(timeout=5000)
+            log_event("wos_full_record_selected")
+            page.wait_for_timeout(500)
+
+            # Capture the download.
+            with ctx.expect_page() as new_page_info:
+                with page.expect_download(timeout=30000) as download_info:
+                    page.locator("button:has-text('Export'), button[type='submit']").last.click(timeout=10000)
+                download = download_info.value
+                log_event("wos_download_started", filename=download.suggested_filename)
+                content = download.path()
+                if content:
+                    bibtex_content.append(Path(content).read_text(encoding="utf-8", errors="replace"))
 
             _close_context_if_needed(ctx)
 
-    except PlaywrightError as exc:
-        raise HTTPException(status_code=502, detail=f"Web of Science browser search failed: {exc}") from exc
+    except Exception as exc:
+        # Try reading download without new page context.
+        if not bibtex_content:
+            raise HTTPException(status_code=502, detail=f"Web of Science export failed: {exc}") from exc
 
-    log_event("wos_search_done", pages=len(pages_html), estimated_results=collected)
-    return {"pages_html": pages_html, "page_count": len(pages_html)}
+    log_event("wos_search_done", bibtex_chars=sum(len(b) for b in bibtex_content))
+    return {"bibtex": bibtex_content[0] if bibtex_content else "", "format": "bibtex"}
 
 
 # ── Generic page fetch ─────────────────────────────────────────────────────────
