@@ -951,21 +951,18 @@ def search_web_of_science_via_browser(
             # Apply date range filter before submitting if requested.
             if year_low or year_high:
                 try:
-                    # Open the date filter panel (calendar/filter SVG toggle).
-                    page.locator("svg").first.click(timeout=5000)
+                    # Click the "+ Add date range" button to expand the date inputs.
+                    page.get_by_text("Add date range").click(timeout=8000)
                     page.wait_for_timeout(500)
-                    # Select "Custom" date range option.
-                    page.locator("div").filter(has_text=re.compile(r"^Custom$")).first.click(timeout=5000)
-                    page.wait_for_timeout(500)
-                    # Fill start date (YYYY-MM-DD).
+                    # Fill start date input (name='startDate').
                     if year_low:
-                        start_input = page.locator("#mat-input-1")
+                        start_input = page.locator("input[name='startDate']")
                         start_input.click(click_count=3)
                         start_input.fill(f"{year_low}-01-01")
                         page.wait_for_timeout(300)
-                    # Fill end date (YYYY-MM-DD).
+                    # Fill end date input (name='endDate').
                     if year_high:
-                        end_input = page.locator("#mat-input-2")
+                        end_input = page.locator("input[name='endDate']")
                         end_input.click(click_count=3)
                         end_input.fill(f"{year_high}-12-31")
                         page.wait_for_timeout(300)
