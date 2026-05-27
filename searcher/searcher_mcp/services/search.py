@@ -278,6 +278,45 @@ def search_sciencedirect(query: str, limit: int, start: int, year_low: int | Non
     return {"provider": "sciencedirect", "query": query, **data}
 
 
+_SCOPUS_PAGE_SIZE = 25
+
+
+def _scopus_parse_entries(entries: list, offset: int) -> list[dict[str, Any]]:
+    results: list[dict[str, Any]] = []
+    for i, item in enumerate(entries, offset + 1):
+        if not isinstance(item, dict):
+            continue
+        cover_date = item.get("prism:coverDate", "")
+        pub_year: int | None = None
+        if cover_date and len(cover_date) >= 4:
+            try:
+                pub_year = int(cover_date[:4])
+            except ValueError:
+                pass
+        creator = item.get("dc:creator", "")
+        authors = [a.strip() for a in creator.split(";") if a.strip()] if creator else []
+        doi = item.get("prism:doi", "")
+        url = f"https://doi.org/{doi}" if doi else ""
+        if not url:
+            for link in item.get("link", []):
+                if isinstance(link, dict) and link.get("@ref") == "scopus":
+                    url = link.get("@href", "")
+                    break
+        results.append({
+            "index": i,
+            "title": item.get("dc:title", ""),
+            "url": url,
+            "snippet": "",
+            "publication_year": pub_year,
+            "authors": authors,
+            "doi": doi,
+            "pdf_link": "",
+            "source": item.get("prism:publicationName", ""),
+            "cited_by": item.get("citedby-count"),
+        })
+    return results
+
+
 def _search_scopus(
     query: str,
     limit: int,
@@ -289,73 +328,50 @@ def _search_scopus(
     if not ELSEVIER_API_KEY:
         raise HTTPException(status_code=400, detail="ELSEVIER_API_KEY is not configured.")
 
-    params: dict[str, Any] = {
+    base_params: dict[str, Any] = {
         "query": query,
-        "count": limit,
-        "start": start,
         "sort": "relevancy",
-        "view": "COMPLETE",
+        "count": _SCOPUS_PAGE_SIZE,
     }
     if year_low or year_high:
         lo = year_low or 1900
         hi = year_high or 9999
-        params["date"] = f"{lo}-{hi}"
+        base_params["date"] = f"{lo}-{hi}"
     if subj:
-        params["subj"] = subj.upper()
-
-    payload = request_json(
-        "https://api.elsevier.com/content/search/scopus",
-        params=params,
-        headers={"X-ELS-APIKey": ELSEVIER_API_KEY, "Accept": "application/json"},
-    )
-
-    search_results = payload.get("search-results") or {}
-    total_raw = search_results.get("opensearch:totalResults")
-    try:
-        total_records = int(total_raw) if total_raw is not None else None
-    except (TypeError, ValueError):
-        total_records = None
+        base_params["subj"] = subj.upper()
 
     results: list[dict[str, Any]] = []
-    for i, item in enumerate((search_results.get("entry") or [])[:limit], start + 1):
-        if not isinstance(item, dict):
-            continue
+    total_records: int | None = None
+    offset = start
 
-        cover_date = item.get("prism:coverDate", "")
-        pub_year: int | None = None
-        if cover_date and len(cover_date) >= 4:
+    while len(results) < limit:
+        params = {**base_params, "start": offset, "count": min(_SCOPUS_PAGE_SIZE, limit - len(results))}
+        payload = request_json(
+            "https://api.elsevier.com/content/search/scopus",
+            params=params,
+            headers={"X-ELS-APIKey": ELSEVIER_API_KEY, "Accept": "application/json"},
+        )
+        search_results = payload.get("search-results") or {}
+
+        if total_records is None:
+            total_raw = search_results.get("opensearch:totalResults")
             try:
-                pub_year = int(cover_date[:4])
-            except ValueError:
+                total_records = int(total_raw) if total_raw is not None else None
+            except (TypeError, ValueError):
                 pass
 
-        # Authors: COMPLETE view returns dc:creator (first author) or author list.
-        creator = item.get("dc:creator", "")
-        authors = [a.strip() for a in creator.split(";") if a.strip()] if creator else []
+        entries = search_results.get("entry") or []
+        if not entries:
+            break
 
-        # URL: prefer DOI, then Scopus abstract link from the link array.
-        doi = item.get("prism:doi", "")
-        url = f"https://doi.org/{doi}" if doi else ""
-        if not url:
-            for link in item.get("link", []):
-                if isinstance(link, dict) and link.get("@ref") == "scopus":
-                    url = link.get("@href", "")
-                    break
+        batch = _scopus_parse_entries(entries, len(results))
+        results.extend(batch)
+        offset += len(entries)
 
-        results.append({
-            "index": i,
-            "title": item.get("dc:title", ""),
-            "url": url,
-            "snippet": item.get("dc:description", ""),
-            "publication_year": pub_year,
-            "authors": authors,
-            "doi": doi,
-            "pdf_link": "",
-            "source": item.get("prism:publicationName", ""),
-            "cited_by": item.get("citedby-count"),
-        })
+        if len(entries) < _SCOPUS_PAGE_SIZE:
+            break
 
-    return {"start": start, "total_records": total_records, "results": results}
+    return {"start": start, "total_records": total_records, "results": results[:limit]}
 
 
 def search_scopus(

@@ -56,7 +56,7 @@ def review_page(
 @app.get("/search_scopus")
 def search_scopus(
     query: str,
-    limit: int = Query(default=20, ge=1),
+    limit: int = Query(default=500, ge=1, description="Maximum number of results to return. Fetched in pages of 25."),
     start: int = Query(default=0, ge=0),
     year_low: int | None = Query(default=None, description="Earliest publication year (inclusive)."),
     year_high: int | None = Query(default=None, description="Latest publication year (inclusive)."),
@@ -64,8 +64,9 @@ def search_scopus(
 ) -> dict[str, Any]:
     """Search Scopus (Elsevier) via the Scopus Search API.
 
-    Supports Boolean queries. Results sorted by relevance. Use subj to filter by
-    subject area (ENGI=Engineering, COMP=Computer Science, MATE=Materials Science, etc).
+    Supports Boolean queries. Results sorted by relevance. Paginates automatically
+    to return up to limit results. Use subj to filter by subject area
+    (ENGI=Engineering, COMP=Computer Science, MATE=Materials Science, etc).
     """
     return search_scopus_service(query=query, limit=limit, start=start, year_low=year_low, year_high=year_high, subj=subj)
 
