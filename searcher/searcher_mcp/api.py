@@ -60,9 +60,14 @@ def search_scopus(
     start: int = Query(default=0, ge=0),
     year_low: int | None = Query(default=None, description="Earliest publication year (inclusive)."),
     year_high: int | None = Query(default=None, description="Latest publication year (inclusive)."),
+    subj: str | None = Query(default="ENGI", description="Subject area code (e.g. ENGI, COMP, MATE, PHYS). See Scopus subject list."),
 ) -> dict[str, Any]:
-    """Search Scopus (Elsevier) via the Scopus Search API."""
-    return search_scopus_service(query=query, limit=limit, start=start, year_low=year_low, year_high=year_high)
+    """Search Scopus (Elsevier) via the Scopus Search API.
+
+    Supports Boolean queries. Results sorted by relevance. Use subj to filter by
+    subject area (ENGI=Engineering, COMP=Computer Science, MATE=Materials Science, etc).
+    """
+    return search_scopus_service(query=query, limit=limit, start=start, year_low=year_low, year_high=year_high, subj=subj)
 
 
 @app.get("/search_sciencedirect")

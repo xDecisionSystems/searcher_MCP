@@ -278,15 +278,30 @@ def search_sciencedirect(query: str, limit: int, start: int, year_low: int | Non
     return {"provider": "sciencedirect", "query": query, **data}
 
 
-def _search_scopus(query: str, limit: int, start: int, year_low: int | None = None, year_high: int | None = None) -> dict[str, Any]:
+def _search_scopus(
+    query: str,
+    limit: int,
+    start: int,
+    year_low: int | None = None,
+    year_high: int | None = None,
+    subj: str | None = None,
+) -> dict[str, Any]:
     if not ELSEVIER_API_KEY:
         raise HTTPException(status_code=400, detail="ELSEVIER_API_KEY is not configured.")
 
-    params: dict[str, Any] = {"query": query, "count": limit, "start": start}
+    params: dict[str, Any] = {
+        "query": query,
+        "count": limit,
+        "start": start,
+        "sort": "relevancy",
+        "view": "COMPLETE",
+    }
     if year_low or year_high:
         lo = year_low or 1900
         hi = year_high or 9999
         params["date"] = f"{lo}-{hi}"
+    if subj:
+        params["subj"] = subj.upper()
 
     payload = request_json(
         "https://api.elsevier.com/content/search/scopus",
@@ -314,12 +329,18 @@ def _search_scopus(query: str, limit: int, start: int, year_low: int | None = No
             except ValueError:
                 pass
 
-        # Authors: Scopus returns a single "dc:creator" string or "author" list.
+        # Authors: COMPLETE view returns dc:creator (first author) or author list.
         creator = item.get("dc:creator", "")
         authors = [a.strip() for a in creator.split(";") if a.strip()] if creator else []
 
+        # URL: prefer DOI, then Scopus abstract link from the link array.
         doi = item.get("prism:doi", "")
-        url = f"https://doi.org/{doi}" if doi else item.get("prism:url", "") or item.get("link", [{}])[0].get("@href", "") if item.get("link") else ""
+        url = f"https://doi.org/{doi}" if doi else ""
+        if not url:
+            for link in item.get("link", []):
+                if isinstance(link, dict) and link.get("@ref") == "scopus":
+                    url = link.get("@href", "")
+                    break
 
         results.append({
             "index": i,
@@ -337,8 +358,15 @@ def _search_scopus(query: str, limit: int, start: int, year_low: int | None = No
     return {"start": start, "total_records": total_records, "results": results}
 
 
-def search_scopus(query: str, limit: int, start: int, year_low: int | None = None, year_high: int | None = None) -> dict[str, Any]:
-    data = _search_scopus(query=query, limit=limit, start=start, year_low=year_low, year_high=year_high)
+def search_scopus(
+    query: str,
+    limit: int,
+    start: int,
+    year_low: int | None = None,
+    year_high: int | None = None,
+    subj: str | None = None,
+) -> dict[str, Any]:
+    data = _search_scopus(query=query, limit=limit, start=start, year_low=year_low, year_high=year_high, subj=subj)
     return {"provider": "scopus", "query": query, **data}
 
 
