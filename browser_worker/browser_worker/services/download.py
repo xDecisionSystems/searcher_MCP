@@ -951,32 +951,31 @@ def search_web_of_science_via_browser(
             # Apply date range filter before submitting if requested.
             if year_low or year_high:
                 try:
-                    # Step 1: Click "+ Add date range" to add the Publication Date row.
-                    # Use get_by_text with partial match to handle the "+" prefix and spacing.
-                    add_date_btn = page.get_by_text("Add date range", exact=False).first
-                    add_date_btn.wait_for(state="visible", timeout=8000)
-                    add_date_btn.click(timeout=8000)
-                    page.wait_for_timeout(800)
-                    log_event("wos_date_row_added")
-
-                    # Step 2: Click the "All years" dropdown to open the date type menu.
-                    page.locator("mat-select, select").filter(has_text="All years").first.click(timeout=8000)
+                    # Step 1: Click the "Publication Date" button to open the date options menu.
+                    # This button is always present on basic-search (added by a prior session or default).
+                    # If not present, click "+ Add date range" first to add it.
+                    pub_date_btn = page.locator("button:has-text('Publication Date')")
+                    if not pub_date_btn.count():
+                        page.get_by_text("Add date range", exact=False).first.click(timeout=8000)
+                        page.wait_for_timeout(800)
+                        log_event("wos_date_row_added")
+                    pub_date_btn.first.click(timeout=8000)
                     page.wait_for_timeout(500)
                     log_event("wos_date_dropdown_opened")
 
-                    # Step 3: Click "Custom" from the dropdown options.
-                    page.get_by_role("option", name="Custom").click(timeout=8000)
+                    # Step 2: Click "Custom" from the dropdown menu.
+                    page.locator("div").filter(has_text=re.compile(r"^Custom$")).first.click(timeout=8000)
                     page.wait_for_timeout(500)
                     log_event("wos_custom_selected")
 
-                    # Step 4: Fill start year.
+                    # Step 3: Fill start date.
                     if year_low:
                         start_input = page.locator("input[name='startDate']").first
                         start_input.wait_for(state="visible", timeout=5000)
                         start_input.click(click_count=3)
                         start_input.fill(f"{year_low}-01-01")
                         page.wait_for_timeout(300)
-                    # Step 5: Fill end year.
+                    # Step 4: Fill end date.
                     if year_high:
                         end_input = page.locator("input[name='endDate']").first
                         end_input.wait_for(state="visible", timeout=5000)
