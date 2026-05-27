@@ -978,15 +978,36 @@ def search_web_of_science_via_browser(
             # Select "Records from" radio and set the count.
             page.locator("#radio3-input").click(timeout=8000)
             count_input = page.locator("#mat-input-1")
-            count_input.click()
-            count_input.triple_click()
+            count_input.click(click_count=3)
             count_input.fill(str(limit))
             page.wait_for_timeout(500)
             log_event("wos_record_count_set", limit=limit)
 
-            # Capture the file download triggered by the Export button.
+            # Capture the file download triggered by the purple Export button in the overlay.
+            # The overlay footer has two buttons: Export (primary/submit) and Cancel.
+            # Try multiple selectors in order of specificity.
+            export_selectors = [
+                "button[type='submit']",
+                "button.mat-flat-button",
+                "button.mat-raised-button",
+                "button.mat-primary",
+            ]
+            export_clicked = False
             with page.expect_download(timeout=30000) as download_info:
-                page.locator("button:has-text('Export'), button[type='submit']").last.click(timeout=10000)
+                for sel in export_selectors:
+                    try:
+                        loc = page.locator(sel).last
+                        if loc.count() and loc.is_visible(timeout=1000):
+                            loc.click(timeout=8000)
+                            export_clicked = True
+                            log_event("wos_export_btn_clicked", selector=sel)
+                            break
+                    except PlaywrightError:
+                        continue
+                if not export_clicked:
+                    # Final fallback: find any button whose text is exactly "Export".
+                    page.locator("button").filter(has_text=re.compile(r"^Export$")).last.click(timeout=8000)
+                    log_event("wos_export_btn_clicked", selector="button[text=Export]")
             download = download_info.value
             log_event("wos_download_started", filename=download.suggested_filename)
             dl_path = download.path()
