@@ -1259,10 +1259,10 @@ def _download_paper_locked(url: str, filename: str | None = None) -> dict[str, A
                     }
 
                 # Login check.
-                is_login = _is_login_page(html, current_url, login_detection=login_detection)
+                is_login = _is_login_page(current_html, current_url, login_detection=login_detection)
                 log_event("login_check", url=current_url, is_login_page=is_login)
                 if is_login:
-                    if not html.strip() or "login" in html and len(html) < 200:
+                    if not current_html.strip() or "login" in current_html and len(current_html) < 200:
                         try:
                             page.goto(url, wait_until="domcontentloaded", timeout=30000)
                         except PlaywrightError:

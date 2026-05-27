@@ -1,7 +1,8 @@
 from datetime import datetime, timezone
 from typing import Any
+from urllib.parse import urlparse
 
-
+import requests
 from bs4 import BeautifulSoup
 from fastapi import HTTPException
 
@@ -85,12 +86,10 @@ _DEFAULT_EXCLUDE_DOMAINS: list[str] = [
 
 
 def _url_domain(url: str) -> str:
-    from urllib.parse import urlparse  # noqa: PLC0415
     return urlparse(url).netloc.lower()
 
 
 def _search_semantic_scholar(query: str, limit: int) -> dict[str, Any]:
-    import threading, time  # noqa: PLC0415
     headers: dict[str, str] = {}
     if SEMANTIC_SCHOLAR_API_KEY:
         headers["x-api-key"] = SEMANTIC_SCHOLAR_API_KEY
@@ -226,7 +225,7 @@ def _fetch_wos_bibtex_via_browser(
         )
         resp.raise_for_status()
         data = resp.json()
-    except Exception as exc:
+    except requests.RequestException as exc:
         raise HTTPException(status_code=502, detail=f"browser_worker WoS search failed: {exc}") from exc
     bibtex = data.get("bibtex", "")
     if not bibtex:
@@ -403,6 +402,7 @@ def _search_scopus(
         "query": query,
         "sort": "relevancy",
         "count": _SCOPUS_PAGE_SIZE,
+        "view": "COMPLETE",
     }
     if year_low or year_high:
         lo = year_low or 1900
@@ -483,7 +483,7 @@ def _fetch_scholar_pages_via_browser(
         )
         resp.raise_for_status()
         data = resp.json()
-    except Exception as exc:
+    except requests.RequestException as exc:
         raise HTTPException(status_code=502, detail=f"browser_worker scholar search failed: {exc}") from exc
     pages = data.get("pages_html", [])
     if not pages:

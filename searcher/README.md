@@ -5,17 +5,21 @@ FastAPI service for scholarly search and web content retrieval. Part of the `sea
 ## Endpoints
 
 - `GET /health` — liveness check
-- `GET /search_scholar` — unified search across all providers
-- `GET /search_google_scholar` — Google Scholar via scholarly library
-- `GET /search_google_scholar_browser` — Google Scholar via real Chromium browser (CAPTCHA-resistant)
+- `GET /search_semantic_scholar` — Semantic Scholar (direct API)
 - `GET /search_ieeexplore` — IEEE Xplore (direct API)
-- `GET /search_web_of_science` — Clarivate Web of Science (direct API)
+- `GET /search_web_of_science` — Web of Science via Chromium browser
 - `GET /search_scopus` — Elsevier Scopus (direct API)
+- `GET /search_sciencedirect` — Elsevier ScienceDirect (direct API)
+- `GET /search_ebsco` — EBSCO Research via Chromium browser
+- `GET /search_google_scholar_browser` — Google Scholar via real Chromium browser (CAPTCHA-resistant)
+- `GET /download_ebsco_paper` — download a single EBSCO paper by detail page URL
+- `POST /download_ebsco_papers` — download multiple EBSCO papers sequentially
 - `GET /fetch_page` — fetch and extract web page content
 - `GET /review_page` — fetch page with headings, word count, read time
 - `GET /download_pdf` — stream PDF to disk with size enforcement
+- `GET /api-reference` — self-describing HTML API reference (for agents and humans)
 
-## `search_google_scholar` Parameters
+## `search_google_scholar_browser` Parameters
 
 | Parameter | Default | Description |
 |-----------|---------|-------------|
@@ -24,9 +28,9 @@ FastAPI service for scholarly search and web content retrieval. Part of the `sea
 | `start_index` | 0 | Result offset for pagination |
 | `year_low` | — | Earliest publication year (inclusive) |
 | `year_high` | — | Latest publication year (inclusive) |
-| `exclude_domains` | — | Domains to exclude from results (defaults to `researchgate.net`, `books.google.com`, `search.proquest.com`) |
+| `exclude_domains` | — | Domains to exclude (defaults to `researchgate.net`, `books.google.com`, `search.proquest.com`) |
 
-`search_google_scholar_browser` accepts the same parameters and returns results in the same schema, but uses the persistent Chromium browser. Prefer this when the scholarly library hits CAPTCHA blocks.
+Uses the `browser_worker`'s persistent Chromium session. After solving a CAPTCHA once via noVNC, subsequent calls reuse the session.
 
 ## Deployment
 
@@ -69,14 +73,16 @@ Runtime tuning:
 
 - `REQUEST_TIMEOUT_SECONDS` (default `20`)
 - `PDF_MAX_MB` (default `50`)
-- `DOWNLOAD_DIR` (default `/tmp`)
+- `DOWNLOAD_DIR` (default: `downloads/` at repo root)
 - `USER_AGENT`
 
-## `/search_scholar` Provider Options
+## Search Provider Notes
 
-`provider` param: `auto` | `semantic_scholar` | `ieeexplore` | `web_of_science` | `scopus`
-
-`auto` defaults to `semantic_scholar`. Semantic Scholar is throttled to 1 request/second (unauthenticated rate limit).
+- `search_semantic_scholar` — unauthenticated access is rate-limited to ~1 request/second; set `SEMANTIC_SCHOLAR_API_KEY` for higher limits.
+- `search_ieeexplore` — requires `IEEE_XPLORE_API_KEY`; supports Boolean operators (AND, OR, NOT), author filter, content type, sort, and open-access filter.
+- `search_scopus` — requires `ELSEVIER_API_KEY`; filter by subject area with `subj` (e.g. `ENGI`, `COMP`).
+- `search_sciencedirect` — requires `ELSEVIER_API_KEY`.
+- `search_web_of_science` and `search_ebsco` — browser-based; require an active institutional browser session in the persistent Chromium instance.
 
 ## Testing Scripts
 
@@ -90,12 +96,14 @@ Runtime tuning:
 ## Example Requests
 
 ```bash
-curl "http://127.0.0.1:8000/search_scholar?query=llm+agents&provider=semantic_scholar"
-curl "http://127.0.0.1:8000/search_google_scholar?query=aviation+noise&limit=50&year_low=2020"
-curl "http://127.0.0.1:8000/search_google_scholar?query=uav+manet&limit=200&exclude_domains=researchgate.net"
-curl "http://127.0.0.1:8000/search_ieeexplore?query=llm+agents"
-curl "http://127.0.0.1:8000/search_web_of_science?query=llm+agents"
-curl "http://127.0.0.1:8000/search_scopus?query=llm+agents"
+curl "http://127.0.0.1:8000/search_semantic_scholar?query=llm+agents&limit=10"
+curl "http://127.0.0.1:8000/search_ieeexplore?query=llm+agents&limit=25"
+curl "http://127.0.0.1:8000/search_ieeexplore?query=uav+trajectory&year_low=2020&open_access=true"
+curl "http://127.0.0.1:8000/search_scopus?query=aviation+noise&limit=50&subj=ENGI"
+curl "http://127.0.0.1:8000/search_sciencedirect?query=llm+agents&limit=20"
+curl "http://127.0.0.1:8000/search_ebsco?query=uav+manet&limit=100&year_low=2020"
+curl "http://127.0.0.1:8000/search_google_scholar_browser?query=uav+manet&limit=200&year_low=2020"
+curl "http://127.0.0.1:8000/search_web_of_science?query=llm+agents&limit=10"
 curl "http://127.0.0.1:8000/fetch_page?url=https://example.com"
 curl "http://127.0.0.1:8000/review_page?url=https://example.com"
 curl "http://127.0.0.1:8000/download_pdf?url=https://arxiv.org/pdf/1706.03762.pdf"

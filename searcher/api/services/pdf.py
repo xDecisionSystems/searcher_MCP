@@ -60,7 +60,7 @@ def download_pdf(url: str) -> dict[str, int | str]:
                     file_handle.write(chunk)
     except HTTPException:
         # Only remove a file we created; a pre-existing file was never opened by us.
-        if out_path.exists() and size == 0 or out_path.stat().st_size != size:
+        if out_path.exists() and (size == 0 or out_path.stat().st_size != size):
             out_path.unlink(missing_ok=True)
         raise
     except requests.RequestException as exc:

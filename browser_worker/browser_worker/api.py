@@ -6,7 +6,7 @@ from pydantic import BaseModel, Field
 
 from .config import VERSION_NAME
 from .logger import tail_log
-from .services.download import download_ebsco_paper, download_paper_via_browser, fetch_page_via_browser, search_ebsco_via_browser, search_google_scholar_via_browser, search_web_of_science_via_browser
+from .services.download import _validate_http_url, download_ebsco_paper, download_paper_via_browser, fetch_page_via_browser, search_ebsco_via_browser, search_google_scholar_via_browser, search_web_of_science_via_browser
 from .services.recorder import (
     delete_strategy,
     get_recording_status,
@@ -100,6 +100,7 @@ def record_session(
     POST /stop_recording (or wait for the timeout). A strategy file is saved for
     the domain and will be used automatically on future download_paper calls.
     """
+    _validate_http_url(url)
     return start_recording(url=url, timeout_seconds=timeout_seconds)
 
 

@@ -25,11 +25,20 @@ FastAPI service that drives a persistent Chromium browser to download papers fro
 }
 ```
 
-Possible response statuses:
+On success the response does **not** contain a `status` field. Instead it contains:
+
+| Field | Description |
+|-------|-------------|
+| `path` | Absolute path to the saved PDF on disk |
+| `filename` | Filename of the saved PDF |
+| `size_bytes` | Size of the downloaded PDF in bytes |
+| `source_url` | Final URL from which the PDF was fetched |
+| `method` | Strategy step or method used to download the file |
+
+On failure the response contains a `status` field:
 
 | Status | Meaning |
 |--------|---------|
-| `ok` | PDF downloaded successfully; `file_path` and `size_bytes` included |
 | `login_required` | Login or CAPTCHA detected; `user_prompt` explains what to do; retry same call after resolving |
 | `busy` | Another download is in progress; retry after it finishes |
 | `no_access` | Institutional access does not cover this specific paper (paywall); `message` explains |
