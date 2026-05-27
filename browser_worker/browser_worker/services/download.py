@@ -923,8 +923,14 @@ def search_web_of_science_via_browser(
             pages = ctx.pages
             page = pages[0] if pages else ctx.new_page()
 
+            # Release any stuck mouse button from prior browser interactions.
+            try:
+                page.mouse.up()
+            except PlaywrightError:
+                pass
+
             # Navigate to smart search.
-            page.goto("https://www.webofscience.com/wos/woscc/smart-search", wait_until="domcontentloaded", timeout=30000)
+            page.goto("https://www.webofscience.com/wos/woscc/basic-search", wait_until="domcontentloaded", timeout=30000)
             try:
                 page.wait_for_load_state("networkidle", timeout=15000)
             except PlaywrightError:
