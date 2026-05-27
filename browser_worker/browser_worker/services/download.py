@@ -956,10 +956,29 @@ def search_web_of_science_via_browser(
                 pass
             page.wait_for_timeout(1500)
 
-            # Click Export button — recorded as clicking a mat-icon with text "expand_more"
-            # inside the export dropdown button on the results toolbar.
-            page.locator("mat-icon:has-text('expand_more')").first.click(timeout=10000)
-            log_event("wos_export_clicked")
+            # Click the Export dropdown button in the results toolbar.
+            # Try multiple selectors — WoS renders this as a button with "Export" text
+            # and an expand_more chevron icon. The language dropdown also has expand_more
+            # so we must not use mat-icon alone.
+            export_clicked = False
+            for selector in [
+                "button[aria-label*='Export']",
+                "button[aria-label*='export']",
+                "[data-ta='export-from-summary-layer'] button",
+                "app-export-action button",
+                "button:has-text('Export')",
+            ]:
+                try:
+                    btn = page.locator(selector).first
+                    btn.wait_for(state="visible", timeout=3000)
+                    btn.click(timeout=5000)
+                    export_clicked = True
+                    log_event("wos_export_clicked", selector=selector)
+                    break
+                except PlaywrightError:
+                    continue
+            if not export_clicked:
+                raise HTTPException(status_code=502, detail="Could not find WoS Export button.")
 
             # Wait for export overlay URL.
             try:
