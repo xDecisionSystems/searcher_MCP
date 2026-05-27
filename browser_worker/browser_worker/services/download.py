@@ -910,16 +910,15 @@ def search_web_of_science_via_browser(
 ) -> dict:
     """Search Web of Science via the real Chromium browser.
 
-    Types the query into the WoS search box, submits, waits for the Angular SPA
-    to render results, then paginates via Next until limit results are collected.
+    Types the query into the WoS smart-search box, clicks the search icon,
+    waits for the Angular SPA to navigate to the summary/ results URL, then
+    paginates via Next until limit results are collected.
     Returns raw HTML per page for the caller to parse.
     """
     log_event("wos_search_start", query=query, limit=limit)
 
     pages_html: list[str] = []
     collected = 0
-
-    # Result item selector — WoS renders each record inside app-summary-title.
     result_selector = "app-summary-title"
 
     try:
@@ -928,43 +927,36 @@ def search_web_of_science_via_browser(
             pages = ctx.pages
             page = pages[0] if pages else ctx.new_page()
 
-            # Navigate to the smart search page.
+            # Navigate to smart search.
             page.goto("https://www.webofscience.com/wos/woscc/smart-search", wait_until="domcontentloaded", timeout=30000)
             try:
                 page.wait_for_load_state("networkidle", timeout=15000)
             except PlaywrightError:
                 pass
-            page.wait_for_timeout(1500)
+            page.wait_for_timeout(2000)
 
-            # Type query into the search input and submit.
-            search_input = page.locator("input#mat-input-0, input[data-ta='search-input'], input[placeholder*='earch'], textarea[placeholder*='earch']").first
-            search_input.wait_for(state="visible", timeout=10000)
-            search_input.click()
-            search_input.fill(query)
+            # Find and fill the search textarea (WoS smart search uses a textarea).
+            search_box = page.locator("textarea, input[type='text']:not([name='startDate']):not([name='endDate'])").first
+            search_box.wait_for(state="visible", timeout=10000)
+            search_box.click()
+            search_box.fill(query)
             page.wait_for_timeout(500)
 
-            # Apply year filters if requested.
-            if year_low or year_high:
-                try:
-                    date_btn = page.locator("button:has-text('Date Range'), button:has-text('Timespan')").first
-                    date_btn.click(timeout=3000)
-                    page.wait_for_timeout(500)
-                    if year_low:
-                        page.locator("input[placeholder*='rom'], input[aria-label*='rom']").first.fill(str(year_low))
-                    if year_high:
-                        page.locator("input[placeholder*='o'], input[aria-label*='o year']").first.fill(str(year_high))
-                except PlaywrightError:
-                    pass
+            # Click the search icon/button — recorded as an SVG click.
+            page.locator("button[type='submit'], button[aria-label*='earch'], button:has(svg)").first.click(timeout=10000)
 
-            # Click Search button.
-            page.locator("button[data-ta='run-search'], button:has-text('Search')").first.click(timeout=10000)
+            # Wait for navigation to the summary results URL.
+            try:
+                page.wait_for_url("**/wos/woscc/summary/**", timeout=20000)
+                log_event("wos_summary_url", url=page.url)
+            except PlaywrightError:
+                log_event("wos_summary_url_timeout", url=page.url)
 
-            # Wait for Angular to render the results list.
+            # Wait for Angular to render result cards.
             try:
                 page.wait_for_selector(result_selector, timeout=20000)
             except PlaywrightError:
-                log_event("wos_results_timeout")
-
+                log_event("wos_results_selector_timeout")
             try:
                 page.wait_for_load_state("networkidle", timeout=10000)
             except PlaywrightError:
