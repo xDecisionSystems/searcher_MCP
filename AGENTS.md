@@ -14,7 +14,7 @@ Prioritize correctness, safe defaults, and predictable API behavior.
 ## 2. Repository Scope
 
 ```
-searcher_MCP/
+searcher/
 ├── searcher/                        # Search API service
 │   ├── app.py                       # Entrypoint
 │   ├── searcher_mcp/                # API routes and business logic

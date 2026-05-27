@@ -1,4 +1,4 @@
-# searcher_MCP
+# searcher
 
 Monorepo containing two FastAPI services and a browser stack deployed together in a single Proxmox LXC.
 
@@ -25,7 +25,7 @@ FastAPI service that drives a persistent Chromium browser to download papers fro
 ## Repository Layout
 
 ```
-searcher_MCP/
+searcher/
 ├── searcher/                    # Scholar search FastAPI service (port 8000)
 ├── browser_worker/              # Browser-automation download FastAPI service (port 8010)
 │   └── browser_worker/

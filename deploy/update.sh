@@ -12,7 +12,7 @@
 set -euo pipefail
 
 REPO_DIR="/opt/searcher"
-REPO_URL="https://github.com/xDecisionSystems/searcher_MCP"
+REPO_URL="https://github.com/xDecisionSystems/searcher"
 BRANCH="${BRANCH:-main}"
 DRY_RUN=0
 

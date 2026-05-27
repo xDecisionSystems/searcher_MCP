@@ -1,6 +1,6 @@
 ---
 name: project-architecture
-description: Current architecture of the searcher_MCP stack — two services plus browser stack in one Proxmox LXC
+description: Current architecture of the searcher stack — two services plus browser stack in one Proxmox LXC
 metadata:
   type: project
 ---
