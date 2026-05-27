@@ -942,8 +942,8 @@ def search_web_of_science_via_browser(
             search_box.fill(query)
             page.wait_for_timeout(500)
 
-            # Click the search icon/button — recorded as an SVG click.
-            page.locator("button[type='submit'], button[aria-label*='earch'], button:has(svg)").first.click(timeout=10000)
+            # Click the purple search icon button to the right of the input.
+            page.keyboard.press("Enter")
 
             # Wait for navigation to the summary results URL.
             try:
