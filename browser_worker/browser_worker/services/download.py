@@ -968,17 +968,21 @@ def search_web_of_science_via_browser(
                     page.wait_for_timeout(500)
                     log_event("wos_custom_selected")
 
-                    # Step 3 & 4: Fill the two YYYY-MM-DD text boxes that appear after "Custom".
-                    date_inputs = page.locator("input[placeholder='YYYY-MM-DD']")
-                    date_inputs.first.wait_for(state="visible", timeout=5000)
+                    # Step 3 & 4: Fill the date inputs — Angular Material uses #mat-input-N IDs.
+                    page.wait_for_timeout(800)
                     if year_low:
-                        date_inputs.first.click(click_count=3)
-                        date_inputs.first.fill(f"{year_low}-01-01")
+                        start_input = page.locator("#mat-input-1")
+                        start_input.wait_for(state="visible", timeout=5000)
+                        start_input.click(click_count=3)
+                        start_input.fill(f"{year_low}-01-01")
                         page.wait_for_timeout(300)
                     if year_high:
-                        date_inputs.last.click(click_count=3)
-                        date_inputs.last.fill(f"{year_high}-12-31")
+                        end_input = page.locator("#mat-input-2")
+                        end_input.wait_for(state="visible", timeout=5000)
+                        end_input.click(click_count=3)
+                        end_input.fill(f"{year_high}-12-31")
                         page.wait_for_timeout(300)
+                    log_event("wos_dates_filled", year_low=year_low, year_high=year_high)
                     log_event("wos_date_filter_set", year_low=year_low, year_high=year_high)
                 except PlaywrightError as exc:
                     log_event("wos_date_filter_failed", error=str(exc))
@@ -1028,10 +1032,26 @@ def search_web_of_science_via_browser(
             overlay = page.locator("app-export-overlay, mat-dialog-container, [class*='export-overlay'], [class*='overlay-panel']").first
             overlay.locator("#radio3-input").click(timeout=8000)
             page.wait_for_timeout(300)
-            # The count input is scoped inside the overlay to avoid hitting background inputs.
-            count_input = overlay.locator("input[type='number'], input[type='text']:not([type='checkbox']):not([type='radio'])").last
-            count_input.click(click_count=3)
-            count_input.fill(str(limit))
+            # The count input ID increments with each mat-input on the page.
+            # Try from the highest likely ID down to find the first visible number input in the overlay.
+            count_filled = False
+            for input_id in ["#mat-input-4", "#mat-input-3", "#mat-input-2", "#mat-input-1"]:
+                try:
+                    inp = overlay.locator(input_id)
+                    if inp.count() and inp.is_visible(timeout=1000):
+                        inp.click(click_count=3)
+                        inp.fill(str(limit))
+                        count_filled = True
+                        log_event("wos_record_count_set", limit=limit, input_id=input_id)
+                        break
+                except PlaywrightError:
+                    continue
+            if not count_filled:
+                # Fallback: any visible text/number input inside the overlay.
+                inp = overlay.locator("input[type='number'], input[type='text']").last
+                inp.click(click_count=3)
+                inp.fill(str(limit))
+                log_event("wos_record_count_set", limit=limit, input_id="fallback")
             page.wait_for_timeout(500)
             log_event("wos_record_count_set", limit=limit)
 
