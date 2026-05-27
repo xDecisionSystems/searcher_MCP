@@ -59,7 +59,14 @@ searcher_MCP/
 
 If you add or change behavior in a service, update that service's `README.md` and the root `.env.example` in the same change.
 
-## 3. Deployment Policy
+## 3. Downloads Folder
+
+- The repo contains a `downloads/` folder at the root for all test and API-triggered file downloads.
+- All files inside `downloads/` are git-ignored; only the folder itself (via its internal `.gitignore`) is tracked.
+- **When testing any endpoint that downloads a file** (e.g. `/download_pdf`, `/download_ebsco_paper`, `browser_worker` download endpoints), always set `DOWNLOAD_DIR` to point at `<repo_root>/downloads/` — or rely on the default, which already resolves there.
+- Do not scatter downloaded files into the system temp dir or other locations during testing.
+
+## 4. Deployment Policy
 
 - Production: single Debian-based Proxmox LXC with `systemd`, running two FastAPI services plus browser stack.
 - Code is deployed to `/opt/searcher/` inside the LXC (git clone of this repo).
@@ -68,7 +75,7 @@ If you add or change behavior in a service, update that service's `README.md` an
 - Use `deploy/update.sh` inside the LXC for code updates — no full redeploy needed.
 - Do not run per-service `install.sh` or `update.sh` — these are legacy and unused.
 
-## 4. Agent Roles
+## 5. Agent Roles
 
 - **Implementer agent**: owns code changes inside a service's module (`searcher_mcp/` or `browser_worker/`).
 - **Documentation agent**: owns `README.md`, `ARCHITECTURE.md`, root `.env.example`.
@@ -76,7 +83,7 @@ If you add or change behavior in a service, update that service's `README.md` an
 
 When using multiple agents in parallel, assign disjoint file ownership.
 
-## 5. Coding Rules
+## 6. Coding Rules
 
 - Python 3.10+ compatible syntax.
 - Preserve current API contracts unless explicitly asked to break them.
@@ -88,7 +95,7 @@ When using multiple agents in parallel, assign disjoint file ownership.
 - Keep external dependencies minimal.
 - For standalone scripts, prefer flat top-level execution flow and do not add `main()`.
 
-## 6. Python Environment Rules (Required)
+## 7. Python Environment Rules (Required)
 
 - Shared `.venv` at repo root for local development.
 - Install service deps: `.venv/bin/python -m pip install -r <service>/requirements.txt`
@@ -96,13 +103,13 @@ When using multiple agents in parallel, assign disjoint file ownership.
 - Do not use system/global `python`, `python3`, or `pip` for project tasks.
 - Use `.env.dev` at the repo root for local development; `.env` is the production file inside the LXC.
 
-## 7. Version Update Rule
+## 8. Version Update Rule
 
 - Whenever code changes are made, automatically increment the patch version in `VERSION.md` at the repo root (e.g. `v1.0.4` → `v1.0.5`).
 - If the user says `update version name to <new>`, use that exact name instead.
 - Format: `VERSION_NAME=<version name>`
 
-## 8. Safety and Security
+## 9. Safety and Security
 
 - Accept only `http`/`https` URLs.
 - Treat downloaded content as untrusted.
@@ -111,7 +118,7 @@ When using multiple agents in parallel, assign disjoint file ownership.
 - Do not execute downloaded files.
 - `browser_worker/` can navigate arbitrary URLs — restrict port 9222 by firewall if needed.
 
-## 9. Change Workflow
+## 10. Change Workflow
 
 1. Identify which service is affected (`searcher/` or `browser_worker/`).
 2. Read that service's `README.md` and main module files.
@@ -121,7 +128,7 @@ When using multiple agents in parallel, assign disjoint file ownership.
 6. **API reference page:** whenever an endpoint is added, removed, or its parameters change, update `searcher/searcher_mcp/static/api_reference.html` in the same change. This file is served live at `/api-reference` and is the authoritative reference for AI agents.
 7. Summarize changes, assumptions, and residual risks.
 
-## 10. Domain Strategy Generation Protocol (Required)
+## 11. Domain Strategy Generation Protocol (Required)
 
 When asked to create or update a `browser_worker` strategy for a publisher/domain:
 
@@ -149,7 +156,7 @@ Notes:
 - Search MCP endpoint: `https://searcher.xds-lab.com/aev/search/mcp`
 - If institutional access is unavailable, store an explicit inaccessible strategy (`accessible: false`) with a clear `inaccessible_reason` instead of fake click steps.
 
-## 11. Definition of Done
+## 12. Definition of Done
 
 - Code is syntactically valid.
 - Endpoint behavior matches documentation.

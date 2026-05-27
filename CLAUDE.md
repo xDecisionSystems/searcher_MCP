@@ -30,6 +30,13 @@ Each service has its own `requirements.txt` and `deploy/` folder. There is a sin
 - Claude is allowed to run testing scripts in each service's `testing/` folder.
 - After local test deployment, Claude should run verification checks and report results.
 
+## Downloads Folder
+
+- The repo contains a `downloads/` folder at the root for all test and API-triggered file downloads.
+- All files inside `downloads/` are git-ignored; only the folder itself (via its `.gitignore`) is tracked.
+- **When testing any endpoint that downloads a file** (e.g. `/download_pdf`, `/download_ebsco_paper`, `browser_worker` download endpoints), always set `DOWNLOAD_DIR` to point at `<repo_root>/downloads/` — or rely on the default, which already resolves there.
+- Do not scatter downloaded files into the system temp dir or other locations during testing.
+
 ## 1. Environment Requirement (Mandatory)
 
 - A single `.venv` is shared at the repo root for local development.

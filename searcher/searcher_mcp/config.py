@@ -1,5 +1,4 @@
 import os
-import tempfile
 from pathlib import Path
 
 APP_USER_AGENT = os.getenv(
@@ -8,7 +7,11 @@ APP_USER_AGENT = os.getenv(
 )
 REQUEST_TIMEOUT = float(os.getenv("REQUEST_TIMEOUT_SECONDS", "20"))
 PDF_MAX_MB = int(os.getenv("PDF_MAX_MB", "50"))
-DOWNLOAD_DIR = Path(os.getenv("DOWNLOAD_DIR", tempfile.gettempdir()))
+
+_REPO_ROOT = Path(__file__).resolve().parent.parent.parent
+_DEFAULT_DOWNLOAD_DIR = _REPO_ROOT / "downloads"
+DOWNLOAD_DIR = Path(os.getenv("DOWNLOAD_DIR", str(_DEFAULT_DOWNLOAD_DIR)))
+
 VERSION_FILE = Path(__file__).resolve().parent.parent.parent / "VERSION.md"
 
 BROWSER_WORKER_URL = os.getenv("BROWSER_WORKER_URL", "http://127.0.0.1:8010")
