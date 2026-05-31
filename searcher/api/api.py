@@ -260,15 +260,17 @@ def download_pdf(url: str) -> dict[str, int | str]:
 
 
 @app.get("/search_atrd_papers")
-def search_atrd_papers() -> dict[str, Any]:
-    """Return metadata for all papers from the ATRD 1st Symposium page.
+def search_atrd_papers(
+    url: str = Query(..., description="URL of an ATRD symposium papers-and-presentations page."),
+) -> dict[str, Any]:
+    """Return metadata for all papers from an ATRD symposium papers page.
 
-    Fetches and parses the symposium page directly (no browser required).
+    Fetches and parses the page directly (no browser required).
     Returns title, authors, section/topic, best-paper flag, and Google Drive
     links for the full paper and presentation slide deck (where available).
     Does not download any files.
     """
-    return search_atrd_papers_service()
+    return search_atrd_papers_service(url=url)
 
 
 @app.post("/download_atrd_paper")

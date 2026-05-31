@@ -155,9 +155,9 @@ If blocked by a login wall, open noVNC, log in through the institution portal, t
 ## ATRD Endpoints
 
 ### GET /search_atrd_papers
-Return metadata for all papers from the ATRD 1st Symposium page. No file downloads. Fetches and parses HTML directly — no browser required.
+Return metadata for all papers from an ATRD symposium papers page. No file downloads. Fetches and parses HTML directly — no browser required.
 
-No parameters.
+- `url`* (string) — URL of an ATRD symposium papers-and-presentations page
 
 Response:
 ```json

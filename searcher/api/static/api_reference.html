@@ -1165,7 +1165,17 @@ GET /search_scopus?query=TITLE-ABS-KEY(UAV)&amp;limit=200&amp;include_abstract=f
         </div>
         <div class="endpoint-body">
           <p class="subhead">Parameters</p>
-          <p>None. The source URL is fixed: <code>https://www.atrdsymposium.org/past-seminars/1st-symposium/papers-and-presentations/</code></p>
+          <table class="param-table">
+            <thead><tr><th>Name</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
+            <tbody>
+              <tr>
+                <td><span class="param-name">url</span><span class="required-star">*</span></td>
+                <td><span class="param-type">string</span></td>
+                <td>—</td>
+                <td>URL of an ATRD symposium papers-and-presentations page.</td>
+              </tr>
+            </tbody>
+          </table>
           <p class="subhead">Response</p>
           <pre>{
   "source": "https://www.atrdsymposium.org/...",

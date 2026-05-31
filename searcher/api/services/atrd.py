@@ -36,10 +36,10 @@ def _drive_download_url(href: str) -> str | None:
     return _DRIVE_EXPORT_TMPL.format(m.group(1))
 
 
-def _fetch_html() -> str:
+def _fetch_html(url: str) -> str:
     try:
         resp = requests.get(
-            _ATRD_URL,
+            url,
             headers={"User-Agent": "Mozilla/5.0 (compatible; searcher/1.0)"},
             timeout=REQUEST_TIMEOUT,
         )
@@ -117,12 +117,12 @@ def _download_file(download_url: str, out_path: Path) -> int:
     return size
 
 
-def search_atrd_papers() -> dict[str, Any]:
-    """Return all paper metadata from the ATRD 1st Symposium page without downloading files."""
-    html = _fetch_html()
+def search_atrd_papers(url: str) -> dict[str, Any]:
+    """Return all paper metadata from an ATRD symposium papers page without downloading files."""
+    html = _fetch_html(url)
     papers = _parse_papers(html)
     return {
-        "source": _ATRD_URL,
+        "source": url,
         "count": len(papers),
         "papers": papers,
     }
