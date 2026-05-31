@@ -179,29 +179,24 @@ Response:
 
 `section` — symposium topic category. `is_best_paper` — true when awarded Best Paper. `presentation_url` — empty string for doctoral papers (slides not posted).
 
-### GET /download_atrd_papers
-Scrape the ATRD 1st Symposium papers page, download all full-paper PDFs from Google Drive, and return structured metadata. Source URL is fixed. Uses headless Playwright — no auth required. PDFs saved under `<DOWNLOAD_DIR>/atrd/`; re-running skips files already on disk.
+### POST /download_atrd_paper
+Download the full-paper PDF for a single ATRD paper. Pass a paper record exactly as returned by `/search_atrd_papers` as the JSON request body. The `full_paper_url` field is used to fetch the PDF from Google Drive. File saved under `<DOWNLOAD_DIR>/atrd/`; calling again with the same record skips the download and returns the existing path.
 
-No parameters.
+Request body: a single paper record from `/search_atrd_papers`.
 
-Response:
+Response: the input record with `local_path` and `size_bytes` added.
 ```json
 {
-  "papers": [
-    {
-      "title": "Vertiport Placement for Urban Air Mobility",
-      "authors": ["Jane Doe", "John Smith"],
-      "url": "https://drive.google.com/file/d/FILE_ID/view?usp=sharing",
-      "local_path": "/opt/searcher/downloads/atrd/vertiport_placement_for_urban_air_mobility.pdf",
-      "size_bytes": 843210
-    }
-  ],
-  "count": 42,
-  "errors": []
+  "title": "Vertiport Placement for Urban Air Mobility...",
+  "authors": ["Yashovardhan S. Chati", "..."],
+  "section": "...",
+  "is_best_paper": true,
+  "full_paper_url": "https://drive.google.com/file/d/FILE_ID/view?usp=sharing",
+  "presentation_url": "https://drive.google.com/file/d/FILE_ID/view?usp=sharing",
+  "local_path": "/opt/searcher/downloads/atrd/vertiport_placement_for_urban_air_mobility_to_reduce_time_for_multimodal_travel.pdf",
+  "size_bytes": 843210
 }
 ```
-
-`errors` lists any per-paper failures (bad link, parse error) without stopping the batch.
 
 ## EBSCO Download Endpoints
 

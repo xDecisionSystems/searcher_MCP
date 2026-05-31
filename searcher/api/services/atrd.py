@@ -128,43 +128,26 @@ def search_atrd_papers() -> dict[str, Any]:
     }
 
 
-def download_atrd_papers() -> dict[str, Any]:
-    """Scrape, then download all full-paper PDFs from Google Drive."""
-    html = _fetch_html()
-    papers = _parse_papers(html)
+def download_atrd_paper(paper: dict[str, Any]) -> dict[str, Any]:
+    """Download the full-paper PDF for a single ATRD paper record from /search_atrd_papers."""
+    title = paper.get("title", "").strip()
+    href = paper.get("full_paper_url", "").strip()
+
+    if not href:
+        raise HTTPException(status_code=400, detail="Paper record has no full_paper_url.")
+
+    download_url = _drive_download_url(href)
+    if not download_url:
+        raise HTTPException(status_code=400, detail=f"full_paper_url is not a Google Drive file link: {href}")
 
     save_dir = DOWNLOAD_DIR / "atrd"
     save_dir.mkdir(parents=True, exist_ok=True)
 
-    results: list[dict[str, Any]] = []
-    errors: list[dict[str, str]] = []
+    filename = _clean_filename(title or href)
+    existing = save_dir / filename
+    if existing.exists():
+        return {**paper, "local_path": str(existing), "size_bytes": existing.stat().st_size}
 
-    for paper in papers:
-        href = paper["full_paper_url"]
-        if not href:
-            errors.append({"title": paper["title"], "reason": "no full paper link"})
-            continue
-
-        download_url = _drive_download_url(href)
-        if not download_url:
-            errors.append({"title": paper["title"], "reason": "href is not a Google Drive file link", "href": href})
-            continue
-
-        filename = _clean_filename(paper["title"])
-        existing = save_dir / filename
-        if existing.exists():
-            results.append({**paper, "local_path": str(existing), "size_bytes": existing.stat().st_size})
-            continue
-
-        out_path = _unique_path(save_dir, filename)
-        try:
-            size = _download_file(download_url, out_path)
-            results.append({**paper, "local_path": str(out_path), "size_bytes": size})
-        except HTTPException as exc:
-            errors.append({"title": paper["title"], "reason": exc.detail})
-
-    return {
-        "papers": results,
-        "count": len(results),
-        "errors": errors,
-    }
+    out_path = _unique_path(save_dir, filename)
+    size = _download_file(download_url, out_path)
+    return {**paper, "local_path": str(out_path), "size_bytes": size}

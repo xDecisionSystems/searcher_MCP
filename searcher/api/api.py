@@ -7,7 +7,7 @@ from starlette.responses import FileResponse
 from .config import VERSION_NAME
 
 _STATIC_DIR = Path(__file__).resolve().parent / "static"
-from .services.atrd import download_atrd_papers as download_atrd_papers_service
+from .services.atrd import download_atrd_paper as download_atrd_paper_service
 from .services.atrd import search_atrd_papers as search_atrd_papers_service
 from .services.page import fetch_page as fetch_page_service
 from .services.page import review_page as review_page_service
@@ -271,14 +271,16 @@ def search_atrd_papers() -> dict[str, Any]:
     return search_atrd_papers_service()
 
 
-@app.get("/download_atrd_papers")
-def download_atrd_papers() -> dict[str, Any]:
-    """Scrape the ATRD 1st Symposium papers page, download all full-paper PDFs from Google Drive,
-    and return structured metadata.
+@app.post("/download_atrd_paper")
+def download_atrd_paper(
+    paper: Annotated[dict[str, Any], Body(..., description="A single paper record returned by /search_atrd_papers.")],
+) -> dict[str, Any]:
+    """Download the full-paper PDF for a single ATRD paper.
 
-    Uses a headless Chromium browser (Playwright) because the page is JavaScript-rendered.
-    PDFs are saved under <DOWNLOAD_DIR>/atrd/. Re-running skips files already on disk.
-    Returns a list of downloaded papers and any per-paper errors.
+    Pass a paper record exactly as returned by /search_atrd_papers.
+    The full_paper_url field is used to fetch the PDF from Google Drive.
+    The file is saved under <DOWNLOAD_DIR>/atrd/; calling again with the
+    same record skips the download and returns the existing path.
     """
-    return download_atrd_papers_service()
+    return download_atrd_paper_service(paper)
 
