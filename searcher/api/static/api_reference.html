@@ -256,6 +256,10 @@
     <a href="#download_ebsco_paper"><span class="method-badge get">GET</span>/download_ebsco_paper</a>
     <a href="#download_ebsco_papers"><span class="method-badge post">POST</span>/download_ebsco_papers</a>
 
+    <div class="nav-section">ATRD</div>
+    <a href="#search_atrd_papers"><span class="method-badge get">GET</span>/search_atrd_papers</a>
+    <a href="#download_atrd_papers"><span class="method-badge get">GET</span>/download_atrd_papers</a>
+
     <div class="nav-section">Patterns</div>
     <a href="#patterns">Agent Patterns</a>
   </nav>
@@ -1135,6 +1139,92 @@ GET /search_scopus?query=TITLE-ABS-KEY(UAV)&amp;limit=200&amp;include_abstract=f
           <ul class="notes">
             <li>Each URL is processed in order; a failure on one does not stop the batch</li>
             <li>Request timeout scales with URL count: <code>60s × n + 30s</code></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════════════════════════ -->
+    <!-- ATRD DOWNLOAD                                            -->
+    <!-- ════════════════════════════════════════════════════════ -->
+    <section id="atrd-download">
+      <h2>ATRD Endpoints</h2>
+
+      <!-- /search_atrd_papers -->
+      <div class="endpoint" id="search_atrd_papers">
+        <div class="endpoint-header">
+          <span class="method-pill GET">GET</span>
+          <div>
+            <div class="path">/search_atrd_papers</div>
+            <div class="desc">Return metadata for all papers from the ATRD 1st Symposium page. No file downloads.</div>
+            <div class="badges">
+              <span class="pill pill-green">No auth required</span>
+              <span class="pill pill-green">No browser required</span>
+            </div>
+          </div>
+        </div>
+        <div class="endpoint-body">
+          <p class="subhead">Parameters</p>
+          <p>None. The source URL is fixed: <code>https://www.atrdsymposium.org/past-seminars/1st-symposium/papers-and-presentations/</code></p>
+          <p class="subhead">Response</p>
+          <pre>{
+  "source": "https://www.atrdsymposium.org/...",
+  "count": 53,
+  "papers": [
+    {
+      "title": "Vertiport Placement for Urban Air Mobility to Reduce Time for Multimodal Travel",
+      "authors": ["Yashovardhan S. Chati", "Yamini Sharma", "Kirti Nikam", "Prasad Devkar", "Arunchandar Vasan"],
+      "section": "Autonomous, unmanned and remotely piloted aircraft systems and emerging operations",
+      "is_best_paper": true,
+      "full_paper_url": "https://drive.google.com/file/d/FILE_ID/view?usp=sharing",
+      "presentation_url": "https://drive.google.com/file/d/FILE_ID/view?usp=sharing"
+    }
+  ]
+}</pre>
+          <p class="subhead">Notes</p>
+          <ul class="notes">
+            <li><code>section</code> — the symposium topic category the paper belongs to</li>
+            <li><code>is_best_paper</code> — true when the paper received a Best Paper award</li>
+            <li><code>presentation_url</code> — empty string for doctoral papers (slides not posted)</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- /download_atrd_papers -->
+      <div class="endpoint" id="download_atrd_papers">
+        <div class="endpoint-header">
+          <span class="method-pill GET">GET</span>
+          <div>
+            <div class="path">/download_atrd_papers</div>
+            <div class="desc">Scrape the ATRD 1st Symposium papers page, download all full-paper PDFs from Google Drive, and return structured metadata.</div>
+            <div class="badges">
+              <span class="pill pill-blue">Playwright (headless)</span>
+              <span class="pill pill-green">No auth required</span>
+            </div>
+          </div>
+        </div>
+        <div class="endpoint-body">
+          <p class="subhead">Parameters</p>
+          <p>None. The source URL is fixed: <code>https://www.atrdsymposium.org/past-seminars/1st-symposium/papers-and-presentations/</code></p>
+          <p class="subhead">Response</p>
+          <pre>{
+  "papers": [
+    {
+      "title": "Vertiport Placement for Urban Air Mobility",
+      "authors": ["Jane Doe", "John Smith"],
+      "url": "https://drive.google.com/file/d/FILE_ID/view?usp=sharing",
+      "local_path": "/opt/searcher/downloads/atrd/vertiport_placement_for_urban_air_mobility.pdf",
+      "size_bytes": 843210
+    }
+  ],
+  "count": 42,
+  "errors": []
+}</pre>
+          <p class="subhead">Notes</p>
+          <ul class="notes">
+            <li>Uses a headless Chromium browser — page is JavaScript-rendered</li>
+            <li>PDFs are saved under <code>&lt;DOWNLOAD_DIR&gt;/atrd/</code>; re-running skips files already on disk</li>
+            <li>Each <code>errors</code> entry describes a paper that could not be downloaded (bad link, parse failure, etc.) without stopping the batch</li>
           </ul>
         </div>
       </div>

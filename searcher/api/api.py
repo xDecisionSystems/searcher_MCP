@@ -7,6 +7,8 @@ from starlette.responses import FileResponse
 from .config import VERSION_NAME
 
 _STATIC_DIR = Path(__file__).resolve().parent / "static"
+from .services.atrd import download_atrd_papers as download_atrd_papers_service
+from .services.atrd import search_atrd_papers as search_atrd_papers_service
 from .services.page import fetch_page as fetch_page_service
 from .services.page import review_page as review_page_service
 from .services.pdf import download_pdf as download_pdf_service
@@ -255,4 +257,28 @@ def search_web_of_science(
 @app.get("/download_pdf")
 def download_pdf(url: str) -> dict[str, int | str]:
     return download_pdf_service(url=url)
+
+
+@app.get("/search_atrd_papers")
+def search_atrd_papers() -> dict[str, Any]:
+    """Return metadata for all papers from the ATRD 1st Symposium page.
+
+    Fetches and parses the symposium page directly (no browser required).
+    Returns title, authors, section/topic, best-paper flag, and Google Drive
+    links for the full paper and presentation slide deck (where available).
+    Does not download any files.
+    """
+    return search_atrd_papers_service()
+
+
+@app.get("/download_atrd_papers")
+def download_atrd_papers() -> dict[str, Any]:
+    """Scrape the ATRD 1st Symposium papers page, download all full-paper PDFs from Google Drive,
+    and return structured metadata.
+
+    Uses a headless Chromium browser (Playwright) because the page is JavaScript-rendered.
+    PDFs are saved under <DOWNLOAD_DIR>/atrd/. Re-running skips files already on disk.
+    Returns a list of downloaded papers and any per-paper errors.
+    """
+    return download_atrd_papers_service()
 

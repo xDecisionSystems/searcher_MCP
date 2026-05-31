@@ -152,6 +152,57 @@ Search EBSCO Research via the persistent Chromium browser. Requires an active in
 
 If blocked by a login wall, open noVNC, log in through the institution portal, then retry.
 
+## ATRD Endpoints
+
+### GET /search_atrd_papers
+Return metadata for all papers from the ATRD 1st Symposium page. No file downloads. Fetches and parses HTML directly — no browser required.
+
+No parameters.
+
+Response:
+```json
+{
+  "source": "https://www.atrdsymposium.org/...",
+  "count": 53,
+  "papers": [
+    {
+      "title": "Vertiport Placement for Urban Air Mobility to Reduce Time for Multimodal Travel",
+      "authors": ["Yashovardhan S. Chati", "Yamini Sharma", "Kirti Nikam", "Prasad Devkar", "Arunchandar Vasan"],
+      "section": "Autonomous, unmanned and remotely piloted aircraft systems and emerging operations",
+      "is_best_paper": true,
+      "full_paper_url": "https://drive.google.com/file/d/FILE_ID/view?usp=sharing",
+      "presentation_url": "https://drive.google.com/file/d/FILE_ID/view?usp=sharing"
+    }
+  ]
+}
+```
+
+`section` — symposium topic category. `is_best_paper` — true when awarded Best Paper. `presentation_url` — empty string for doctoral papers (slides not posted).
+
+### GET /download_atrd_papers
+Scrape the ATRD 1st Symposium papers page, download all full-paper PDFs from Google Drive, and return structured metadata. Source URL is fixed. Uses headless Playwright — no auth required. PDFs saved under `<DOWNLOAD_DIR>/atrd/`; re-running skips files already on disk.
+
+No parameters.
+
+Response:
+```json
+{
+  "papers": [
+    {
+      "title": "Vertiport Placement for Urban Air Mobility",
+      "authors": ["Jane Doe", "John Smith"],
+      "url": "https://drive.google.com/file/d/FILE_ID/view?usp=sharing",
+      "local_path": "/opt/searcher/downloads/atrd/vertiport_placement_for_urban_air_mobility.pdf",
+      "size_bytes": 843210
+    }
+  ],
+  "count": 42,
+  "errors": []
+}
+```
+
+`errors` lists any per-paper failures (bad link, parse error) without stopping the batch.
+
 ## EBSCO Download Endpoints
 
 ### GET /download_ebsco_paper
