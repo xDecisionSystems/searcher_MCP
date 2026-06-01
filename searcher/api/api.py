@@ -273,16 +273,21 @@ def search_atrd_papers(
     return search_atrd_papers_service(url=url)
 
 
-@app.post("/download_atrd_paper")
+@app.post("/download_atrd_paper", response_class=FileResponse)
 def download_atrd_paper(
     paper: Annotated[dict[str, Any], Body(..., description="A single paper record returned by /search_atrd_papers.")],
-) -> dict[str, Any]:
-    """Download the full-paper PDF for a single ATRD paper.
+) -> FileResponse:
+    """Download the full-paper PDF for a single ATRD paper and return it as a file.
 
     Pass a paper record exactly as returned by /search_atrd_papers.
     The full_paper_url field is used to fetch the PDF from Google Drive.
-    The file is saved under <DOWNLOAD_DIR>/atrd/; calling again with the
-    same record skips the download and returns the existing path.
+    The file is cached under <DOWNLOAD_DIR>/atrd/; calling again with the
+    same record skips the download and serves the cached file.
     """
-    return download_atrd_paper_service(paper)
+    result = download_atrd_paper_service(paper)
+    return FileResponse(
+        path=result["local_path"],
+        media_type="application/pdf",
+        filename=Path(result["local_path"]).name,
+    )
 

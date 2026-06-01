@@ -1224,17 +1224,7 @@ GET /search_scopus?query=TITLE-ABS-KEY(UAV)&amp;limit=200&amp;include_abstract=f
   "presentation_url": "https://drive.google.com/file/d/FILE_ID/view?usp=sharing"
 }</pre>
           <p class="subhead">Response</p>
-          <p>The input record with <code>local_path</code> and <code>size_bytes</code> added.</p>
-          <pre>{
-  "title": "Vertiport Placement for Urban Air Mobility...",
-  "authors": [...],
-  "section": "...",
-  "is_best_paper": true,
-  "full_paper_url": "https://drive.google.com/...",
-  "presentation_url": "https://drive.google.com/...",
-  "local_path": "/opt/searcher/downloads/atrd/vertiport_placement_for_urban_air_mobility_to_reduce_time_for_multimodal_travel.pdf",
-  "size_bytes": 843210
-}</pre>
+          <p>The PDF file streamed directly (<code>Content-Type: application/pdf</code>, <code>Content-Disposition: attachment</code>). The file is cached server-side under <code>&lt;DOWNLOAD_DIR&gt;/atrd/</code>; repeat calls serve the cached copy without re-downloading.</p>
           <p class="subhead">Notes</p>
           <ul class="notes">
             <li>File is saved under <code>&lt;DOWNLOAD_DIR&gt;/atrd/</code></li>

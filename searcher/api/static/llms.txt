@@ -184,19 +184,7 @@ Download the full-paper PDF for a single ATRD paper. Pass a paper record exactly
 
 Request body: a single paper record from `/search_atrd_papers`.
 
-Response: the input record with `local_path` and `size_bytes` added.
-```json
-{
-  "title": "Vertiport Placement for Urban Air Mobility...",
-  "authors": ["Yashovardhan S. Chati", "..."],
-  "section": "...",
-  "is_best_paper": true,
-  "full_paper_url": "https://drive.google.com/file/d/FILE_ID/view?usp=sharing",
-  "presentation_url": "https://drive.google.com/file/d/FILE_ID/view?usp=sharing",
-  "local_path": "/opt/searcher/downloads/atrd/vertiport_placement_for_urban_air_mobility_to_reduce_time_for_multimodal_travel.pdf",
-  "size_bytes": 843210
-}
-```
+Response: the PDF file (`Content-Type: application/pdf`) with `Content-Disposition: attachment; filename=<title>.pdf`. The file is cached server-side; repeat calls serve the cached copy.
 
 ## EBSCO Download Endpoints
 
